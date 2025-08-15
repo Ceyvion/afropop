@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-dm-sans: 'DM Sans', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+    --font-ibm-plex-mono: 'IBM Plex Mono', monospace;
+  }
+  
+  body {
+    font-family: var(--font-inter);
+    background-color: #f8f7f2; /* Light cream background */
+    color: #0B0B0C; /* Ink color */
+    cursor: none;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-dm-sans);
+    font-weight: 700;
+  }
+  
+  code, pre {
+    font-family: var(--font-ibm-plex-mono);
+  }
+  
+  a, button, input, textarea, select {
+    cursor: none;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  .card-hover:hover {
+    @apply transform -translate-y-1 shadow-lg;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 rounded-md font-medium transition-all duration-300 ease-in-out;
+  }
+  
+  .btn-primary:hover {
+    @apply opacity-90 transform -translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 border rounded-md font-medium transition-all duration-300 ease-in-out;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-gray-50 transform -translate-y-0.5;
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}

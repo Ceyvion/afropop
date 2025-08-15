@@ -1,0 +1,40 @@
+{
+  "name": "afropop-worldwide-website",
+  "version": "1.0.0",
+  "description": "The new website for Afropop Worldwide, featuring audio-first storytelling, archive discovery, and Swiss-leaning design.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test:rss": "node test-rss.js",
+    "refresh:rss": "node refresh-rss.js"
+  },
+  "keywords": [
+    "nextjs",
+    "afropop",
+    "music",
+    "african-music",
+    "podcast",
+    "website"
+  ],
+  "author": "Afropop Worldwide",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "feed": "^4.2.2",
+    "next": "^15.4.6",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "rss-parser": "^3.13.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.0",
+    "postcss": "^8.0.0",
+    "tailwindcss": "^3.0.0"
+  }
+}
