@@ -5,17 +5,20 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log(`Fetching item by ID: ${params.id}`)
+    // Resolve the params promise
+    const { id } = await params;
+    
+    console.log(`Fetching item by ID: ${id}`)
     
     // Dynamically import the RSS service
     const rssService = await import('../../../lib/rss-service-feedburner.js')
     const { getRSSItemById } = rssService
     
     // Get item by ID
-    const item = await getRSSItemById(params.id)
+    const item = await getRSSItemById(id)
     
     // Return the item
     return NextResponse.json(item)

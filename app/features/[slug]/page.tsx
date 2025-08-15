@@ -5,9 +5,11 @@ import React from 'react'
 import Link from 'next/link'
 import { useItemById } from '@/app/lib/use-rss-data'
 
-export default function FeatureDetail({ params }: { params: { slug: string } }) {
+export default function FeatureDetail({ params }: { params: Promise<{ slug: string }> }) {
+  // Resolve the params promise
+  const resolvedParams = React.use(params);
   // Get the feature data from the RSS feed
-  const { data, loading, error } = useItemById(params.slug)
+  const { data, loading, error } = useItemById(resolvedParams.slug)
 
   if (loading) {
     return (

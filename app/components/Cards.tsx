@@ -2,27 +2,63 @@
 import React from 'react'
 
 // Episode Card
-export const EpisodeCard = ({ title, region, genre, duration }: { 
+export const EpisodeCard = ({ title, region, genre, duration, image, categories }: { 
   title: string; 
   region: string; 
   genre: string; 
   duration: string;
+  image?: string;
+  categories?: string[];
 }) => {
+  // Extract additional tags from categories
+  const additionalTags = categories
+    ?.filter(cat => 
+      cat.toLowerCase() !== region?.toLowerCase() && 
+      cat.toLowerCase() !== genre?.toLowerCase() &&
+      !['episode', 'podcast', 'audio'].includes(cat.toLowerCase())
+    )
+    .slice(0, 2) || []
+
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
-      {/* 1:1 image placeholder */}
-      <div className="bg-gray-200 border-2 border-dashed aspect-square w-full" />
+      {/* Episode image or placeholder */}
+      {image ? (
+        <div className="aspect-square w-full overflow-hidden">
+          <img 
+            src={image} 
+            alt={title} 
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to placeholder if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.parentElement!.innerHTML = '<div class="bg-gray-200 border-2 border-dashed aspect-square w-full"></div>';
+            }}
+          />
+        </div>
+      ) : (
+        <div className="bg-gray-200 border-2 border-dashed aspect-square w-full" />
+      )}
       
       <div className="p-5">
         <h3 className="font-bold text-ink line-clamp-2 mb-3">{title}</h3>
         
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            {region}
-          </span>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            {genre}
-          </span>
+          {region && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {region}
+            </span>
+          )}
+          {genre && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {genre}
+            </span>
+          )}
+          {additionalTags.map((tag, index) => (
+            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {tag}
+            </span>
+          ))}
         </div>
         
         <div className="flex items-center justify-between">

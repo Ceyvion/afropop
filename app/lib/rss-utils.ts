@@ -12,6 +12,11 @@ export type RSSItem = {
   isoDate?: string
   categories?: string[]
   guid?: string
+  enclosure?: {
+    url: string
+    length: string
+    type: string
+  }
   [key: string]: any
 }
 
@@ -38,7 +43,8 @@ const parser: Parser<RSSFeed, RSSItem> = new Parser({
       ['itunes:season', 'season'],
       ['media:content', 'mediaContent'],
       ['media:thumbnail', 'thumbnail'],
-      ['guid', 'guid']
+      ['guid', 'guid'],
+      ['enclosure', 'enclosure']
     ]
   }
 })
@@ -81,6 +87,7 @@ export function normalizeRSSItems(items: RSSItem[]): any[] {
     duration: item.duration,
     categories: item.categories || [],
     image: item.image?.$?.href || item.thumbnail?.$?.url || null,
+    enclosure: item.enclosure,
     // Additional fields specific to Afropop
     type: determineContentType(item),
     region: extractRegion(item),

@@ -15,6 +15,11 @@ export type RSSItem = {
   isoDate?: string
   categories?: string[]
   guid?: string
+  enclosure?: {
+    url: string
+    length: string
+    type: string
+  }
   [key: string]: any
 }
 
@@ -28,7 +33,7 @@ export type RSSFeed = {
 }
 
 // Create a parser instance with custom fields for podcast feeds
-const parser: Parser.Parser<RSSFeed, RSSItem> = new Parser({
+const parser: any = new (Parser as any)({
   customFields: {
     item: [
       ['itunes:author', 'author'],
@@ -41,7 +46,8 @@ const parser: Parser.Parser<RSSFeed, RSSItem> = new Parser({
       ['itunes:season', 'season'],
       ['media:content', 'mediaContent'],
       ['media:thumbnail', 'thumbnail'],
-      ['guid', 'guid']
+      ['guid', 'guid'],
+      ['enclosure', 'enclosure']
     ]
   }
 })
@@ -156,6 +162,7 @@ export function normalizeRSSItems(items: RSSItem[]): any[] {
     duration: item.duration,
     categories: item.categories || [],
     image: item.image?.$?.href || item.thumbnail?.$?.url || null,
+    enclosure: item.enclosure,
     // Additional fields specific to Afropop
     type: determineContentType(item),
     region: extractRegion(item),
@@ -182,39 +189,199 @@ function determineContentType(item: RSSItem): string {
 
 // Helper function to extract region from item
 function extractRegion(item: RSSItem): string | null {
-  // This would be customized based on Afropop's RSS structure
   // Look for region in categories, tags, or content
   const categories = item.categories?.map(cat => cat.toLowerCase()) || []
   
-  const regionKeywords = [
-    'africa', 'caribbean', 'diaspora', 'west', 'east', 'south', 'north',
-    'nigeria', 'ghana', 'senegal', 'kenya', 'egypt', 'morocco', 'tunisia',
-    'south africa', 'zimbabwe', 'uganda', 'ethiopia', 'tanzania'
+  // More specific region detection
+  const regionMap: { [key: string]: string } = {
+    'nigeria': 'Nigeria',
+    'ghana': 'Ghana',
+    'senegal': 'Senegal',
+    'kenya': 'Kenya',
+    'egypt': 'Egypt',
+    'morocco': 'Morocco',
+    'tunisia': 'Tunisia',
+    'south africa': 'South Africa',
+    'zimbabwe': 'Zimbabwe',
+    'uganda': 'Uganda',
+    'ethiopia': 'Ethiopia',
+    'tanzania': 'Tanzania',
+    'cameroon': 'Cameroon',
+    'ivory coast': 'Ivory Coast',
+    'benin': 'Benin',
+    'angola': 'Angola',
+    'algeria': 'Algeria',
+    'libya': 'Libya',
+    'mauritania': 'Mauritania',
+    'mali': 'Mali',
+    'burkina faso': 'Burkina Faso',
+    'niger': 'Niger',
+    'chad': 'Chad',
+    'sudan': 'Sudan',
+    'eritrea': 'Eritrea',
+    'djibouti': 'Djibouti',
+    'somalia': 'Somalia',
+    'rwanda': 'Rwanda',
+    'burundi': 'Burundi',
+    'congo': 'Congo',
+    'drc': 'DRC',
+    'gabon': 'Gabon',
+    'equatorial guinea': 'Equatorial Guinea',
+    'central african republic': 'Central African Republic',
+    'botswana': 'Botswana',
+    'namibia': 'Namibia',
+    'lesotho': 'Lesotho',
+    'swaziland': 'Swaziland',
+    'madagascar': 'Madagascar',
+    'mozambique': 'Mozambique',
+    'zambia': 'Zambia',
+    'malawi': 'Malawi',
+    'sierra leone': 'Sierra Leone',
+    'liberia': 'Liberia',
+    'guinea': 'Guinea',
+    'gambia': 'Gambia',
+    'cape verde': 'Cape Verde',
+    'sao tome': 'Sao Tome',
+    'seychelles': 'Seychelles',
+    'comoros': 'Comoros',
+    'mauritius': 'Mauritius',
+    'reunion': 'Reunion',
+    'mayotte': 'Mayotte',
+    'western sahara': 'Western Sahara',
+    'sahrawi': 'Western Sahara',
+    'caribbean': 'Caribbean',
+    'jamaica': 'Jamaica',
+    'haiti': 'Haiti',
+    'cuba': 'Cuba',
+    'dominican republic': 'Dominican Republic',
+    'puerto rico': 'Puerto Rico',
+    'trinidad and tobago': 'Trinidad and Tobago',
+    'barbados': 'Barbados',
+    'bahamas': 'Bahamas',
+    'grenada': 'Grenada',
+    'saint lucia': 'Saint Lucia',
+    'saint vincent': 'Saint Vincent',
+    'antigua': 'Antigua',
+    'dominica': 'Dominica',
+    'st kitts': 'St Kitts',
+    'belize': 'Belize',
+    'guyana': 'Guyana',
+    'suriname': 'Suriname',
+    'french guiana': 'French Guiana',
+    'diaspora': 'Diaspora',
+    'african diaspora': 'Diaspora',
+    'afro caribbean': 'Afro Caribbean',
+    'afro latin': 'Afro Latin',
+    'afro brazilian': 'Afro Brazilian',
+    'afro cuban': 'Afro Cuban'
+  }
+  
+  // Check for specific regions first
+  for (const [keyword, region] of Object.entries(regionMap)) {
+    if (categories.some(cat => cat.includes(keyword))) {
+      return region
+    }
+  }
+  
+  // Check for broader regions
+  const broadRegions = [
+    'africa', 'west africa', 'east africa', 'south africa', 'north africa', 'central africa',
+    'caribbean', 'latin america', 'north america', 'south america', 'europe', 'asia', 'oceania'
   ]
   
   const foundRegion = categories.find(cat => 
-    regionKeywords.some(keyword => cat.includes(keyword))
+    broadRegions.some(region => cat.includes(region))
   )
   
-  return foundRegion || null
+  return foundRegion ? foundRegion.split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.substr(1).toLowerCase())
+    .join(' ') : null
 }
 
 // Helper function to extract genre from item
 function extractGenre(item: RSSItem): string | null {
-  // This would be customized based on Afropop's RSS structure
   // Look for genre in categories, tags, or content
   const categories = item.categories?.map(cat => cat.toLowerCase()) || []
   
-  const genreKeywords = [
-    'highlife', 'afrobeat', 'soukous', 'apapiano', 'taarab', 'juju', 'makossa',
-    'mbaqanga', 'kwaito', 'azonto', 'afropop', 'world music', 'traditional'
-  ]
+  // More specific genre detection
+  const genreMap: { [key: string]: string } = {
+    'afrobeat': 'Afrobeat',
+    'afrobeats': 'Afrobeats',
+    'highlife': 'Highlife',
+    'soukous': 'Soukous',
+    'sakara': 'Sakara',
+    'apala': 'Apala',
+    'juju': 'Juju',
+    'fuji': 'Fuji',
+    'waka': 'Waka',
+    'makossa': 'Makossa',
+    'bikutsi': 'Bikutsi',
+    'mbaqanga': 'Mbaqanga',
+    'kwaito': 'Kwaito',
+    'gqom': 'Gqom',
+    'amapiano': 'Amapiano',
+    'azonto': 'Azonto',
+    'afropop': 'Afropop',
+    'afro pop': 'Afropop',
+    'world music': 'World Music',
+    'traditional': 'Traditional',
+    'folk': 'Folk',
+    'griot': 'Griot',
+    'mbube': 'Mbube',
+    'maskandi': 'Maskandi',
+    'taarab': 'Taarab',
+    'bongo flava': 'Bongo Flava',
+    'azawakh': 'Azawakh',
+    'tishoumaren': 'Tishoumaren',
+    'assiko': 'Assiko',
+    'ndombolo': 'Ndombolo',
+    'salsa': 'Salsa',
+    'reggae': 'Reggae',
+    'dancehall': 'Dancehall',
+    'calypso': 'Calypso',
+    'soca': 'Soca',
+    'compay': 'Compay',
+    'son cubano': 'Son Cubano',
+    'rumba': 'Rumba',
+    'conga': 'Conga',
+    'mambo': 'Mambo',
+    'cha cha': 'Cha Cha',
+    'merengue': 'Merengue',
+    'bachata': 'Bachata',
+    'samba': 'Samba',
+    'bossa nova': 'Bossa Nova',
+    'forro': 'Forro',
+    'reggaeton': 'Reggaeton',
+    'hip hop': 'Hip Hop',
+    'rap': 'Rap',
+    'jazz': 'Jazz',
+    'blues': 'Blues',
+    'soul': 'Soul',
+    'funk': 'Funk',
+    'r&b': 'R&B',
+    'gospel': 'Gospel',
+    'electro': 'Electronic',
+    'house': 'House',
+    'techno': 'Techno',
+    'dub': 'Dub',
+    'rock': 'Rock',
+    'metal': 'Metal',
+    'punk': 'Punk',
+    'indie': 'Indie',
+    'pop': 'Pop',
+    'classical': 'Classical',
+    'orchestral': 'Orchestral'
+  }
   
-  const foundGenre = categories.find(cat => 
-    genreKeywords.some(keyword => cat.includes(keyword))
-  )
+  // Check for specific genres first
+  for (const [keyword, genre] of Object.entries(genreMap)) {
+    if (categories.some(cat => cat.includes(keyword))) {
+      return genre
+    }
+  }
   
-  return foundGenre || null
+  // If no specific genre found, return a broader category
+  return 'World Music'
 }
 
 // Function to search RSS feed items
@@ -230,7 +397,7 @@ export async function searchRSSFeed(query: string, filters: {
     const feedData = await getRSSFeed()
     
     // Filter items based on search query and filters
-    let filteredItems = feedData.items.filter(item => {
+    let filteredItems = feedData.items.filter((item: any) => {
       // Check search query against title, description, and content
       const matchesQuery = !query || 
         item.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -264,7 +431,7 @@ export async function searchRSSFeed(query: string, filters: {
     })
     
     // Sort by date (newest first)
-    filteredItems.sort((a, b) => {
+    filteredItems.sort((a: any, b: any) => {
       const dateA = new Date(a.isoDate || a.pubDate || '')
       const dateB = new Date(b.isoDate || b.pubDate || '')
       return dateB.getTime() - dateA.getTime()
@@ -286,7 +453,7 @@ export async function searchRSSFeed(query: string, filters: {
 export async function getRSSItemById(id: string) {
   try {
     const feedData = await getRSSFeed()
-    const item = feedData.items.find(item => item.id === id)
+    const item = feedData.items.find((item: any) => item.id === id)
     
     if (!item) {
       throw new Error(`Item with ID ${id} not found`)
@@ -303,12 +470,12 @@ export async function getRSSItemById(id: string) {
 export async function getRSSItemsByType(type: string) {
   try {
     const feedData = await getRSSFeed()
-    const items = feedData.items.filter(item => 
+    const items = feedData.items.filter((item: any) => 
       item.type.toLowerCase() === type.toLowerCase()
     )
     
     // Sort by date (newest first)
-    items.sort((a, b) => {
+    items.sort((a: any, b: any) => {
       const dateA = new Date(a.isoDate || a.pubDate || '')
       const dateB = new Date(b.isoDate || b.pubDate || '')
       return dateB.getTime() - dateA.getTime()

@@ -1,5 +1,5 @@
 // refresh-rss.js
-const { refreshRSSFeed } = require('./app/lib/rss-service')
+const { refreshRSSFeed } = require('./app/lib/rss-service-feedburner')
 
 async function refreshRSS() {
   try {

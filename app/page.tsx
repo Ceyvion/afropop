@@ -71,18 +71,28 @@ export default function Home() {
             ) : episodesError ? (
               <div className="text-center py-8">
                 <p className="text-gray-600">Error loading episodes: {episodesError}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="mt-4 px-4 py-2 bg-accent-2 text-white rounded-md hover:bg-accent"
+                >
+                  Retry
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {episodesData?.items?.map((episode: any, index: number) => (
-                  <div key={episode.id} className={`fade-in delay-${(index + 1) * 100}`}>
-                    <EpisodeCard
-                      title={episode.title}
-                      region={episode.region || 'Africa'}
-                      genre={episode.genre || 'World Music'}
-                      duration={episode.duration || '45 min'}
-                    />
-                  </div>
+                  <Link key={episode.id} href={`/episodes/${encodeURIComponent(episode.id)}`} className="block">
+                    <div className={`fade-in delay-${(index + 1) * 100}`}>
+                      <EpisodeCard
+                        title={episode.title}
+                        region={episode.region || 'Africa'}
+                        genre={episode.genre || 'World Music'}
+                        duration={episode.duration || '45 min'}
+                        image={episode.image}
+                        categories={episode.categories}
+                      />
+                    </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -104,25 +114,33 @@ export default function Home() {
             ) : featuresError ? (
               <div className="text-center py-8">
                 <p className="text-gray-600">Error loading features: {featuresError}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="mt-4 px-4 py-2 bg-accent-2 text-white rounded-md hover:bg-accent"
+                >
+                  Retry
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {featuresData?.items?.map((feature: any, index: number) => (
-                  <div key={feature.id} className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover fade-in delay-${(index + 1) * 100}`}>
-                    <div className="bg-gray-200 border-2 border-dashed aspect-video w-full" />
-                    <div className="p-6">
-                      <h3 className="font-bold text-ink line-clamp-2 mb-3">{feature.title}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-5">
-                        {feature.description || 'Learn more about this feature...'}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{feature.author || 'Afropop Worldwide'}</span>
-                        <span className="text-xs text-gray-500">
-                          {feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
-                        </span>
+                  <Link key={feature.id} href={`/features/${encodeURIComponent(feature.id)}`} className="block">
+                    <div className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover fade-in delay-${(index + 1) * 100}`}>
+                      <div className="bg-gray-200 border-2 border-dashed aspect-video w-full" />
+                      <div className="p-6">
+                        <h3 className="font-bold text-ink line-clamp-2 mb-3">{feature.title}</h3>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-5">
+                          {feature.description || 'Learn more about this feature...'}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">{feature.author || 'Afropop Worldwide'}</span>
+                          <span className="text-xs text-gray-500">
+                            {feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

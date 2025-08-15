@@ -63,7 +63,7 @@ export async function searchRSSFeed(query: string, filters: {
     const feedData = await getRSSFeed()
     
     // Filter items based on search query and filters
-    let filteredItems = feedData.items.filter(item => {
+    let filteredItems = feedData.items.filter((item: any) => {
       // Check search query against title, description, and content
       const matchesQuery = !query || 
         item.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -97,7 +97,7 @@ export async function searchRSSFeed(query: string, filters: {
     })
     
     // Sort by date (newest first)
-    filteredItems.sort((a, b) => {
+    filteredItems.sort((a: any, b: any) => {
       const dateA = new Date(a.isoDate || a.pubDate || '')
       const dateB = new Date(b.isoDate || b.pubDate || '')
       return dateB.getTime() - dateA.getTime()
@@ -119,7 +119,7 @@ export async function searchRSSFeed(query: string, filters: {
 export async function getRSSItemById(id: string) {
   try {
     const feedData = await getRSSFeed()
-    const item = feedData.items.find(item => item.id === id)
+    const item = feedData.items.find((item: any) => item.id === id)
     
     if (!item) {
       throw new Error(`Item with ID ${id} not found`)
@@ -136,12 +136,12 @@ export async function getRSSItemById(id: string) {
 export async function getRSSItemsByType(type: string) {
   try {
     const feedData = await getRSSFeed()
-    const items = feedData.items.filter(item => 
+    const items = feedData.items.filter((item: any) => 
       item.type.toLowerCase() === type.toLowerCase()
     )
     
     // Sort by date (newest first)
-    items.sort((a, b) => {
+    items.sort((a: any, b: any) => {
       const dateA = new Date(a.isoDate || a.pubDate || '')
       const dateB = new Date(b.isoDate || b.pubDate || '')
       return dateB.getTime() - dateA.getTime()

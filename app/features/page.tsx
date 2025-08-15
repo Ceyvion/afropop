@@ -48,14 +48,16 @@ export default function Features() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {data?.items?.map((feature: any, index: number) => (
-                <div key={feature.id} className={`fade-in delay-${(index % 6 + 1) * 100}`}>
-                  <FeatureCard
-                    title={feature.title}
-                    dek={feature.description}
-                    author={feature.author || 'Afropop Worldwide'}
-                    readTime={feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
-                  />
-                </div>
+                <Link key={feature.id} href={`/features/${encodeURIComponent(feature.id)}`} className="block">
+                  <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                    <FeatureCard
+                      title={feature.title}
+                      dek={feature.description}
+                      author={feature.author || 'Afropop Worldwide'}
+                      readTime={feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
+                    />
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
