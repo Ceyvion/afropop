@@ -26,6 +26,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "feed": "^4.2.2",
+    "ical.js": "^2.2.1",
     "next": "^15.4.6",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

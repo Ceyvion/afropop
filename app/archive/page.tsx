@@ -1,30 +1,133 @@
 // Archive page with RSS feed integration
-'use client'
+"use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import FilterRail from '@/app/components/FilterRail'
 import { EpisodeCard, FeatureCard, EventCard } from '@/app/components/Cards'
-import { useRSSFeed } from '@/app/lib/use-rss-data'
+import { usePlayer } from '@/app/components/PlayerProvider'
+import { useRSSFeed, useRSSSearch } from '@/app/lib/use-rss-data'
 
 export default function Archive() {
-  const { data, loading, error } = useRSSFeed()
+  const { data: feedData, loading: feedLoading, error: feedError } = useRSSFeed()
+  const { data: searchData, loading: searchLoading, error: searchError, search } = useRSSSearch()
+  const player = usePlayer()
   const [filteredResults, setFilteredResults] = useState<any[]>([])
   const [activeFilter, setActiveFilter] = useState('all')
+  const [query, setQuery] = useState('')
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
+  const [visibleCount, setVisibleCount] = useState(12)
+  const [facetFilters, setFacetFilters] = useState<Record<string, string[]>>({})
+  const [groupMode, setGroupMode] = useState<'none' | 'year' | 'decade'>('none')
+  const [useSearchResults, setUseSearchResults] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+
+  // Derived filters for API from facet filters + active type
+  const apiFilters = useMemo(() => {
+    const filters: any = {}
+    if (activeFilter !== 'all') filters.type = activeFilter
+    const regionSel = facetFilters['Region'] || []
+    const genreSel = facetFilters['Genre'] || []
+    if (regionSel.length > 0) {
+      const r0 = regionSel[0]
+      const regionMap: Record<string, string> = {
+        'West Africa': 'west',
+        'East Africa': 'east',
+        'Southern Africa': 'south',
+        'North Africa': 'north',
+      }
+      filters.region = regionMap[r0] || r0
+    }
+    if (genreSel.length > 0) filters.genre = genreSel[0]
+
+    const eras = facetFilters['Era/Decade'] || []
+    if (eras.length > 0) {
+      // Compute min/max date range from selected decades
+      const ranges = eras.map(dec => {
+        const decadeStart = parseInt(dec) || parseInt(dec.replace(/s$/, ''))
+        if (!isNaN(decadeStart)) {
+          const from = `${decadeStart}-01-01`
+          const to = `${decadeStart + 9}-12-31`
+          return { from, to }
+        }
+        return null
+      }).filter(Boolean) as { from: string, to: string }[]
+      if (ranges.length > 0) {
+        const from = ranges.reduce((min, r) => r.from < min ? r.from : min, ranges[0].from)
+        const to = ranges.reduce((max, r) => r.to > max ? r.to : max, ranges[0].to)
+        filters.dateFrom = from
+        filters.dateTo = to
+      }
+    }
+    return filters
+  }, [facetFilters, activeFilter])
+
+  // Debounced search when query or filters change
+  useEffect(() => {
+    const hasFilters = query.trim().length > 0 || Object.keys(apiFilters).length > 0
+    const t = setTimeout(() => {
+      if (hasFilters) {
+        search(query, apiFilters)
+        setUseSearchResults(true)
+      } else {
+        setUseSearchResults(false)
+      }
+    }, 300)
+    return () => clearTimeout(t)
+  }, [query, apiFilters])
+
+  const sourceItems = useMemo(() => {
+    return (useSearchResults ? searchData?.items : feedData?.items) || []
+  }, [useSearchResults, searchData, feedData])
+
+  const loading = useSearchResults ? searchLoading : feedLoading
+  const error = useSearchResults ? searchError : feedError
 
   // Filter results based on active filter
   useEffect(() => {
-    if (data?.items) {
-      if (activeFilter === 'all') {
-        setFilteredResults(data.items)
-      } else {
-        setFilteredResults(
-          data.items.filter((item: any) => 
-            item.type.toLowerCase() === activeFilter
-          )
-        )
-      }
+    if (!sourceItems) return
+
+    let items = [...sourceItems]
+
+    // Filter by active type
+    if (activeFilter !== 'all') {
+      items = items.filter((item: any) => item.type?.toLowerCase() === activeFilter)
     }
-  }, [data, activeFilter])
+
+    // Simple client-side search across title and description
+    if (query.trim()) {
+      const q = query.toLowerCase()
+      items = items.filter((item: any) =>
+        (item.title || '').toLowerCase().includes(q) ||
+        (item.description || '').toLowerCase().includes(q)
+      )
+    }
+
+    // Sort by date
+    items.sort((a: any, b: any) => {
+      const da = new Date(a.isoDate || a.pubDate || 0).getTime()
+      const db = new Date(b.isoDate || b.pubDate || 0).getTime()
+      return sortOrder === 'newest' ? db - da : da - db
+    })
+
+    setFilteredResults(items)
+    setVisibleCount(12)
+  }, [sourceItems, activeFilter, query, sortOrder])
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    if (!sentinelRef.current) return
+    if (visibleCount >= filteredResults.length) return
+    const el = sentinelRef.current
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries[0]
+      if (first.isIntersecting) {
+        setVisibleCount(c => Math.min(c + 12, filteredResults.length))
+      }
+    }, { rootMargin: '200px' })
+    observer.observe(el)
+    return () => observer.unobserve(el)
+  }, [filteredResults.length, visibleCount])
 
   if (loading) {
     return (
@@ -39,7 +142,7 @@ export default function Archive() {
       <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Error Loading Archive</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <p className="text-gray-600 mb-6">{String(error)}</p>
           <button 
             onClick={() => window.location.reload()}
             className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
@@ -56,7 +159,7 @@ export default function Archive() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row">
           {/* Filter Rail */}
-          <FilterRail />
+          <FilterRail onChange={(filters) => setFacetFilters(filters)} onApply={(filters) => setFacetFilters(filters)} />
           
           {/* Main Content */}
           <div className="flex-1">
@@ -74,11 +177,30 @@ export default function Archive() {
                   <option value="feature">Features</option>
                   <option value="event">Events</option>
                 </select>
+                <select
+                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+                <select
+                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                  value={groupMode}
+                  onChange={(e) => setGroupMode(e.target.value as 'none' | 'year' | 'decade')}
+                >
+                  <option value="none">No grouping</option>
+                  <option value="year">Group by year</option>
+                  <option value="decade">Group by decade</option>
+                </select>
                 
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Search archive..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
                     className="text-sm border border-gray-300 rounded-md pl-10 pr-4 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
                   />
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-3 top-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,67 +212,156 @@ export default function Archive() {
             
             {/* Results count */}
             <p className="text-gray-600 mb-6">
-              Showing {filteredResults.length} of {data?.count} items
+              Showing {Math.min(filteredResults.length, visibleCount)} of {filteredResults.length} items
             </p>
             
             {/* Results */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredResults.map((item: any) => {
+            {(() => {
+              const visibleItems = filteredResults.slice(0, visibleCount)
+              const renderItem = (item: any, index: number) => {
                 if (item.type === 'Episode') {
                   return (
-                    <EpisodeCard
-                      key={item.id}
-                      title={item.title}
-                      region={item.region || 'Africa'}
-                      genre={item.genre || 'World Music'}
-                      duration={item.duration || '45 min'}
-                    />
+                    <Link key={item.id} href={`/episodes/${encodeURIComponent(item.id)}`} className="block">
+                      <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                        <EpisodeCard
+                          title={item.title}
+                          region={item.region || 'Africa'}
+                          genre={item.genre || 'World Music'}
+                          duration={item.duration || '45 min'}
+                          image={item.image}
+                          categories={item.categories}
+                          onPlay={() => {
+                            if (item.audioUrl) {
+                              player.play({
+                                id: item.id,
+                                title: item.title,
+                                author: item.author,
+                                image: item.image,
+                                audioUrl: item.audioUrl,
+                                duration: item.duration,
+                              })
+                            }
+                          }}
+                        />
+                      </div>
+                    </Link>
                   )
                 }
                 
                 if (item.type === 'Feature') {
                   return (
-                    <FeatureCard
-                      key={item.id}
-                      title={item.title}
-                      dek={item.description}
-                      author={item.author || 'Afropop Worldwide'}
-                      readTime={item.duration ? `${Math.round(parseInt(item.duration)/60)} min read` : '8 min read'}
-                    />
+                    <Link key={item.id} href={`/features/${encodeURIComponent(item.id)}`} className="block">
+                      <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                        <FeatureCard
+                          title={item.title}
+                          dek={item.description}
+                          author={item.author || 'Afropop Worldwide'}
+                          readTime={item.duration ? `${Math.round(parseInt(item.duration)/60)} min read` : '8 min read'}
+                          image={item.image}
+                        />
+                      </div>
+                    </Link>
                   )
                 }
                 
                 if (item.type === 'Event') {
                   return (
-                    <EventCard
-                      key={item.id}
-                      title={item.title}
-                      date={formatDate(item.pubDate)}
-                      city="Various Locations"
-                      venue="Afropop Event"
-                    />
+                    <div key={item.id} className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                      <EventCard
+                        title={item.title}
+                        date={formatDate(item.pubDate)}
+                        city="Various Locations"
+                        venue="Afropop Event"
+                        image={item.image}
+                      />
+                    </div>
                   )
                 }
                 
                 // Default to episode card for unknown types
                 return (
-                  <EpisodeCard
-                    key={item.id}
-                    title={item.title}
-                    region={item.region || 'Africa'}
-                    genre={item.genre || 'World Music'}
-                    duration={item.duration || '45 min'}
-                  />
+                  <Link key={item.id} href={`/episodes/${encodeURIComponent(item.id)}`} className="block">
+                    <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                      <EpisodeCard
+                        title={item.title}
+                        region={item.region || 'Africa'}
+                        genre={item.genre || 'World Music'}
+                        duration={item.duration || '45 min'}
+                        image={item.image}
+                        categories={item.categories}
+                        onPlay={() => {
+                          if (item.audioUrl) {
+                            player.play({
+                              id: item.id,
+                              title: item.title,
+                              author: item.author,
+                              image: item.image,
+                              audioUrl: item.audioUrl,
+                              duration: item.duration,
+                            })
+                          }
+                        }}
+                      />
+                    </div>
+                  </Link>
                 )
-              })}
-            </div>
+              }
+
+              if (groupMode === 'none') {
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {visibleItems.map((item, index) => renderItem(item, index))}
+                  </div>
+                )
+              }
+
+              // Group items by year or decade
+              const groupsMap = new Map<string, any[]>()
+              visibleItems.forEach(item => {
+                const d = new Date(item.isoDate || item.pubDate || 0)
+                const year = d.getFullYear()
+                const key = groupMode === 'year' ? String(year) : `${Math.floor(year / 10) * 10}s`
+                const arr = groupsMap.get(key) || []
+                arr.push(item)
+                groupsMap.set(key, arr)
+              })
+              const groupKeys = Array.from(groupsMap.keys()).sort((a, b) => {
+                // Numeric compare based on leading number
+                const na = parseInt(a)
+                const nb = parseInt(b)
+                return sortOrder === 'newest' ? nb - na : na - nb
+              })
+
+              return (
+                <div className="space-y-12">
+                  {groupKeys.map(key => (
+                    <div key={key}>
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">{key}</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {groupsMap.get(key)!.map((item, index) => renderItem(item, index))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
+
+            {/* Infinite scroll sentinel */}
+            {visibleCount < filteredResults.length && (
+              <div ref={sentinelRef} className="h-10" />
+            )}
             
-            {/* Load More */}
-            <div className="mt-16 text-center">
-              <button className="px-8 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider">
-                Load More
-              </button>
-            </div>
+            {/* Manual Load More fallback */}
+            {visibleCount < filteredResults.length && (
+              <div className="mt-8 text-center">
+                <button 
+                  onClick={() => setVisibleCount(c => c + 12)}
+                  className="px-8 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
+                >
+                  Load More
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

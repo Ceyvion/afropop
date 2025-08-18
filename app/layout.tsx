@@ -2,9 +2,9 @@
 import React from 'react'
 import Header from '@/app/components/Header'
 import MiniPlayer from '@/app/components/MiniPlayer'
+import { PlayerProvider } from '@/app/components/PlayerProvider'
 import Footer from '@/app/components/Footer'
 import DonateBanner from '@/app/components/DonateBanner'
-import CustomCursor from '@/app/components/CustomCursor'
 import '@/app/globals.css'
 import type { Metadata } from 'next'
 import { DM_Sans, Inter, IBM_Plex_Mono } from 'next/font/google'
@@ -44,16 +44,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable}`}>
       <body className={inter.className}>
-        <CustomCursor />
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow">
-            {children}
-            <DonateBanner />
-          </main>
-          <Footer />
-          <MiniPlayer />
-        </div>
+        <PlayerProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow">
+              {children}
+              <DonateBanner />
+            </main>
+            <Footer />
+            <MiniPlayer />
+          </div>
+        </PlayerProvider>
       </body>
     </html>
   )

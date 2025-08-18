@@ -4,11 +4,13 @@
 import React from 'react'
 import Link from 'next/link'
 import { EpisodeCard } from '@/app/components/Cards'
+import { usePlayer } from '@/app/components/PlayerProvider'
 import { useEpisodes } from '@/app/lib/use-rss-data'
 
 export default function Episodes() {
   // Get all episodes from the RSS feed
   const { data, loading, error } = useEpisodes()
+  const player = usePlayer()
 
   return (
     <div className="min-h-screen bg-[#f8f7f2]">
@@ -57,6 +59,18 @@ export default function Episodes() {
                       duration={episode.duration || '45 min'}
                       image={episode.image}
                       categories={episode.categories}
+                      onPlay={() => {
+                        if (episode.audioUrl) {
+                          player.play({
+                            id: episode.id,
+                            title: episode.title,
+                            author: episode.author,
+                            image: episode.image,
+                            audioUrl: episode.audioUrl,
+                            duration: episode.duration,
+                          })
+                        }
+                      }}
                     />
                   </div>
                 </Link>

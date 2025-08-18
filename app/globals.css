@@ -13,7 +13,6 @@
     font-family: var(--font-inter);
     background-color: #f0f9f0; /* Light green background */
     color: #0B0B0C; /* Ink color */
-    cursor: none;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -24,19 +23,11 @@
   code, pre {
     font-family: var(--font-ibm-plex-mono);
   }
-  
-  a, button, input, textarea, select {
-    cursor: none;
-  }
 }
 
 @layer components {
   .card-hover {
     @apply transition-all duration-300 ease-in-out;
-  }
-  
-  .card-hover:hover {
-    @apply transform -translate-y-1 shadow-lg;
   }
   
   .btn-primary {

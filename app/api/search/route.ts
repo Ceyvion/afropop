@@ -24,8 +24,11 @@ export async function GET(request: Request) {
     console.log(`Searching RSS feed: query="${query}", filters=`, filters)
     
     // Dynamically import the RSS service
-    const rssService = await import('../../lib/rss-service-feedburner.js')
-    const { searchRSSFeed } = rssService
+    const mod: any = await import('../../lib/rss-service-feedburner.js')
+    const searchRSSFeed = (mod as any).searchRSSFeed || mod.default?.searchRSSFeed
+    if (typeof searchRSSFeed !== 'function') {
+      throw new Error('RSS service not loaded correctly')
+    }
     
     // Search the RSS feed
     const results = await searchRSSFeed(query, filters)

@@ -4,11 +4,39 @@
 import React from 'react'
 import Link from 'next/link'
 import { EpisodeCard } from '@/app/components/Cards'
+import { usePlayer } from '@/app/components/PlayerProvider'
 import { useEpisodes, useFeatures } from '@/app/lib/use-rss-data'
 
 export default function Home() {
+  // Hardcoded YouTube URL for the hero embed
+  const HERO_YOUTUBE_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
+  // Convert common YouTube URL formats to embed URL
+  const getYouTubeEmbedUrl = (url: string) => {
+    try {
+      const u = new URL(url)
+      // youtu.be/<id>
+      if (u.hostname.includes('youtu.be')) {
+        const id = u.pathname.replace('/', '')
+        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`
+      }
+      // youtube.com/watch?v=<id>
+      if (u.searchParams.get('v')) {
+        const id = u.searchParams.get('v')!
+        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`
+      }
+      // youtube.com/embed/<id>
+      if (u.pathname.includes('/embed/')) {
+        return `${u.origin}${u.pathname}${u.search || ''}`
+      }
+    } catch (e) {
+      // no-op; fall through to empty string
+    }
+    return ''
+  }
   // Get the latest episodes from the RSS feed
   const { data: episodesData, loading: episodesLoading, error: episodesError } = useEpisodes(3)
+  const player = usePlayer()
   
   // Get the latest features from the RSS feed
   const { data: featuresData, loading: featuresLoading, error: featuresError } = useFeatures(2)
@@ -48,7 +76,20 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="bg-gray-200 border-2 border-dashed aspect-video rounded-xl fade-in delay-200" />
+              <div className="aspect-video rounded-xl fade-in delay-200 overflow-hidden shadow-sm bg-black">
+                {HERO_YOUTUBE_URL ? (
+                  <iframe
+                    className="w-full h-full"
+                    src={getYouTubeEmbedUrl(HERO_YOUTUBE_URL)}
+                    title="Afropop Worldwide Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 border-2 border-dashed" />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -90,6 +131,18 @@ export default function Home() {
                         duration={episode.duration || '45 min'}
                         image={episode.image}
                         categories={episode.categories}
+                        onPlay={() => {
+                          if (episode.audioUrl) {
+                            player.play({
+                              id: episode.id,
+                              title: episode.title,
+                              author: episode.author,
+                              image: episode.image,
+                              audioUrl: episode.audioUrl,
+                              duration: episode.duration,
+                            })
+                          }
+                        }}
                       />
                     </div>
                   </Link>

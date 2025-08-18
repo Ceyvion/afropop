@@ -8,14 +8,17 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Resolve the params promise
-    const { id } = await params;
+    const { id: raw } = await params
+    const id = decodeURIComponent(raw)
     
     console.log(`Fetching item by ID: ${id}`)
     
     // Dynamically import the RSS service
-    const rssService = await import('../../../lib/rss-service-feedburner.js')
-    const { getRSSItemById } = rssService
+    const mod: any = await import('../../../lib/rss-service-feedburner.js')
+    const getRSSItemById = (mod as any).getRSSItemById || mod.default?.getRSSItemById
+    if (typeof getRSSItemById !== 'function') {
+      throw new Error('RSS service not loaded correctly')
+    }
     
     // Get item by ID
     const item = await getRSSItemById(id)

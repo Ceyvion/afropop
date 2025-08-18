@@ -12,8 +12,11 @@ export async function GET(request: Request) {
     console.log(`Fetching episodes: limit=${limit}, offset=${offset}`)
     
     // Dynamically import the RSS service
-    const rssService = await import('../../lib/rss-service-feedburner.js')
-    const { getRSSItemsByType } = rssService
+    const mod: any = await import('../../lib/rss-service-feedburner.js')
+    const getRSSItemsByType = (mod as any).getRSSItemsByType || mod.default?.getRSSItemsByType
+    if (typeof getRSSItemsByType !== 'function') {
+      throw new Error('RSS service not loaded correctly')
+    }
     
     // Get episodes (items with type 'Episode')
     const items = await getRSSItemsByType('Episode')

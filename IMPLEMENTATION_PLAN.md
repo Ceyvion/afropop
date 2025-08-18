@@ -60,7 +60,15 @@ This document outlines the step-by-step plan to implement the enhanced RSS integ
 - [ ] Performance testing with load simulation
 - [ ] Security testing for input validation
 
-## Phase 3: Frontend Integration (Week 3)
+## Phase 3 — Programs & Events (W6)
+- Programs list/detail, Events calendar + ICS ✅
+
+### Completed Tasks
+- ✅ Events calendar with upcoming events display
+- ✅ iCal download functionality for upcoming events
+- ✅ Google Calendar and Apple Calendar integration
+- ✅ Custom cursor implementation and fixes
+- ✅ Performance optimization for calendar events (caching and efficient filtering)
 
 ### 3.1 React Hooks Implementation
 - [ ] Implement `useRSSFeed()` hook for main feed data

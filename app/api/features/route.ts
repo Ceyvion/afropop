@@ -12,11 +12,20 @@ export async function GET(request: Request) {
     console.log(`Fetching features: limit=${limit}, offset=${offset}`)
     
     // Dynamically import the RSS service
-    const rssService = await import('../../lib/rss-service-feedburner.js')
-    const { getRSSItemsByType } = rssService
+    const mod: any = await import('../../lib/rss-service-feedburner.js')
+    const getRSSItemsByType = (mod as any).getRSSItemsByType || mod.default?.getRSSItemsByType
+    if (typeof getRSSItemsByType !== 'function') {
+      throw new Error('RSS service not loaded correctly')
+    }
     
     // Get features (items with type 'Feature')
-    const items = await getRSSItemsByType('Feature')
+    let items = [];
+    try {
+      items = await getRSSItemsByType('Feature');
+    } catch (error) {
+      console.log('No features found in RSS feed, returning empty array');
+      items = [];
+    }
     
     // Apply pagination
     const limitNum = parseInt(limit)

@@ -16,6 +16,15 @@ const RSS_REQUEST_HEADERS = {
   'Accept-Encoding': 'gzip, deflate, br'
 }
 const RSS_CACHE_TIMEOUT = 5 * 60 * 1000 // 5 minutes in milliseconds
+const RSS_FETCH_TIMEOUT_MS = 12000 // 12s timeout to avoid hanging requests
+
+function fetchWithTimeout(url, options = {}, timeoutMs = RSS_FETCH_TIMEOUT_MS) {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeoutMs)
+  const opts = { ...options, signal: controller.signal }
+  return fetch(url, opts)
+    .finally(() => clearTimeout(id))
+}
 
 // Create parser
 const parser = new Parser({
@@ -44,7 +53,7 @@ async function fetchAndParseRSS() {
   try {
     console.log(`Fetching RSS feed from FeedBurner: ${AFROPOP_RSS_URL}`)
     
-    const response = await fetch(AFROPOP_RSS_URL, {
+    const response = await fetchWithTimeout(AFROPOP_RSS_URL, {
       headers: RSS_REQUEST_HEADERS
     })
     
@@ -65,7 +74,7 @@ async function fetchAndParseRSS() {
       try {
         console.log(`Trying alternative RSS feed: ${url}`)
         
-        const response = await fetch(url, {
+        const response = await fetchWithTimeout(url, {
           headers: RSS_REQUEST_HEADERS
         })
         
@@ -142,6 +151,8 @@ function normalizeRSSItems(items) {
     duration: item.duration,
     categories: item.categories || [],
     image: item.image?.$?.href || item.thumbnail?.$?.url || null,
+    audioUrl: (item.enclosure && item.enclosure.url) || (item.mediaContent && item.mediaContent.$ && item.mediaContent.$.url) || null,
+    audioType: (item.enclosure && item.enclosure.type) || (item.mediaContent && item.mediaContent.$ && item.mediaContent.$.type) || null,
     // Additional fields specific to Afropop
     type: determineContentType(item),
     region: extractRegion(item),
@@ -173,7 +184,8 @@ function extractRegion(item) {
   const categories = item.categories?.map(cat => cat.toLowerCase()) || []
   
   const regionKeywords = [
-    'africa', 'caribbean', 'diaspora', 'west', 'east', 'south', 'north',
+    'africa', 'west africa', 'east africa', 'north africa', 'southern africa',
+    'caribbean', 'diaspora', 'west', 'east', 'south', 'north',
     'nigeria', 'ghana', 'senegal', 'kenya', 'egypt', 'morocco', 'tunisia',
     'south africa', 'zimbabwe', 'uganda', 'ethiopia', 'tanzania'
   ]
@@ -192,7 +204,7 @@ function extractGenre(item) {
   const categories = item.categories?.map(cat => cat.toLowerCase()) || []
   
   const genreKeywords = [
-    'highlife', 'afrobeat', 'soukous', 'apapiano', 'taarab', 'juju', 'makossa',
+    'highlife', 'afrobeat', 'afrobeats', 'soukous', 'amapiano', 'taarab', 'juju', 'makossa',
     'mbaqanga', 'kwaito', 'azonto', 'afropop', 'world music', 'traditional'
   ]
   

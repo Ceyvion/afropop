@@ -1,9 +1,17 @@
 // Filter component with refined design
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-const FilterRail = () => {
+type FiltersMap = Record<string, string[]>
+
+interface FilterRailProps {
+  onChange?: (filters: FiltersMap) => void
+  onApply?: (filters: FiltersMap) => void
+  initialSelected?: FiltersMap
+}
+
+const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => {
   // Facets from the spec
   const facets = [
     { name: 'Region', options: ['West Africa', 'East Africa', 'Southern Africa', 'North Africa'] },
@@ -17,7 +25,12 @@ const FilterRail = () => {
   ]
 
   // State for selected filters
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({})
+  const [selectedFilters, setSelectedFilters] = useState<FiltersMap>(initialSelected || {})
+
+  useEffect(() => {
+    if (initialSelected) setSelectedFilters(initialSelected)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(initialSelected)])
 
   const handleFilterChange = (facetName: string, option: string) => {
     setSelectedFilters(prev => {
@@ -32,10 +45,14 @@ const FilterRail = () => {
         updated = [...current, option]
       }
       
-      return {
+      const next = {
         ...prev,
         [facetName]: updated
       }
+
+      // Notify parent on every change (live updates)
+      onChange?.(next)
+      return next
     })
   }
 
@@ -77,6 +94,7 @@ const FilterRail = () => {
         
         <button 
           className="mt-8 w-full py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200"
+          onClick={() => onApply?.(selectedFilters)}
         >
           Apply Filters
         </button>

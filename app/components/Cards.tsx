@@ -2,13 +2,14 @@
 import React from 'react'
 
 // Episode Card
-export const EpisodeCard = ({ title, region, genre, duration, image, categories }: { 
+export const EpisodeCard = ({ title, region, genre, duration, image, categories, onPlay }: { 
   title: string; 
   region: string; 
   genre: string; 
   duration: string;
   image?: string;
   categories?: string[];
+  onPlay?: (e: React.MouseEvent) => void;
 }) => {
   // Extract additional tags from categories
   const additionalTags = categories
@@ -63,7 +64,15 @@ export const EpisodeCard = ({ title, region, genre, duration, image, categories 
         
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">{duration}</span>
-          <button className="text-accent-2 hover:text-accent transition-colors duration-200" aria-label={`Play ${title}`}>
+          <button 
+            className="text-accent-2 hover:text-accent transition-colors duration-200"
+            aria-label={`Play ${title}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onPlay?.(e);
+            }}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -76,16 +85,32 @@ export const EpisodeCard = ({ title, region, genre, duration, image, categories 
 }
 
 // Feature Card
-export const FeatureCard = ({ title, dek, author, readTime }: { 
+export const FeatureCard = ({ title, dek, author, readTime, image }: { 
   title: string; 
   dek: string; 
   author: string; 
   readTime: string;
+  image?: string;
 }) => {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
-      {/* 3:2 image placeholder */}
-      <div className="bg-gray-200 border-2 border-dashed aspect-[3/2] w-full" />
+      {/* 3:2 image or placeholder */}
+      {image ? (
+        <div className="aspect-[3/2] w-full overflow-hidden">
+          <img 
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              target.onerror = null
+              target.parentElement!.innerHTML = '<div class="bg-gray-200 border-2 border-dashed aspect-[3/2] w-full"></div>'
+            }}
+          />
+        </div>
+      ) : (
+        <div className="bg-gray-200 border-2 border-dashed aspect-[3/2] w-full" />
+      )}
       
       <div className="p-5">
         <h3 className="font-bold text-ink line-clamp-2 mb-3">{title}</h3>
@@ -101,17 +126,33 @@ export const FeatureCard = ({ title, dek, author, readTime }: {
 }
 
 // Event Card
-export const EventCard = ({ title, date, city, venue }: { 
+export const EventCard = ({ title, date, city, venue, image }: { 
   title: string; 
   date: string; 
   city: string; 
   venue: string;
+  image?: string;
 }) => {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
       <div className="relative">
-        {/* 3:4 poster placeholder */}
-        <div className="bg-gray-200 border-2 border-dashed aspect-[3/4] w-full" />
+        {/* 3:4 poster or placeholder */}
+        {image ? (
+          <div className="aspect-[3/4] w-full overflow-hidden">
+            <img 
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.onerror = null
+                target.parentElement!.innerHTML = '<div class="bg-gray-200 border-2 border-dashed aspect-[3/4] w-full"></div>'
+              }}
+            />
+          </div>
+        ) : (
+          <div className="bg-gray-200 border-2 border-dashed aspect-[3/4] w-full" />
+        )}
         
         {/* Date badge */}
         <div className="absolute top-4 left-4 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">

@@ -1,10 +1,43 @@
 // Events page with refined design
-import React from 'react'
-import { EventCard } from '@/app/components/Cards'
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { EventCard } from '@/app/components/Cards';
+
+// Function to fetch events from our API
+async function getCalendarEvents() {
+  try {
+    const res = await fetch(`/api/calendar-events?type=upcoming&limit=10`, {
+      cache: 'no-store'
+    });
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch events');
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching calendar events:', error);
+    return [];
+  }
+}
+
+// Function to format date for display
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric'
+  });
+}
 
 export default function Events() {
-  // Sample event data
-  const events = [
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Sample fallback data if no calendar events are available
+  const fallbackEvents = [
     { 
       id: 1, 
       title: 'Afropop Live: Brooklyn', 
@@ -47,7 +80,64 @@ export default function Events() {
       city: 'Zanzibar', 
       venue: 'Stone Town Cultural Centre' 
     },
-  ]
+  ];
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        setLoading(true);
+        const calendarEvents = await getCalendarEvents();
+        
+        // Transform calendar events to match our EventCard component
+        const transformedEvents = calendarEvents.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          date: event.formattedDate ? formatDate(event.startDate) : 'TBD',
+          city: event.location || 'Location TBA',
+          venue: event.location || 'Venue TBA'
+        }));
+        
+        setEvents(transformedEvents);
+      } catch (err) {
+        setError('Failed to load events');
+        console.error('Error fetching events:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchEvents();
+  }, []);
+
+  // Use calendar events if available, otherwise use fallback
+  const displayEvents = events.length > 0 ? events : fallbackEvents;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-2 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500">Error loading events: {error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-accent-2 text-white rounded-md hover:bg-accent transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f7f2]">
@@ -120,9 +210,9 @@ export default function Events() {
         
         {/* Events List */}
         <div className="fade-in delay-300">
-          <h2 className="text-2xl font-bold text-ink mb-6">June 2025 Events</h2>
+          <h2 className="text-2xl font-bold text-ink mb-6">Upcoming Events</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event, index) => (
+            {displayEvents.map((event: any, index: number) => (
               <div key={event.id} className={`fade-in delay-${(index + 1) * 100}`}>
                 <EventCard
                   title={event.title}
@@ -135,6 +225,40 @@ export default function Events() {
           </div>
         </div>
         
+        {/* Calendar Integration Options */}
+        <div className="mt-16 fade-in delay-400">
+          <h2 className="text-xl font-bold text-ink mb-4 text-center">Add to Your Calendar</h2>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <button 
+              onClick={() => window.open('/api/calendar-ics', '_blank')}
+              className="px-6 py-3 border border-gray-300 text-sm font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider flex items-center justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download ICS
+            </button>
+            <button 
+              onClick={() => window.open(`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('c_2c54e0a2af46caecc80ffb8657a18343ac7ec9af0c5f6e9b8cc6b096c7b60422@group.calendar.google.com')}`, '_blank')}
+              className="px-6 py-3 border border-gray-300 text-sm font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider flex items-center justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Add to Google Calendar
+            </button>
+            <button 
+              onClick={() => window.open(`webcal://calendar.google.com/calendar/ical/c_2c54e0a2af46caecc80ffb8657a18343ac7ec9af0c5f6e9b8cc6b096c7b60422%40group.calendar.google.com/public/basic.ics`, '_blank')}
+              className="px-6 py-3 border border-gray-300 text-sm font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider flex items-center justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Add to Apple Calendar
+            </button>
+          </div>
+        </div>
+        
         {/* Load More */}
         <div className="mt-16 text-center fade-in delay-400">
           <button className="px-8 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider">
@@ -143,5 +267,5 @@ export default function Events() {
         </div>
       </div>
     </div>
-  )
+  );
 }

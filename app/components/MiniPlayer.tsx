@@ -1,48 +1,19 @@
 // Mini Player component with refined design
+
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { usePlayer } from '@/app/components/PlayerProvider'
 
 const MiniPlayer = () => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(180) // 3 minutes in seconds
-
-  // Simulate audio playback
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime((prevTime) => {
-          if (prevTime >= duration) {
-            setIsPlaying(false)
-            return 0
-          }
-          return prevTime + 1
-        })
-      }, 1000)
-    } else if (interval) {
-      clearInterval(interval)
-    }
-    
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [isPlaying, duration])
+  const { track, isPlaying, currentTime, duration, toggle, seek, skip } = usePlayer()
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`
-  }
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying)
-  }
-
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentTime(Number(e.target.value))
+    if (!Number.isFinite(seconds)) return '0:00'
+    const secs = Math.max(0, Math.floor(seconds))
+    const mins = Math.floor(secs / 60)
+    const rem = secs % 60
+    return `${mins}:${rem < 10 ? '0' : ''}${rem}`
   }
 
   return (
@@ -51,17 +22,21 @@ const MiniPlayer = () => {
         <div className="flex items-center justify-between py-3">
           {/* Episode info */}
           <div className="flex items-center space-x-3 flex-1 min-w-0">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-12 h-12 md:w-14 md:h-14" />
+            {track?.image ? (
+              <img src={track.image} alt={track.title} className="rounded-xl w-12 h-12 md:w-14 md:h-14 object-cover" />
+            ) : (
+              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-12 h-12 md:w-14 md:h-14" />
+            )}
             <div className="min-w-0">
-              <h3 className="text-sm font-medium text-ink truncate">The Origins of Highlife</h3>
-              <p className="text-xs text-gray-500 truncate">Amina Okello</p>
+              <h3 className="text-sm font-medium text-ink truncate">{track?.title || 'No episode selected'}</h3>
+              <p className="text-xs text-gray-500 truncate">{track?.author || ''}</p>
             </div>
           </div>
 
           {/* Controls */}
           <div className="flex items-center space-x-3 md:space-x-4">
             <button 
-              onClick={() => setCurrentTime(Math.max(0, currentTime - 15))}
+              onClick={() => skip(-15)}
               className="text-ink hover:text-accent-2 transition-colors duration-200"
               aria-label="Skip backward 15 seconds"
             >
@@ -71,7 +46,7 @@ const MiniPlayer = () => {
             </button>
             
             <button 
-              onClick={handlePlayPause}
+              onClick={toggle}
               className="bg-ink text-white rounded-full p-2 md:p-3 hover:bg-accent-2 transition-colors duration-200"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
@@ -88,7 +63,7 @@ const MiniPlayer = () => {
             </button>
             
             <button 
-              onClick={() => setCurrentTime(Math.min(duration, currentTime + 15))}
+              onClick={() => skip(15)}
               className="text-ink hover:text-accent-2 transition-colors duration-200"
               aria-label="Skip forward 15 seconds"
             >
@@ -104,9 +79,9 @@ const MiniPlayer = () => {
             <input
               type="range"
               min="0"
-              max={duration}
-              value={currentTime}
-              onChange={handleSeek}
+              max={Math.max(0, duration)}
+              value={Math.min(currentTime, duration || 0)}
+              onChange={(e) => seek(Number(e.target.value))}
               className="w-24 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-2"
             />
             <span className="text-xs text-gray-500 font-mono">{formatTime(duration)}</span>
@@ -141,9 +116,9 @@ const MiniPlayer = () => {
           <input
             type="range"
             min="0"
-            max={duration}
-            value={currentTime}
-            onChange={handleSeek}
+            max={Math.max(0, duration)}
+            value={Math.min(currentTime, duration || 0)}
+            onChange={(e) => seek(Number(e.target.value))}
             className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-2"
           />
         </div>

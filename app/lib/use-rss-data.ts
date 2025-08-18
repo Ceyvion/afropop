@@ -1,7 +1,7 @@
 // app/lib/use-rss-data.ts
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Hook to fetch RSS feed data
 export function useRSSFeed() {
@@ -15,7 +15,7 @@ export function useRSSFeed() {
         setLoading(true)
         setError(null)
         const response = await fetch('/api/rss')
-        const result = await response.json()
+        const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
         
         if (response.ok) {
           setData(result)
@@ -41,12 +41,21 @@ export function useRSSSearch() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const controllerRef = useRef<AbortController | null>(null)
+  const requestIdRef = useRef<number>(0)
 
   const search = async (query: string, filters: any = {}) => {
     try {
+      // Abort previous in-flight request
+      if (controllerRef.current) {
+        try { controllerRef.current.abort() } catch {}
+      }
+      controllerRef.current = new AbortController()
+      const { signal } = controllerRef.current
+
       setLoading(true)
       setError(null)
-      
+
       // Build query string
       const params = new URLSearchParams()
       if (query) params.append('q', query)
@@ -55,17 +64,25 @@ export function useRSSSearch() {
           params.append(key, filters[key])
         }
       })
-      
-      const response = await fetch(`/api/search?${params.toString()}`)
-      const result = await response.json()
-      
+
+      const myId = ++requestIdRef.current
+      const response = await fetch(`/api/search?${params.toString()}`, { signal })
+      const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
+
+      // Ignore if a newer request has started
+      if (myId !== requestIdRef.current) return
+
       if (response.ok) {
         setData(result)
       } else {
         setError(result.error || 'Failed to search RSS feed')
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to search RSS feed')
+      // Swallow abort errors gracefully
+      if (err?.name === 'AbortError') {
+        return
+      }
+      setError(err?.message || 'Failed to search RSS feed')
       console.error('Error searching RSS feed:', err)
     } finally {
       setLoading(false)
@@ -93,7 +110,7 @@ export function useEpisodes(limit?: number, offset?: number) {
         if (offset) params.append('offset', offset.toString())
         
         const response = await fetch(`/api/episodes?${params.toString()}`)
-        const result = await response.json()
+        const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
         
         if (response.ok) {
           setData(result)
@@ -132,7 +149,7 @@ export function useFeatures(limit?: number, offset?: number) {
         if (offset) params.append('offset', offset.toString())
         
         const response = await fetch(`/api/features?${params.toString()}`)
-        const result = await response.json()
+        const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
         
         if (response.ok) {
           setData(result)
@@ -171,8 +188,8 @@ export function useItemById(id: string) {
           return
         }
         
-        const response = await fetch(`/api/item/${id}`)
-        const result = await response.json()
+        const response = await fetch(`/api/item/${encodeURIComponent(id)}`)
+        const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
         
         if (response.ok) {
           setData(result)

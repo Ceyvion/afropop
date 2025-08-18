@@ -30,3 +30,6 @@ coverage/
 
 # Project specific
 *.log
+# Next dev runtime files
+.next-dev.pid
+.next-dev.log
