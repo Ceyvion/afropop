@@ -31,10 +31,10 @@ const Header = () => {
       {/* Main header bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left: Afropop wordmark (SVG) */}
+          {/* Left: Afropop Worldwide wordmark (text link for now) */}
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold tracking-tight text-ink">
-              Afropop
+              Afropop Worldwide
             </Link>
           </div>
 
