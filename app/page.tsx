@@ -3,7 +3,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { EpisodeCard } from '@/app/components/Cards'
+import { EpisodeCard, FeatureCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useEpisodes, useFeatures } from '@/app/lib/use-rss-data'
 
@@ -181,27 +181,22 @@ export default function Home() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {featuresData?.items?.map((feature: any, index: number) => (
-                <Link
-                  key={feature.id}
-                  href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
-                  className="block"
-                >
-                    <div className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover fade-in delay-${(index + 1) * 100}`}>
-                      <div className="bg-gray-200 border-2 border-dashed aspect-video w-full" />
-                      <div className="p-6">
-                        <h3 className="font-bold text-ink line-clamp-2 mb-3">{feature.title}</h3>
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-5">
-                          {feature.description || 'Learn more about this feature...'}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">{feature.author || 'Afropop Worldwide'}</span>
-                          <span className="text-xs text-gray-500">
-                            {feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
-                          </span>
-                        </div>
-                      </div>
+                  <Link
+                    key={feature.id}
+                    href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
+                    className="block"
+                  >
+                    <div className={`fade-in delay-${(index + 1) * 100}`}>
+                      <FeatureCard
+                        title={feature.title}
+                        dek={feature.description || 'Learn more about this feature...'}
+                        author={feature.author || 'Afropop Worldwide'}
+                        readTime={feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
+                        image={feature.image}
+                        density="compact"
+                      />
                     </div>
                   </Link>
                 ))}

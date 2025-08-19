@@ -108,7 +108,7 @@ export default function ClientEpisode({ slug }: { slug: string }) {
   const published = new Date(data.pubDate || data.isoDate || '').toLocaleDateString()
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2]">
+    <div className="min-h-screen bg-[#f8f7f2] dark:bg-neutral-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6">
@@ -127,12 +127,13 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
         {/* Hero with gradient overlay */}
         <div className="relative mb-10 overflow-hidden rounded-2xl">
-          <div className="aspect-video w-full bg-gray-200">
+          <div className="aspect-video w-full bg-gray-200 dark:bg-neutral-800">
             {data.image && (
               <img
                 src={data.image}
                 alt={data.title}
                 className="h-full w-full object-cover"
+                loading="eager"
                 onError={(e) => {
                   const t = e.target as HTMLImageElement
                   t.onerror = null
@@ -184,6 +185,13 @@ export default function ClientEpisode({ slug }: { slug: string }) {
                   <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-full bg-white text-ink hover:bg-gray-50 text-sm font-bold">Download</a>
                 )}
               </div>
+              {/* Quick meta chips for region/genre */}
+              {(data.region || data.genre) && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {data.region && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20">{data.region}</span>}
+                  {data.genre && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20">{data.genre}</span>}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -194,8 +202,8 @@ export default function ClientEpisode({ slug }: { slug: string }) {
           <div className="lg:col-span-8 space-y-6">
             {/* Progress (if playing/current) */}
             {audioUrl && (
-              <div className="bg-white rounded-xl p-5 shadow-sm">
-                <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
+              <div className="bg-white dark:bg-neutral-900 rounded-xl p-5 shadow-sm">
+                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
                   <span>{formatTime(isCurrent ? currentTime : 0)}</span>
                   <span>{formatTime(isCurrent ? duration : 0)}</span>
                 </div>
@@ -206,27 +214,28 @@ export default function ClientEpisode({ slug }: { slug: string }) {
                   max={(isCurrent ? duration : 0) || 100}
                   value={isCurrent ? currentTime : 0}
                   onChange={(e) => seek(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  className="w-full h-2 bg-gray-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer"
+                  style={{ accentColor: '#228B22' }}
                 />
               </div>
             )}
 
             {/* Description */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-ink mb-4">Episode Description</h2>
-              <div className="prose max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: data.content || data.description || 'No description available.' }} />
+            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-ink dark:text-gray-100 mb-4">Episode Description</h2>
+              <div className="prose max-w-none text-gray-700 dark:prose-invert" dangerouslySetInnerHTML={{ __html: data.content || data.description || 'No description available.' }} />
             </div>
 
             {/* Transcript placeholder */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xl font-bold text-ink">Transcript</h2>
+                <h2 className="text-xl font-bold text-ink dark:text-gray-100">Transcript</h2>
                 {audioUrl && (
                   <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-2 hover:text-accent font-bold">Download MP3</a>
                 )}
               </div>
-              <div className="bg-gray-50 rounded-lg p-5">
-                <p className="text-gray-600 mb-3">Transcript content would appear here…</p>
+              <div className="bg-gray-50 dark:bg-neutral-800 rounded-lg p-5">
+                <p className="text-gray-600 dark:text-gray-300 mb-3">Transcript content would appear here…</p>
                 <button className="text-sm text-accent-2 hover:text-accent font-medium">View full transcript</button>
               </div>
             </div>
@@ -234,20 +243,20 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
           {/* Right sidebar */}
           <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">Details</h3>
+            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4">Details</h3>
               <dl className="space-y-3 text-sm">
-                <div className="flex justify-between"><dt className="text-gray-500">Published</dt><dd className="text-ink font-medium">{published || '—'}</dd></div>
-                <div className="flex justify-between"><dt className="text-gray-500">Duration</dt><dd className="text-ink font-medium">{prettyDuration(typeof data.duration === 'string' ? data.duration : duration)}</dd></div>
-                {data.region && (<div className="flex justify-between"><dt className="text-gray-500">Region</dt><dd className="text-ink font-medium">{data.region}</dd></div>)}
-                {data.genre && (<div className="flex justify-between"><dt className="text-gray-500">Genre</dt><dd className="text-ink font-medium">{data.genre}</dd></div>)}
+                <div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Published</dt><dd className="text-ink dark:text-gray-100 font-medium">{published || '—'}</dd></div>
+                <div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Duration</dt><dd className="text-ink dark:text-gray-100 font-medium">{prettyDuration(typeof data.duration === 'string' ? data.duration : duration)}</dd></div>
+                {data.region && (<div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Region</dt><dd className="text-ink dark:text-gray-100 font-medium">{data.region}</dd></div>)}
+                {data.genre && (<div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Genre</dt><dd className="text-ink dark:text-gray-100 font-medium">{data.genre}</dd></div>)}
               </dl>
               {data.categories?.length > 0 && (
                 <div className="mt-4">
-                  <h4 className="text-sm font-bold text-gray-600 mb-2">Categories</h4>
+                  <h4 className="text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">Categories</h4>
                   <div className="flex flex-wrap gap-2">
                     {data.categories.slice(0, 12).map((c: string, i: number) => (
-                      <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-800">{c}</span>
+                      <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-gray-200">{c}</span>
                     ))}
                   </div>
                 </div>
@@ -262,12 +271,12 @@ export default function ClientEpisode({ slug }: { slug: string }) {
               )}
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Actions</h3>
+            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Actions</h3>
               <div className="flex flex-wrap gap-3">
-                <button onClick={shareEpisode} className="px-4 py-2 rounded-md border border-gray-300 bg-white text-ink hover:bg-gray-50 text-sm font-bold">Share</button>
+                <button onClick={shareEpisode} className="px-4 py-2 rounded-md border border-gray-300 bg-white dark:bg-neutral-900 dark:border-neutral-700 text-ink dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-neutral-800 text-sm font-bold">Share</button>
                 {audioUrl && (
-                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-md border border-gray-300 bg-white text-ink hover:bg-gray-50 text-sm font-bold">Download</a>
+                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-md border border-gray-300 bg-white dark:bg-neutral-900 dark:border-neutral-700 text-ink dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-neutral-800 text-sm font-bold">Download</a>
                 )}
               </div>
             </div>
