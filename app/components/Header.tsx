@@ -1,4 +1,4 @@
-// Header component with refined design
+// Header component with streamlined layout and prominent search
 'use client'
 
 import React, { useState } from 'react'
@@ -9,19 +9,22 @@ import { usePlayer } from '@/app/components/PlayerProvider'
 const Header = () => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMoreOpen, setIsMoreOpen] = useState(false)
   const { track, isPlaying } = usePlayer()
 
-  // Navigation items from the spec
-  const navItems = [
+  // Core navigation kept visible; others moved to "More"
+  const navPrimary = [
     { name: 'Archive', href: '/archive' },
     { name: 'Episodes', href: '/episodes' },
     { name: 'Features', href: '/features' },
     { name: 'Events', href: '/events' },
+  ]
+
+  const navMore = [
     { name: 'Pitch', href: '/pitch' },
     { name: 'Community', href: '/community' },
     { name: 'Programs', href: '/programs' },
-    { name: 'Hosts & Contributors', href: '/contributors' },
-    { name: 'Support', href: '/support' },
+    { name: 'Contributors', href: '/contributors' },
     { name: 'Shop', href: '/shop' },
     { name: 'About', href: '/about' },
   ]
@@ -38,9 +41,9 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Center: primary nav (hidden on mobile) */}
-          <nav className="hidden md:flex md:space-x-8">
-            {navItems.map((item) => (
+          {/* Center: primary nav + More (hidden on mobile) */}
+          <nav className="hidden md:flex md:items-center md:space-x-6">
+            {navPrimary.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -53,11 +56,53 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            <div className="relative">
+              <button
+                className={`text-sm font-medium transition-colors duration-200 inline-flex items-center gap-1 ${isMoreOpen ? 'text-accent-2' : 'text-ink hover:text-accent-2'}`}
+                onClick={() => setIsMoreOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={isMoreOpen}
+              >
+                More
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+              </button>
+              {isMoreOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50"
+                  role="menu"
+                >
+                  {navMore.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`block px-3 py-2 text-sm ${pathname === item.href ? 'text-accent-2 bg-gray-50' : 'text-ink hover:bg-gray-50 hover:text-accent-2'}`}
+                      onClick={() => setIsMoreOpen(false)}
+                      role="menuitem"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* Right: Search, Donate, Menu (mobile) */}
+          {/* Right: prominent Search, Donate, Menu (mobile) */}
           <div className="flex items-center space-x-4">
-            <Link href="/search" className="text-ink hover:text-accent-2 transition-colors duration-200">
+            <Link
+              href="/search"
+              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-ink bg-white hover:bg-gray-50 transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Search
+            </Link>
+            <Link
+              href="/search"
+              className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-300 text-ink bg-white hover:bg-gray-50 transition-colors duration-200"
+              aria-label="Search"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -71,6 +116,7 @@ const Header = () => {
             <button 
               className="md:hidden text-ink hover:text-accent-2 transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Open menu"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -84,7 +130,16 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-1">
-            {navItems.map((item) => (
+            <div className="pb-2">
+              <Link
+                href="/search"
+                className="block w-full px-3 py-2 rounded-md border border-gray-300 text-ink bg-white text-base font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Search
+              </Link>
+            </div>
+            {[...navPrimary, ...navMore].map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
