@@ -59,14 +59,16 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
   }
 
   return (
-    <div className="hidden lg:block w-64 flex-shrink-0 pr-8 border-r border-gray-200">
-      <div className="sticky top-24">
-        <h2 className="text-xl font-bold text-ink mb-6">Filters</h2>
-        
-        <div className="space-y-8">
+    <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 pr-6 border-r border-gray-200">
+      {/* Stick the whole rail below the header */}
+      <div className="sticky top-20">
+        <h2 className="text-xl font-bold text-ink mb-4">Filters</h2>
+
+        {/* Scrollable facet list with its own scrollbar */}
+        <div className="max-h-[calc(100vh-9rem)] overflow-y-auto pr-1 custom-scroll space-y-8">
           {facets.map((facet) => (
             <div key={facet.name}>
-              <h3 className="text-sm font-bold text-ink mb-3 uppercase tracking-wider">{facet.name}</h3>
+              <h3 className="text-xs font-bold text-ink mb-3 uppercase tracking-wider">{facet.name}</h3>
               <div className="space-y-2.5">
                 {facet.options.map((option) => (
                   <div key={option} className="flex items-center">
@@ -88,14 +90,19 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
               </div>
             </div>
           ))}
+          {/* Spacer so the bottom button never overlaps last options */}
+          <div className="h-6" />
         </div>
-        
-        <button 
-          className="mt-8 w-full py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200"
-          onClick={() => onApply?.(selectedFilters)}
-        >
-          Apply Filters
-        </button>
+
+        {/* Tasteful apply area pinned at bottom of the rail */}
+        <div className="mt-3 pt-3 border-t border-gray-200 bg-white/90">
+          <button
+            className="w-full py-2.5 px-4 text-sm font-semibold rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200 shadow-sm"
+            onClick={() => onApply?.(selectedFilters)}
+          >
+            Apply Filters
+          </button>
+        </div>
       </div>
     </div>
   )

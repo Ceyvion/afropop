@@ -55,6 +55,24 @@
   }
 }
 
+@layer utilities {
+  /* Subtle custom scrollbar used by filter rail */
+  .custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent; /* slate-300 */
+  }
+  .custom-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; /* slate-300 */
+    border-radius: 8px;
+  }
+  .custom-scroll:hover::-webkit-scrollbar-thumb {
+    background-color: #94a3b8; /* slate-400 */
+  }
+}
+
 /* Custom animations */
 @keyframes fadeIn {
   from {

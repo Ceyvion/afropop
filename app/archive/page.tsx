@@ -192,8 +192,8 @@ export default function Archive() {
     <div className="min-h-screen bg-[#f8f7f2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row">
-          {/* Filter Rail */}
-          <FilterRail onChange={(filters) => setFacetFilters(filters)} onApply={(filters) => setFacetFilters(filters)} />
+          {/* Filter Rail (sticky with own scroll; applies on button click) */}
+          <FilterRail initialSelected={facetFilters} onApply={(filters) => setFacetFilters(filters)} />
           
           {/* Main Content */}
           <div className="flex-1">
