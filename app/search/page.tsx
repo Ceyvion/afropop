@@ -1,7 +1,7 @@
 // Search page with RSS feed integration
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { EpisodeCard, FeatureCard, EventCard } from '@/app/components/Cards'
 import { useRSSSearch } from '@/app/lib/use-rss-data'
 
@@ -24,6 +24,19 @@ export default function Search() {
     search(searchQuery, filters)
   }
 
+  // Debounced search when typing (min 2 chars)
+  useEffect(() => {
+    const q = searchQuery.trim()
+    const timer = setTimeout(() => {
+      if (q.length >= 2) {
+        const filters: any = {}
+        if (activeFilter !== 'all') filters.type = activeFilter
+        search(q, filters)
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [searchQuery, activeFilter])
+
   return (
     <div className="min-h-screen bg-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -38,7 +51,7 @@ export default function Search() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search episodes, features, events, programs, and contributors..."
-                className="w-full px-6 py-4 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 transition-colors duration-200"
+                className="w-full px-6 py-4 text-lg border border-gray-300 rounded-xl focus:outline-none transition-colors duration-200"
                 style={{ outlineColor: 'var(--accent)' } as any}
               />
               <button 

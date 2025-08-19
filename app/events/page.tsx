@@ -1,7 +1,7 @@
 // Events page – calm by default, power-friendly via inline expanders
 "use client";
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { EventCard } from '@/app/components/Cards';
 
 type RawEvent = {
@@ -125,6 +125,34 @@ export default function Events() {
 
   const now = Date.now()
 
+  // Progressive disclosure state
+  const [openMonths, setOpenMonths] = useState<Record<string, boolean>>({})
+  const [openEvents, setOpenEvents] = useState<Record<string, boolean>>({})
+
+  // (initialized after derived)
+
+  // Simple collapsible helper
+  const Collapsible: React.FC<{ open: boolean; children: React.ReactNode }> = ({ open, children }) => {
+    const ref = useRef<HTMLDivElement>(null)
+    const [maxH, setMaxH] = useState<number>(open ? 9999 : 0)
+    useEffect(() => {
+      const el = ref.current
+      if (!el) return
+      const h = el.scrollHeight
+      // Set to measured height when opening; 0 when closing
+      requestAnimationFrame(() => setMaxH(open ? h + 24 : 0))
+    }, [open, children])
+    return (
+      <div
+        ref={ref}
+        style={{ maxHeight: `${maxH}px` }}
+        className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${open ? 'opacity-100' : 'opacity-95'}`}
+      >
+        {children}
+      </div>
+    )
+  }
+
   const derived = useMemo(() => {
     // Base aggregations
     const cities = new Map<string, number>()
@@ -205,6 +233,18 @@ export default function Events() {
       orderedKeys,
     }
   }, [raw, query, location, timePreset, advanced])
+
+  // Initialize open month (current month if present; otherwise first group)
+  useEffect(() => {
+    const keys = derived.orderedKeys || []
+    if (keys.length === 0) return
+    const nowDate = new Date()
+    const keyNow = `${nowDate.getFullYear()}-${String(nowDate.getMonth() + 1).padStart(2, '0')}`
+    const initialOpen: Record<string, boolean> = {}
+    if (keys.includes(keyNow)) initialOpen[keyNow] = true
+    else initialOpen[keys[0]] = true
+    setOpenMonths((prev) => ({ ...initialOpen, ...prev }))
+  }, [derived.orderedKeys.join(',')])
 
   if (loading) {
     return (
@@ -494,9 +534,22 @@ export default function Events() {
             derived.orderedKeys.map((key) => {
               const list = derived.groups[key]
               return (
-                <section key={key} className="mb-10">
-                  <h2 className="text-2xl font-bold text-ink mb-6">{monthLabel(key)}</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <section key={key} className="mb-6">
+                  <button
+                    onClick={() => setOpenMonths((m) => ({ ...m, [key]: !m[key] }))}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-md bg-surface border border-sep hover:bg-gray-50 transition-colors"
+                    aria-expanded={!!openMonths[key]}
+                    aria-controls={`month-${key}`}
+                  >
+                    <span className="text-left">
+                      <span className="text-sm text-muted block">{key}</span>
+                      <span className="text-ink font-bold text-lg">{monthLabel(key)}</span>
+                    </span>
+                    <span className={`transition-transform duration-300 ${openMonths[key] ? 'rotate-180' : ''}`}>⌄</span>
+                  </button>
+
+                  <Collapsible open={!!openMonths[key]}>
+                  <div id={`month-${key}`} className="pt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {list.map((ev: RawEvent, index: number) => {
                       const { city, venue } = parseLocation(ev.location)
                       const ctaHref = firstUrlFromText(ev.description || '')
@@ -536,10 +589,35 @@ export default function Events() {
                               </a>
                             </div>
                           </div>
+
+                          {/* Event progressive details */}
+                          <div className="mt-2">
+                            <button
+                              onClick={() => setOpenEvents((s) => ({ ...s, [ev.id]: !s[ev.id] }))}
+                              className="text-sm text-accent-v hover:opacity-90 inline-flex items-center gap-1"
+                              aria-expanded={!!openEvents[ev.id]}
+                              aria-controls={`ev-${ev.id}`}
+                            >
+                              {openEvents[ev.id] ? 'Hide details' : 'More details'}
+                              <span className={`transition-transform duration-300 ${openEvents[ev.id] ? 'rotate-180' : ''}`}>⌄</span>
+                            </button>
+                            <Collapsible open={!!openEvents[ev.id]}>
+                              <div id={`ev-${ev.id}`} className="mt-2 bg-surface border border-sep rounded-md p-3 text-sm text-gray-700">
+                                <p className="mb-2 line-clamp-5">{ev.description || 'No description available.'}</p>
+                                <div className="flex items-center gap-3">
+                                  {ctaHref && (
+                                    <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:opacity-90">Event page</a>
+                                  )}
+                                  <span className="text-muted">{city}, {venue}</span>
+                                </div>
+                              </div>
+                            </Collapsible>
+                          </div>
                         </div>
                       )
                     })}
                   </div>
+                  </Collapsible>
                 </section>
               )
             })
