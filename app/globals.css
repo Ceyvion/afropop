@@ -85,6 +85,7 @@
   .text-accent-v { color: var(--accent); }
   .bg-accent-v { background-color: var(--accent); }
   .hover\:bg-accent-strong-v:hover { background-color: var(--accent-strong); }
+  .border-accent-v { border-color: var(--accent); }
 
   .chip-soft {
     background-color: var(--chip);
@@ -159,6 +160,17 @@
   --accent-strong: #1e40af;
   --chip: #e8efff;
   --chip-text: #1e3a8a;
+}
+
+/* Dark overrides for tokens (applies to any seasonal palette) */
+.dark {
+  --bg: #0b0b0f;
+  --surface: #101214;
+  --elevated: #14171a;
+  --text: #f5f6f8;
+  --muted: #b2bcc6;
+  --border: #262a31;
+  /* keep --accent by palette; keep --accent-strong */
 }
 
 /* Accent-based button */

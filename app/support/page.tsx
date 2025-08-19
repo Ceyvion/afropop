@@ -48,7 +48,7 @@ export default function Support() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
             Public-service music journalism, powered by listeners like you.
           </p>
-          <div className="inline-flex items-center bg-accent-50 text-accent-2 px-4 py-2 rounded-full text-sm font-bold">
+          <div className="inline-flex items-center bg-accent-50 text-accent-v px-4 py-2 rounded-full text-sm font-bold">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -63,24 +63,24 @@ export default function Support() {
               key={tier.name} 
               className={`bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 ease-in-out card-hover ${
                 tier.featured 
-                  ? 'border-2 border-accent-2 ring-2 ring-accent-2 ring-opacity-20 transform -translate-y-2' 
+                  ? 'border-2 border-accent-v ring-2 ring-accent-2 ring-opacity-20 transform -translate-y-2' 
                   : 'border border-gray-200'
               }`}
             >
               {tier.featured && (
-                <div className="bg-accent-2 text-white text-center py-2 text-sm font-bold">
+                <div className="bg-accent-v text-white text-center py-2 text-sm font-bold">
                   MOST POPULAR
                 </div>
               )}
               <div className="p-8">
                 <h2 className="text-2xl font-bold text-ink mb-3">{tier.name}</h2>
-                <p className="text-4xl font-bold text-accent-2 mb-4">{tier.price}</p>
+                <p className="text-4xl font-bold text-accent-v mb-4">{tier.price}</p>
                 <p className="text-gray-600 mb-8">{tier.description}</p>
                 
                 <ul className="space-y-4 mb-10">
                   {tier.perks.map((perk) => (
                     <li key={perk} className="flex items-start">
-                      <svg className="h-5 w-5 text-accent-2 mr-3 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-accent-v mr-3 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span className="text-gray-700">{perk}</span>
@@ -91,7 +91,7 @@ export default function Support() {
                 <button 
                   className={`w-full py-4 px-6 border border-transparent text-base font-bold rounded-md transition-colors duration-200 uppercase tracking-wider ${
                     tier.featured 
-                      ? 'bg-accent-2 text-white hover:bg-accent' 
+                      ? 'btn-accent hover:bg-accent-strong-v text-white' 
                       : 'bg-ink text-white hover:bg-gray-900'
                   }`}
                 >
@@ -121,7 +121,7 @@ export default function Support() {
           </div>
           
           <div className="text-center">
-            <button className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200 uppercase tracking-wider">
+            <button className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white btn-accent transition-colors duration-200 uppercase tracking-wider">
               Donate Now
             </button>
           </div>
@@ -134,7 +134,7 @@ export default function Support() {
             Many employers will match your donation to Afropop Worldwide. 
             Check with your HR department to see if your company participates.
           </p>
-          <button className="text-accent-2 hover:text-accent font-bold uppercase tracking-wider transition-colors duration-200">
+          <button className="text-accent-v hover:opacity-90 font-bold uppercase tracking-wider transition-colors duration-200">
             Learn about employer matching
           </button>
         </div>

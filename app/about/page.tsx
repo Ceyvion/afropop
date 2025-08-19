@@ -86,7 +86,7 @@ export default function About() {
                 <div className="bg-gray-200 border-2 border-dashed rounded-full w-20 h-20 mr-6" />
                 <div>
                   <h3 className="font-bold text-ink text-lg">Team Member Name</h3>
-                  <p className="text-accent-2 font-medium mb-2">Role/Title</p>
+                  <p className="text-accent-v font-medium mb-2">Role/Title</p>
                   <p className="text-sm text-gray-600">Specialty or department</p>
                 </div>
               </div>
@@ -94,7 +94,7 @@ export default function About() {
           </div>
           
           <div className="mt-12 text-center">
-            <button className="text-accent-2 hover:text-accent font-bold uppercase tracking-wider transition-colors duration-200">
+            <button className="text-accent-v hover:opacity-90 font-bold uppercase tracking-wider transition-colors duration-200">
               View all contributors
             </button>
           </div>
@@ -106,39 +106,39 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="border border-gray-200 rounded-xl p-8 text-center hover:shadow-md transition-shadow duration-200">
               <div className="bg-accent-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="h-8 w-8 text-accent-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-8 w-8 text-accent-v" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-ink mb-4">Press Releases</h3>
               <p className="text-gray-600 mb-6">Official announcements and news</p>
-              <button className="text-sm text-accent-2 hover:text-accent font-bold uppercase tracking-wider transition-colors duration-200">
+              <button className="text-sm text-accent-v hover:opacity-90 font-bold uppercase tracking-wider transition-colors duration-200">
                 Download
               </button>
             </div>
             
             <div className="border border-gray-200 rounded-xl p-8 text-center hover:shadow-md transition-shadow duration-200">
               <div className="bg-accent-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="h-8 w-8 text-accent-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-8 w-8 text-accent-v" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-ink mb-4">Media Assets</h3>
               <p className="text-gray-600 mb-6">Logos, photos, and brand guidelines</p>
-              <button className="text-sm text-accent-2 hover:text-accent font-bold uppercase tracking-wider transition-colors duration-200">
+              <button className="text-sm text-accent-v hover:opacity-90 font-bold uppercase tracking-wider transition-colors duration-200">
                 Download
               </button>
             </div>
             
             <div className="border border-gray-200 rounded-xl p-8 text-center hover:shadow-md transition-shadow duration-200">
               <div className="bg-accent-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="h-8 w-8 text-accent-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-8 w-8 text-accent-v" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-ink mb-4">Financial Reports</h3>
               <p className="text-gray-600 mb-6">Annual reports and financial information</p>
-              <button className="text-sm text-accent-2 hover:text-accent font-bold uppercase tracking-wider transition-colors duration-200">
+              <button className="text-sm text-accent-v hover:opacity-90 font-bold uppercase tracking-wider transition-colors duration-200">
                 Download
               </button>
             </div>
@@ -152,7 +152,7 @@ export default function About() {
             <div className="bg-white rounded-xl p-8 shadow-sm">
               <h3 className="text-xl font-bold text-ink mb-4">General Inquiries</h3>
               <p className="text-gray-600 mb-4">For general questions and information</p>
-              <a href="mailto:info@afropop.org" className="text-accent-2 hover:text-accent transition-colors duration-200">
+              <a href="mailto:info@afropop.org" className="text-accent-v hover:opacity-90 transition-colors duration-200">
                 info@afropop.org
               </a>
             </div>
@@ -160,7 +160,7 @@ export default function About() {
             <div className="bg-white rounded-xl p-8 shadow-sm">
               <h3 className="text-xl font-bold text-ink mb-4">Press Requests</h3>
               <p className="text-gray-600 mb-4">For media and press inquiries</p>
-              <a href="mailto:press@afropop.org" className="text-accent-2 hover:text-accent transition-colors duration-200">
+              <a href="mailto:press@afropop.org" className="text-accent-v hover:opacity-90 transition-colors duration-200">
                 press@afropop.org
               </a>
             </div>

@@ -51,8 +51,8 @@ const Header = () => {
                 href={item.href}
                 className={`text-sm font-medium transition-colors duration-200 ${
                   pathname === item.href 
-                    ? 'text-accent-2 border-b-2 border-accent-2 pb-1' 
-                    : 'text-body hover:text-accent-2'
+                    ? 'text-accent-v border-b-2 border-accent-v pb-1' 
+                    : 'text-body hover:text-accent-v'
                 }`}
               >
                 {item.name}
@@ -60,7 +60,7 @@ const Header = () => {
             ))}
             <div className="relative">
               <button
-                className={`text-sm font-medium transition-colors duration-200 inline-flex items-center gap-1 ${isMoreOpen ? 'text-accent-2' : 'text-body hover:text-accent-2'}`}
+                className={`text-sm font-medium transition-colors duration-200 inline-flex items-center gap-1 ${isMoreOpen ? 'text-accent-v' : 'text-body hover:text-accent-v'}`}
                 onClick={() => setIsMoreOpen((v) => !v)}
                 aria-haspopup="menu"
                 aria-expanded={isMoreOpen}
@@ -77,7 +77,7 @@ const Header = () => {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`block px-3 py-2 text-sm ${pathname === item.href ? 'text-accent-2 bg-gray-50' : 'text-body hover:bg-gray-50 hover:text-accent-2'}`}
+                      className={`block px-3 py-2 text-sm ${pathname === item.href ? 'text-accent-v bg-gray-50' : 'text-body hover:bg-gray-50 hover:text-accent-v'}`}
                       onClick={() => setIsMoreOpen(false)}
                       role="menuitem"
                     >

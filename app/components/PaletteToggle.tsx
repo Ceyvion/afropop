@@ -48,15 +48,15 @@ export default function PaletteToggle() {
         <span className="hidden sm:inline">Palette</span>
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50 dark:bg-neutral-900 dark:border-neutral-700">
+        <div className="absolute right-0 mt-2 w-44 bg-surface border border-sep rounded-md shadow-lg py-1 z-50">
           {(['spring', 'summer', 'autumn', 'winter'] as Palette[]).map((opt) => (
             <button
               key={opt}
               onClick={() => update(opt)}
               className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                 palette === opt
-                  ? 'text-accent-2 bg-gray-50 dark:bg-neutral-800'
-                  : 'text-ink hover:bg-gray-50 hover:text-accent-2 dark:text-gray-100 dark:hover:bg-neutral-800'
+                  ? 'text-accent-v bg-gray-50'
+                  : 'text-body hover:bg-gray-50 hover:text-accent-v'
               }`}
             >
               {opt[0].toUpperCase() + opt.slice(1)}
@@ -67,4 +67,3 @@ export default function PaletteToggle() {
     </div>
   )
 }
-

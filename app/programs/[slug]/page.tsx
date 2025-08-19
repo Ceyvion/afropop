@@ -37,13 +37,13 @@ export default function ProgramDetail() {
         <nav className="mb-6">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <Link href="/" className="text-accent-2 hover:text-accent transition-colors duration-200">
+              <Link href="/" className="text-accent-v hover:opacity-90 transition-colors duration-200">
                 Home
               </Link>
             </li>
             <li className="text-gray-400">/</li>
             <li>
-              <Link href="/programs" className="text-accent-2 hover:text-accent transition-colors duration-200">
+              <Link href="/programs" className="text-accent-v hover:opacity-90 transition-colors duration-200">
                 Programs
               </Link>
             </li>
@@ -61,7 +61,7 @@ export default function ProgramDetail() {
           <p className="text-xl text-gray-600 mb-8 max-w-3xl">{program.purpose}</p>
           
           <div className="flex flex-wrap gap-4">
-            <button className="btn-primary bg-accent-2 text-white hover:bg-accent">
+            <button className="btn-accent px-6 py-3">
               Follow Program
             </button>
             <button className="btn-secondary border-gray-300 text-ink bg-white hover:bg-gray-50">
@@ -93,7 +93,7 @@ export default function ProgramDetail() {
         <div className="fade-in delay-300">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-ink">Episodes in this Program</h2>
-            <Link href="/episodes" className="text-accent-2 hover:text-accent text-sm font-bold uppercase tracking-wider transition-colors duration-200">
+            <Link href="/episodes" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
               View all episodes
             </Link>
           </div>

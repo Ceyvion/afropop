@@ -64,7 +64,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-4">
                   <Link 
                     href="/archive" 
-                    className="btn-primary bg-accent-2 text-white hover:bg-accent"
+                    className="btn-accent px-6 py-3"
                   >
                     Explore Archive
                   </Link>
@@ -100,21 +100,21 @@ export default function Home() {
           <section className="mb-20 fade-in">
             <div className="flex items-center justify-between mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-ink">New This Week</h2>
-              <Link href="/episodes" className="text-accent-2 hover:text-accent text-sm font-bold uppercase tracking-wider transition-colors duration-200">
-                View all episodes
-              </Link>
+                  <Link href="/episodes" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
+                    View all episodes
+                  </Link>
             </div>
             
             {episodesLoading ? (
               <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div>
               </div>
             ) : episodesError ? (
               <div className="text-center py-8">
-                <p className="text-gray-600">Error loading episodes: {episodesError}</p>
+                <p className="text-muted">Error loading episodes: {episodesError}</p>
                 <button 
                   onClick={() => window.location.reload()}
-                  className="mt-4 px-4 py-2 bg-accent-2 text-white rounded-md hover:bg-accent"
+                  className="mt-4 px-4 py-2 btn-accent rounded-md"
                 >
                   Retry
                 </button>
@@ -161,21 +161,21 @@ export default function Home() {
           <section className="mb-20 fade-in">
             <div className="flex items-center justify-between mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-ink">News from the Diaspora</h2>
-              <Link href="/features" className="text-accent-2 hover:text-accent text-sm font-bold uppercase tracking-wider transition-colors duration-200">
+              <Link href="/features" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
                 View all features
               </Link>
             </div>
             
             {featuresLoading ? (
               <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div>
               </div>
             ) : featuresError ? (
               <div className="text-center py-8">
-                <p className="text-gray-600">Error loading features: {featuresError}</p>
+                <p className="text-muted">Error loading features: {featuresError}</p>
                 <button 
                   onClick={() => window.location.reload()}
-                  className="mt-4 px-4 py-2 bg-accent-2 text-white rounded-md hover:bg-accent"
+                  className="mt-4 px-4 py-2 btn-accent rounded-md"
                 >
                   Retry
                 </button>
@@ -208,7 +208,7 @@ export default function Home() {
           <section className="fade-in">
             <div className="flex items-center justify-between mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-ink">Events Near You</h2>
-              <Link href="/events" className="text-accent-2 hover:text-accent text-sm font-bold uppercase tracking-wider transition-colors duration-200">
+              <Link href="/events" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
                 View all events
               </Link>
             </div>
@@ -233,7 +233,7 @@ export default function Home() {
                       </div>
                       <Link 
                         href="/events" 
-                        className="w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent text-center block transition-colors duration-200"
+                        className="w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white btn-accent text-center block transition-colors duration-200"
                       >
                         Get Tickets
                       </Link>

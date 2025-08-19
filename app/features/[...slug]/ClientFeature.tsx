@@ -129,11 +129,11 @@ export default function ClientFeature({ slug }: { slug: string }) {
         <nav className="mb-6">
           <ol className="flex items-center space-x-2 text-sm">
             <li>
-              <Link href="/" className="text-accent-2 hover:text-accent transition-colors duration-200">Home</Link>
+              <Link href="/" className="text-accent-v hover:opacity-90 transition-colors duration-200">Home</Link>
             </li>
             <li className="text-gray-400">/</li>
             <li>
-              <Link href="/features" className="text-accent-2 hover:text-accent transition-colors duration-200">Features</Link>
+              <Link href="/features" className="text-accent-v hover:opacity-90 transition-colors duration-200">Features</Link>
             </li>
             <li className="text-gray-400">/</li>
             <li className="text-gray-500 truncate max-w-xs">{data.title}</li>

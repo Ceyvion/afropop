@@ -83,7 +83,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
         <div className="flex items-center justify-between">
           <span className={durationClass}>{duration}</span>
           <button 
-            className="text-accent-2 hover:text-accent transition-colors duration-200"
+            className="text-accent-v hover:opacity-90 transition-colors duration-200"
             aria-label={`Play ${title}`}
             onClick={(e) => {
               e.preventDefault();

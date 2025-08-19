@@ -59,11 +59,11 @@ export default function Community() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-32"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-2"></div></div>
+          <div className="flex justify-center items-center h-32"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div></div>
         ) : error ? (
           <div className="text-center text-red-600">{error}</div>
         ) : items.length === 0 ? (
-          <div className="text-gray-600">No submissions yet. Be the first to <a className="text-accent-2 hover:text-accent" href="/pitch">pitch</a>!</div>
+          <div className="text-gray-600">No submissions yet. Be the first to <a className="text-accent-v hover:opacity-90" href="/pitch">pitch</a>!</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((s) => (

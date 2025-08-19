@@ -224,7 +224,7 @@ export default function Events() {
           <p className="text-red-500">Error loading events: {error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-accent-2 text-white rounded-md hover:bg-accent transition-colors"
+            className="mt-4 px-4 py-2 btn-accent rounded-md transition-colors"
           >
             Retry
           </button>
@@ -521,7 +521,7 @@ export default function Events() {
                             <div className="flex items-center gap-3">
                               <a
                                 href={`/api/event-ics/${encodeURIComponent(ev.id)}`}
-                                className="text-accent-2 hover:text-accent"
+                                className="text-accent-v hover:opacity-90"
                                 title="Add to your calendar"
                               >
                                 Add to calendar

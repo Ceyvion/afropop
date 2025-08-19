@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="max-w-md text-center px-4 fade-in">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent-100 text-accent-2 mb-8">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent-100 text-accent-v mb-8">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -19,7 +19,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link 
             href="/" 
-            className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white bg-accent-2 hover:bg-accent text-center transition-colors duration-200 uppercase tracking-wider"
+            className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white btn-accent text-center transition-colors duration-200 uppercase tracking-wider"
           >
             Go Home
           </Link>
