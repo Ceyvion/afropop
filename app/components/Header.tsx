@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { usePlayer } from '@/app/components/PlayerProvider'
+import ThemeToggle from '@/app/components/ThemeToggle'
 
 const Header = () => {
   const pathname = usePathname()
@@ -30,13 +31,13 @@ const Header = () => {
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200 dark:bg-neutral-900/80 dark:border-neutral-800">
       {/* Main header bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Afropop Worldwide wordmark (text link for now) */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold tracking-tight text-ink">
+            <Link href="/" className="text-2xl font-bold tracking-tight text-ink dark:text-gray-100">
               Afropop Worldwide
             </Link>
           </div>
@@ -50,7 +51,7 @@ const Header = () => {
                 className={`text-sm font-medium transition-colors duration-200 ${
                   pathname === item.href 
                     ? 'text-accent-2 border-b-2 border-accent-2 pb-1' 
-                    : 'text-ink hover:text-accent-2'
+                    : 'text-ink hover:text-accent-2 dark:text-gray-100'
                 }`}
               >
                 {item.name}
@@ -58,7 +59,7 @@ const Header = () => {
             ))}
             <div className="relative">
               <button
-                className={`text-sm font-medium transition-colors duration-200 inline-flex items-center gap-1 ${isMoreOpen ? 'text-accent-2' : 'text-ink hover:text-accent-2'}`}
+                className={`text-sm font-medium transition-colors duration-200 inline-flex items-center gap-1 ${isMoreOpen ? 'text-accent-2' : 'text-ink hover:text-accent-2 dark:text-gray-100'}`}
                 onClick={() => setIsMoreOpen((v) => !v)}
                 aria-haspopup="menu"
                 aria-expanded={isMoreOpen}
@@ -68,14 +69,14 @@ const Header = () => {
               </button>
               {isMoreOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50"
+                  className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50 dark:bg-neutral-900 dark:border-neutral-700"
                   role="menu"
                 >
                   {navMore.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`block px-3 py-2 text-sm ${pathname === item.href ? 'text-accent-2 bg-gray-50' : 'text-ink hover:bg-gray-50 hover:text-accent-2'}`}
+                      className={`block px-3 py-2 text-sm ${pathname === item.href ? 'text-accent-2 bg-gray-50 dark:bg-neutral-800' : 'text-ink hover:bg-gray-50 hover:text-accent-2 dark:text-gray-100 dark:hover:bg-neutral-800'}`}
                       onClick={() => setIsMoreOpen(false)}
                       role="menuitem"
                     >
@@ -89,9 +90,13 @@ const Header = () => {
 
           {/* Right: prominent Search, Donate, Menu (mobile) */}
           <div className="flex items-center space-x-4">
+            {/* Theme toggle desktop */}
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
             <Link
               href="/search"
-              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-ink bg-white hover:bg-gray-50 transition-colors duration-200"
+              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-ink bg-white hover:bg-gray-50 transition-colors duration-200 dark:border-neutral-700 dark:text-gray-100 dark:bg-neutral-900 dark:hover:bg-neutral-800"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -100,13 +105,17 @@ const Header = () => {
             </Link>
             <Link
               href="/search"
-              className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-300 text-ink bg-white hover:bg-gray-50 transition-colors duration-200"
+              className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-300 text-ink bg-white hover:bg-gray-50 transition-colors duration-200 dark:border-neutral-700 dark:text-gray-100 dark:bg-neutral-900 dark:hover:bg-neutral-800"
               aria-label="Search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </Link>
+            {/* Theme toggle mobile */}
+            <div className="md:hidden">
+              <ThemeToggle compact />
+            </div>
             <Link 
               href="/support"
               className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200"
@@ -114,7 +123,7 @@ const Header = () => {
               Donate
             </Link>
             <button 
-              className="md:hidden text-ink hover:text-accent-2 transition-colors duration-200"
+              className="md:hidden text-ink hover:text-accent-2 transition-colors duration-200 dark:text-gray-100"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Open menu"
             >
@@ -128,12 +137,12 @@ const Header = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
+        <div className="md:hidden bg-white border-t border-gray-200 dark:bg-neutral-900 dark:border-neutral-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-1">
             <div className="pb-2">
               <Link
                 href="/search"
-                className="block w-full px-3 py-2 rounded-md border border-gray-300 text-ink bg-white text-base font-medium"
+                className="block w-full px-3 py-2 rounded-md border border-gray-300 text-ink bg-white text-base font-medium dark:border-neutral-700 dark:text-gray-100 dark:bg-neutral-900"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Search
@@ -145,8 +154,8 @@ const Header = () => {
                 href={item.href}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === item.href 
-                    ? 'text-accent-2 bg-gray-50' 
-                    : 'text-ink hover:bg-gray-50 hover:text-accent-2'
+                    ? 'text-accent-2 bg-gray-50 dark:bg-neutral-800' 
+                    : 'text-ink hover:bg-gray-50 hover:text-accent-2 dark:text-gray-100 dark:hover:bg-neutral-800'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >

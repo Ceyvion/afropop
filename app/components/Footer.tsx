@@ -4,13 +4,13 @@ import Link from 'next/link'
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-200 mt-20">
+    <footer className="bg-white border-t border-gray-200 mt-20 dark:bg-neutral-900 dark:border-neutral-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <h3 className="text-lg font-bold text-ink mb-4">Afropop Worldwide</h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <h3 className="text-lg font-bold text-ink mb-4 dark:text-gray-100">Afropop Worldwide</h3>
+            <p className="text-sm text-gray-600 mb-6 dark:text-gray-400">
               Public-service music journalism, powered by listeners.
             </p>
             <div className="flex space-x-4">
@@ -37,49 +37,49 @@ const Footer = () => {
           
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider">Explore</h3>
+            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">Explore</h3>
             <ul className="space-y-3">
-              <li><Link href="/archive" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Archive</Link></li>
-              <li><Link href="/episodes" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Episodes</Link></li>
-              <li><Link href="/features" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Features</Link></li>
-              <li><Link href="/events" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Events</Link></li>
-              <li><Link href="/programs" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Programs</Link></li>
+              <li><Link href="/archive" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Archive</Link></li>
+              <li><Link href="/episodes" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Episodes</Link></li>
+              <li><Link href="/features" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Features</Link></li>
+              <li><Link href="/events" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Events</Link></li>
+              <li><Link href="/programs" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Programs</Link></li>
             </ul>
           </div>
           
           {/* About */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider">About</h3>
+            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">About</h3>
             <ul className="space-y-3">
-              <li><Link href="/about" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Our Mission</Link></li>
-              <li><Link href="/contributors" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Hosts & Contributors</Link></li>
-              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Support Us</Link></li>
-              <li><Link href="/shop" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Shop</Link></li>
-              <li><Link href="/contact" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Contact</Link></li>
+              <li><Link href="/about" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Our Mission</Link></li>
+              <li><Link href="/contributors" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Hosts & Contributors</Link></li>
+              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Support Us</Link></li>
+              <li><Link href="/shop" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Shop</Link></li>
+              <li><Link href="/contact" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Contact</Link></li>
             </ul>
           </div>
           
           {/* Support */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider">Support</h3>
+            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">Support</h3>
             <ul className="space-y-3">
-              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Donate</Link></li>
-              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Membership</Link></li>
-              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Sponsorship</Link></li>
-              <li><Link href="/shop" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200">Merchandise</Link></li>
+              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Donate</Link></li>
+              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Membership</Link></li>
+              <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Sponsorship</Link></li>
+              <li><Link href="/shop" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Merchandise</Link></li>
             </ul>
           </div>
           
           {/* Newsletter */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider">Stay Connected</h3>
+            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">Stay Connected</h3>
             <form className="mb-4">
               <label htmlFor="email-address" className="sr-only">Email address</label>
               <input
                 id="email-address"
                 type="email"
                 placeholder="Enter your email"
-                className="w-full px-4 py-2.5 text-sm placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                className="w-full px-4 py-2.5 text-sm placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200 dark:bg-neutral-900 dark:text-gray-100 dark:placeholder-gray-500 dark:border-neutral-700"
               />
               <button
                 type="submit"
@@ -91,12 +91,12 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-gray-200 md:flex md:items-center md:justify-between">
-          <p className="text-sm text-gray-500">&copy; 2025 Afropop Worldwide. All rights reserved.</p>
+        <div className="mt-12 pt-8 border-t border-gray-200 md:flex md:items-center md:justify-between dark:border-neutral-800">
+          <p className="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 Afropop Worldwide. All rights reserved.</p>
           <div className="mt-4 md:mt-0 md:order-1">
             <ul className="flex space-x-6">
-              <li><Link href="/privacy" className="text-sm text-gray-500 hover:text-accent-2 transition-colors duration-200">Privacy</Link></li>
-              <li><Link href="/terms" className="text-sm text-gray-500 hover:text-accent-2 transition-colors duration-200">Terms</Link></li>
+              <li><Link href="/privacy" className="text-sm text-gray-500 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Privacy</Link></li>
+              <li><Link href="/terms" className="text-sm text-gray-500 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Terms</Link></li>
             </ul>
           </div>
         </div>

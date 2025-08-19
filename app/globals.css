@@ -13,6 +13,13 @@
     font-family: var(--font-inter);
     background-color: #f0f9f0; /* Light green background */
     color: #0B0B0C; /* Ink color */
+    color-scheme: light;
+  }
+  
+  .dark body {
+    background-color: #0b0b0f; /* Near-black */
+    color: #f5f6f8; /* Light text */
+    color-scheme: dark;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -43,7 +50,7 @@
   }
   
   .btn-secondary:hover {
-    @apply bg-gray-50 transform -translate-y-0.5;
+    @apply bg-gray-50 transform -translate-y-0.5 dark:bg-neutral-800;
   }
   
   .section-padding {

@@ -42,7 +42,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { const s = localStorage.getItem('theme'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; const t = s || 'system'; const dark = t === 'dark' || (t === 'system' && sys); const r = document.documentElement; r.classList[dark ? 'add' : 'remove']('dark'); r.setAttribute('data-theme', dark ? 'dark' : 'light'); } catch (e) {} })();`,
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <PlayerProvider>
           <div className="flex flex-col min-h-screen">
