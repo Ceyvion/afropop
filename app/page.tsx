@@ -122,9 +122,14 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {episodesData?.items?.map((episode: any, index: number) => (
-                  <Link key={episode.id} href={`/episodes/${encodeURIComponent(episode.id)}`} className="block">
+                <Link
+                  key={episode.id}
+                  href={`/episodes/${String(episode.id).split('/').map(encodeURIComponent).join('/')}`}
+                  className="block"
+                >
                     <div className={`fade-in delay-${(index + 1) * 100}`}>
                       <EpisodeCard
+                        id={episode.id}
                         title={episode.title}
                         region={episode.region || 'Africa'}
                         genre={episode.genre || 'World Music'}
@@ -177,7 +182,11 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {featuresData?.items?.map((feature: any, index: number) => (
-                  <Link key={feature.id} href={`/features/${encodeURIComponent(feature.id)}`} className="block">
+                <Link
+                  key={feature.id}
+                  href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
+                  className="block"
+                >
                     <div className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover fade-in delay-${(index + 1) * 100}`}>
                       <div className="bg-gray-200 border-2 border-dashed aspect-video w-full" />
                       <div className="p-6">

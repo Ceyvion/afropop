@@ -188,7 +188,8 @@ export function useItemById(id: string) {
           return
         }
         
-        const response = await fetch(`/api/item/${encodeURIComponent(id)}`)
+        const encoded = String(id).split('/').map(encodeURIComponent).join('/')
+        const response = await fetch(`/api/item/${encoded}`)
         const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
         
         if (response.ok) {

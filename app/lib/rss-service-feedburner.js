@@ -4,18 +4,12 @@
 const Parser = require('rss-parser')
 
 // Configuration
-const AFROPOP_RSS_URL = 'https://feeds.feedburner.com/afropop/podcast'
-const ALTERNATIVE_RSS_URLS = [
-  'https://afropop.org/feed/podcast',
-  'https://f.prxu.org/afropop/feed-rss.xml',
-  'https://feeds.prx.org/afropop'
-]
-const RSS_REQUEST_HEADERS = {
-  'User-Agent': 'Afropop Worldwide Website Client (+https://afropop.org)',
-  'Accept': 'application/xml,text/xml,*/*',
-  'Accept-Encoding': 'gzip, deflate, br'
-}
-const RSS_CACHE_TIMEOUT = 5 * 60 * 1000 // 5 minutes in milliseconds
+const { 
+  AFROPOP_RSS_URL,
+  ALTERNATIVE_RSS_URLS,
+  RSS_REQUEST_HEADERS,
+  RSS_CACHE_TIMEOUT
+} = require('./rss-config.js')
 const RSS_FETCH_TIMEOUT_MS = 12000 // 12s timeout to avoid hanging requests
 
 function fetchWithTimeout(url, options = {}, timeoutMs = RSS_FETCH_TIMEOUT_MS) {

@@ -2,7 +2,10 @@
 import React from 'react'
 
 // Episode Card
-export const EpisodeCard = ({ title, region, genre, duration, image, categories, onPlay }: { 
+import EngagementBar from './EngagementBar'
+
+export const EpisodeCard = ({ id, title, region, genre, duration, image, categories, onPlay, showEngagement = true }: { 
+  id?: string | number;
   title: string; 
   region: string; 
   genre: string; 
@@ -10,6 +13,7 @@ export const EpisodeCard = ({ title, region, genre, duration, image, categories,
   image?: string;
   categories?: string[];
   onPlay?: (e: React.MouseEvent) => void;
+  showEngagement?: boolean;
 }) => {
   // Extract additional tags from categories
   const additionalTags = categories
@@ -79,6 +83,11 @@ export const EpisodeCard = ({ title, region, genre, duration, image, categories,
             </svg>
           </button>
         </div>
+        {showEngagement && id != null && (
+          <div className="mt-4">
+            <EngagementBar targetType="episode" targetId={id} />
+          </div>
+        )}
       </div>
     </div>
   )
@@ -126,12 +135,13 @@ export const FeatureCard = ({ title, dek, author, readTime, image }: {
 }
 
 // Event Card
-export const EventCard = ({ title, date, city, venue, image }: { 
+export const EventCard = ({ title, date, city, venue, image, ctaHref }: { 
   title: string; 
   date: string; 
   city: string; 
   venue: string;
   image?: string;
+  ctaHref?: string;
 }) => {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
@@ -171,9 +181,20 @@ export const EventCard = ({ title, date, city, venue, image }: {
           <span>{city}, {venue}</span>
         </div>
         
-        <button className="w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200">
-          Get Tickets
-        </button>
+        {ctaHref ? (
+          <a
+            href={ctaHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex items-center justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200"
+          >
+            Get Tickets
+          </a>
+        ) : (
+          <button className="w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-400 cursor-not-allowed">
+            Get Tickets
+          </button>
+        )}
       </div>
     </div>
   )

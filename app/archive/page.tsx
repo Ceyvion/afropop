@@ -6,11 +6,10 @@ import Link from 'next/link'
 import FilterRail from '@/app/components/FilterRail'
 import { EpisodeCard, FeatureCard, EventCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
-import { useRSSFeed, useRSSSearch } from '@/app/lib/use-rss-data'
+import { useRSSFeed } from '@/app/lib/use-rss-data'
 
 export default function Archive() {
   const { data: feedData, loading: feedLoading, error: feedError } = useRSSFeed()
-  const { data: searchData, loading: searchLoading, error: searchError, search } = useRSSSearch()
   const player = usePlayer()
   const [filteredResults, setFilteredResults] = useState<any[]>([])
   const [activeFilter, setActiveFilter] = useState('all')
@@ -19,7 +18,6 @@ export default function Archive() {
   const [visibleCount, setVisibleCount] = useState(12)
   const [facetFilters, setFacetFilters] = useState<Record<string, string[]>>({})
   const [groupMode, setGroupMode] = useState<'none' | 'year' | 'decade'>('none')
-  const [useSearchResults, setUseSearchResults] = useState(false)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   // Derived filters for API from facet filters + active type
@@ -30,13 +28,14 @@ export default function Archive() {
     const genreSel = facetFilters['Genre'] || []
     if (regionSel.length > 0) {
       const r0 = regionSel[0]
+      // Prefer full region label for robust includes() matching
       const regionMap: Record<string, string> = {
-        'West Africa': 'west',
-        'East Africa': 'east',
-        'Southern Africa': 'south',
-        'North Africa': 'north',
+        'West Africa': 'west africa',
+        'East Africa': 'east africa',
+        'Southern Africa': 'southern africa',
+        'North Africa': 'north africa',
       }
-      filters.region = regionMap[r0] || r0
+      filters.region = (regionMap[r0] || r0).toLowerCase()
     }
     if (genreSel.length > 0) filters.genre = genreSel[0]
 
@@ -62,28 +61,15 @@ export default function Archive() {
     return filters
   }, [facetFilters, activeFilter])
 
-  // Debounced search when query or filters change
-  useEffect(() => {
-    const hasFilters = query.trim().length > 0 || Object.keys(apiFilters).length > 0
-    const t = setTimeout(() => {
-      if (hasFilters) {
-        search(query, apiFilters)
-        setUseSearchResults(true)
-      } else {
-        setUseSearchResults(false)
-      }
-    }, 300)
-    return () => clearTimeout(t)
-  }, [query, apiFilters])
-
+  // Source is the full feed; we filter client-side for responsiveness
   const sourceItems = useMemo(() => {
-    return (useSearchResults ? searchData?.items : feedData?.items) || []
-  }, [useSearchResults, searchData, feedData])
+    return feedData?.items || []
+  }, [feedData])
 
-  const loading = useSearchResults ? searchLoading : feedLoading
-  const error = useSearchResults ? searchError : feedError
+  const loading = feedLoading
+  const error = feedError
 
-  // Filter results based on active filter
+  // Filter results based on active filter, query, and facet filters
   useEffect(() => {
     if (!sourceItems) return
 
@@ -92,6 +78,54 @@ export default function Archive() {
     // Filter by active type
     if (activeFilter !== 'all') {
       items = items.filter((item: any) => item.type?.toLowerCase() === activeFilter)
+    }
+
+    // Apply facet filters: region, genre, and era/decade date range
+    const regionSel = (facetFilters['Region'] || []).map(r => r.toLowerCase())
+    const genreSel = (facetFilters['Genre'] || []).map(g => g.toLowerCase())
+    const eras = facetFilters['Era/Decade'] || []
+
+    if (regionSel.length > 0) {
+      const synonyms: Record<string, string[]> = {
+        'west africa': ['west africa', 'west', 'western'],
+        'east africa': ['east africa', 'east', 'eastern'],
+        'southern africa': ['southern africa', 'south', 'southern'],
+        'north africa': ['north africa', 'north', 'northern'],
+      }
+      const targets = regionSel.flatMap(label => {
+        const key = label.toLowerCase()
+        // Map canonical labels; fall back to the label itself
+        return synonyms[key] || [key]
+      })
+      items = items.filter((item: any) => {
+        const r = (item.region || '').toLowerCase()
+        return targets.some(t => r.includes(t))
+      })
+    }
+
+    if (genreSel.length > 0) {
+      items = items.filter((item: any) => {
+        const g = (item.genre || '').toLowerCase()
+        return genreSel.some(t => g.includes(t))
+      })
+    }
+
+    if (eras.length > 0) {
+      const ranges = eras.map(dec => {
+        const decadeStart = parseInt(dec) || parseInt(dec.replace(/s$/, ''))
+        if (!isNaN(decadeStart)) {
+          const from = new Date(`${decadeStart}-01-01`).getTime()
+          const to = new Date(`${decadeStart + 9}-12-31`).getTime()
+          return { from, to }
+        }
+        return null
+      }).filter(Boolean) as { from: number, to: number }[]
+      if (ranges.length > 0) {
+        items = items.filter((item: any) => {
+          const t = new Date(item.isoDate || item.pubDate || 0).getTime()
+          return ranges.some(r => t >= r.from && t <= r.to)
+        })
+      }
     }
 
     // Simple client-side search across title and description
@@ -112,7 +146,7 @@ export default function Archive() {
 
     setFilteredResults(items)
     setVisibleCount(12)
-  }, [sourceItems, activeFilter, query, sortOrder])
+  }, [sourceItems, activeFilter, query, sortOrder, facetFilters])
 
   // Infinite scroll via IntersectionObserver
   useEffect(() => {
@@ -221,7 +255,11 @@ export default function Archive() {
               const renderItem = (item: any, index: number) => {
                 if (item.type === 'Episode') {
                   return (
-                    <Link key={item.id} href={`/episodes/${encodeURIComponent(item.id)}`} className="block">
+                    <Link
+                      key={item.id}
+                      href={`/episodes/${String(item.id).split('/').map(encodeURIComponent).join('/')}`}
+                      className="block"
+                    >
                       <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
                         <EpisodeCard
                           title={item.title}
@@ -250,7 +288,11 @@ export default function Archive() {
                 
                 if (item.type === 'Feature') {
                   return (
-                    <Link key={item.id} href={`/features/${encodeURIComponent(item.id)}`} className="block">
+                    <Link
+                      key={item.id}
+                      href={`/features/${String(item.id).split('/').map(encodeURIComponent).join('/')}`}
+                      className="block"
+                    >
                       <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
                         <FeatureCard
                           title={item.title}
@@ -280,7 +322,11 @@ export default function Archive() {
                 
                 // Default to episode card for unknown types
                 return (
-                  <Link key={item.id} href={`/episodes/${encodeURIComponent(item.id)}`} className="block">
+                  <Link
+                    key={item.id}
+                    href={`/episodes/${String(item.id).split('/').map(encodeURIComponent).join('/')}`}
+                    className="block"
+                  >
                     <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
                       <EpisodeCard
                         title={item.title}

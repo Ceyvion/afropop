@@ -48,7 +48,11 @@ export default function Features() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {data?.items?.map((feature: any, index: number) => (
-                <Link key={feature.id} href={`/features/${encodeURIComponent(feature.id)}`} className="block">
+                <Link
+                  key={feature.id}
+                  href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
+                  className="block"
+                >
                   <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
                     <FeatureCard
                       title={feature.title}

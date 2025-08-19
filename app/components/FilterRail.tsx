@@ -1,7 +1,7 @@
 // Filter component with refined design
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 type FiltersMap = Record<string, string[]>
 
@@ -35,26 +35,24 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
   const handleFilterChange = (facetName: string, option: string) => {
     setSelectedFilters(prev => {
       const current = prev[facetName] || []
-      let updated: string[]
-      
-      if (current.includes(option)) {
-        // Remove option if already selected
-        updated = current.filter(item => item !== option)
-      } else {
-        // Add option if not selected
-        updated = [...current, option]
-      }
-      
-      const next = {
-        ...prev,
-        [facetName]: updated
-      }
-
-      // Notify parent on every change (live updates)
-      onChange?.(next)
-      return next
+      const updated = current.includes(option)
+        ? current.filter(item => item !== option)
+        : [...current, option]
+      return { ...prev, [facetName]: updated }
     })
   }
+
+  // Notify parent after state commits to avoid setState during render of child
+  const didMount = useRef(false)
+  useEffect(() => {
+    if (didMount.current) {
+      onChange?.(selectedFilters)
+    } else {
+      didMount.current = true
+    }
+    // We intentionally do not include onChange in deps to avoid effect recreation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFilters])
 
   const isOptionSelected = (facetName: string, option: string) => {
     return selectedFilters[facetName]?.includes(option) || false

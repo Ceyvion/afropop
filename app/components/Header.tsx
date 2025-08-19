@@ -4,10 +4,12 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { usePlayer } from '@/app/components/PlayerProvider'
 
 const Header = () => {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { track, isPlaying } = usePlayer()
 
   // Navigation items from the spec
   const navItems = [
@@ -15,6 +17,8 @@ const Header = () => {
     { name: 'Episodes', href: '/episodes' },
     { name: 'Features', href: '/features' },
     { name: 'Events', href: '/events' },
+    { name: 'Pitch', href: '/pitch' },
+    { name: 'Community', href: '/community' },
     { name: 'Programs', href: '/programs' },
     { name: 'Hosts & Contributors', href: '/contributors' },
     { name: 'Support', href: '/support' },
@@ -105,10 +109,15 @@ const Header = () => {
         </div>
       )}
 
-      {/* Now Playing strip */}
-      <div className="bg-accent-2 text-white text-center py-2 text-sm font-medium">
+      {/* Now Playing strip (linked to mini player, updates from PlayerProvider) */}
+      <div className="bg-accent-2 text-white text-center py-2 text-sm font-medium" aria-live="polite">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="animate-pulse">●</span> Now Playing: The Origins of Highlife
+          <Link href="#mini-player" className="inline-flex items-center gap-2 hover:opacity-90">
+            <span className={isPlaying ? 'animate-pulse' : 'opacity-70'}>●</span>
+            <span>
+              Now Playing: {track?.title ? track.title : 'No episode selected'}
+            </span>
+          </Link>
         </div>
       </div>
     </header>

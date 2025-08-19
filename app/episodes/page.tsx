@@ -50,9 +50,14 @@ export default function Episodes() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {data?.items?.map((episode: any, index: number) => (
-                <Link key={episode.id} href={`/episodes/${encodeURIComponent(episode.id)}`} className="block">
+                <Link
+                  key={episode.id}
+                  href={`/episodes/${String(episode.id).split('/').map(encodeURIComponent).join('/')}`}
+                  className="block"
+                >
                   <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
                     <EpisodeCard
+                      id={episode.id}
                       title={episode.title}
                       region={episode.region || 'Africa'}
                       genre={episode.genre || 'World Music'}

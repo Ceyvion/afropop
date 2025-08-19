@@ -1,6 +1,7 @@
 // app/api/rss-proxy/route.ts
 import { NextResponse } from 'next/server'
 import Parser from 'rss-parser'
+import { RSS_REQUEST_HEADERS } from '@/app/lib/rss-config'
 
 // Define the type for our RSS items
 type RSSItem = {
@@ -68,9 +69,7 @@ export async function GET(request: Request) {
 
     // Fetch the RSS feed
     const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Afropop Worldwide Website Client'
-      }
+      headers: RSS_REQUEST_HEADERS
     })
     
     if (!response.ok) {

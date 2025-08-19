@@ -1,5 +1,6 @@
 // app/lib/rss-service-enhanced.ts
 // Enhanced RSS service using third-party parsing services
+import { RSS_REQUEST_HEADERS } from './rss-config'
 
 // Configuration for RSS parsing service
 const RSS_PARSER_SERVICE = 'https://api.rss.app/v1' // Example service
@@ -65,8 +66,8 @@ async function fetchFromThirdPartyService() {
         `${RSS_PARSER_SERVICE}/feed?url=${encodeURIComponent(AFROPOP_RSS_URL)}`,
         {
           headers: {
-            'Authorization': `Bearer ${RSS_PARSER_API_KEY}`,
-            'User-Agent': 'Afropop Worldwide Website Client'
+            ...RSS_REQUEST_HEADERS,
+            'Authorization': `Bearer ${RSS_PARSER_API_KEY}`
           }
         }
       )
@@ -92,9 +93,7 @@ async function fetchAndParseDirectly() {
   try {
     // Fetch the RSS feed
     const response = await fetch(AFROPOP_RSS_URL, {
-      headers: {
-        'User-Agent': 'Afropop Worldwide Website Client'
-      }
+      headers: RSS_REQUEST_HEADERS
     })
     
     if (!response.ok) {

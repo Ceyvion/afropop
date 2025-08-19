@@ -5,11 +5,13 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string | string[] }> }
 ) {
   try {
     const { id: raw } = await params
-    const id = decodeURIComponent(raw)
+    const id = Array.isArray(raw)
+      ? raw.map((s) => decodeURIComponent(s)).join('/')
+      : decodeURIComponent(raw)
     
     console.log(`Fetching item by ID: ${id}`)
     
