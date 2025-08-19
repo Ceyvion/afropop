@@ -46,7 +46,7 @@ export default function Features() {
               Showing {data?.items?.length || 0} features
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {data?.items?.map((feature: any, index: number) => (
                 <Link
                   key={feature.id}
@@ -59,6 +59,7 @@ export default function Features() {
                       dek={feature.description}
                       author={feature.author || 'Afropop Worldwide'}
                       readTime={feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
+                      density="compact"
                     />
                   </div>
                 </Link>

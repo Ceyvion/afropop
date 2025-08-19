@@ -4,7 +4,7 @@ import React from 'react'
 // Episode Card
 import EngagementBar from './EngagementBar'
 
-export const EpisodeCard = ({ id, title, region, genre, duration, image, categories, onPlay, showEngagement = true }: { 
+export const EpisodeCard = ({ id, title, region, genre, duration, image, categories, onPlay, showEngagement = true, density = 'comfortable' }: { 
   id?: string | number;
   title: string; 
   region: string; 
@@ -14,6 +14,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
   categories?: string[];
   onPlay?: (e: React.MouseEvent) => void;
   showEngagement?: boolean;
+  density?: 'comfortable' | 'compact';
 }) => {
   // Extract additional tags from categories
   const additionalTags = categories
@@ -24,50 +25,63 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
     )
     .slice(0, 2) || []
 
+  const compact = density === 'compact'
+  const padClass = compact ? 'p-3' : 'p-5'
+  const titleClass = compact
+    ? 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-2 text-[15px]'
+    : 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-3'
+  const chipsWrapClass = compact ? 'flex flex-wrap gap-1.5 mb-3' : 'flex flex-wrap gap-2 mb-4'
+  const chipClass = 'inline-flex items-center rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-gray-200 '
+    + (compact ? 'px-2 py-0.5' : 'px-2.5 py-0.5')
+  const playIconClass = compact ? 'h-4 w-4' : 'h-5 w-5'
+  const durationClass = 'text-xs ' + (compact ? 'text-gray-500 dark:text-gray-400' : 'text-gray-500 dark:text-gray-400')
+  const imageAspect = compact ? 'aspect-[4/3]' : 'aspect-square'
+  const showEngage = showEngagement && !compact && id != null
+
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
       {/* Episode image or placeholder */}
       {image ? (
-        <div className="aspect-square w-full overflow-hidden">
+        <div className={`${imageAspect} w-full overflow-hidden`}>
           <img 
             src={image} 
             alt={title} 
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
             onError={(e) => {
               // Fallback to placeholder if image fails to load
               const target = e.target as HTMLImageElement;
               target.onerror = null;
-              target.parentElement!.innerHTML = '<div class="bg-gray-200 border-2 border-dashed aspect-square w-full"></div>';
+              target.parentElement!.innerHTML = `<div class=\"bg-gray-200 border-2 border-dashed ${imageAspect} w-full\"></div>`;
             }}
           />
         </div>
       ) : (
-        <div className="bg-gray-200 border-2 border-dashed aspect-square w-full" />
+        <div className={`bg-gray-200 border-2 border-dashed ${imageAspect} w-full`} />
       )}
       
-      <div className="p-5">
-        <h3 className="font-bold text-ink line-clamp-2 mb-3">{title}</h3>
+      <div className={padClass}>
+        <h3 className={titleClass}>{title}</h3>
         
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className={chipsWrapClass}>
           {region && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <span className={chipClass}>
               {region}
             </span>
           )}
           {genre && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <span className={chipClass}>
               {genre}
             </span>
           )}
-          {additionalTags.map((tag, index) => (
-            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-              {tag}
-            </span>
+          {!compact && additionalTags.map((tag, index) => (
+            <span key={index} className={chipClass}>{tag}</span>
           ))}
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">{duration}</span>
+          <span className={durationClass}>{duration}</span>
           <button 
             className="text-accent-2 hover:text-accent transition-colors duration-200"
             aria-label={`Play ${title}`}
@@ -77,13 +91,13 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
               onPlay?.(e);
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className={playIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
         </div>
-        {showEngagement && id != null && (
+        {showEngage && (
           <div className="mt-4">
             <EngagementBar targetType="episode" targetId={id} />
           </div>
@@ -94,40 +108,49 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
 }
 
 // Feature Card
-export const FeatureCard = ({ title, dek, author, readTime, image }: { 
+export const FeatureCard = ({ title, dek, author, readTime, image, density = 'comfortable' }: { 
   title: string; 
   dek: string; 
   author: string; 
   readTime: string;
   image?: string;
+  density?: 'comfortable' | 'compact';
 }) => {
+  const compact = density === 'compact'
+  const padClass = compact ? 'p-3' : 'p-5'
+  const titleClass = compact ? 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-2 text-[15px]' : 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-3'
+  const dekClass = compact ? 'text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3' : 'text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-4'
+  const metaClass = 'text-xs text-gray-500 dark:text-gray-400'
+  const imageAspect = compact ? 'aspect-[16/9]' : 'aspect-[3/2]'
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
       {/* 3:2 image or placeholder */}
       {image ? (
-        <div className="aspect-[3/2] w-full overflow-hidden">
+        <div className={`${imageAspect} w-full overflow-hidden`}>
           <img 
             src={image}
             alt={title}
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.onerror = null
-              target.parentElement!.innerHTML = '<div class="bg-gray-200 border-2 border-dashed aspect-[3/2] w-full"></div>'
+              target.parentElement!.innerHTML = `<div class=\"bg-gray-200 border-2 border-dashed ${imageAspect} w-full\"></div>`
             }}
           />
         </div>
       ) : (
-        <div className="bg-gray-200 border-2 border-dashed aspect-[3/2] w-full" />
+        <div className={`bg-gray-200 border-2 border-dashed ${imageAspect} w-full`} />
       )}
       
-      <div className="p-5">
-        <h3 className="font-bold text-ink line-clamp-2 mb-3">{title}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2 mb-4">{dek}</p>
+      <div className={padClass}>
+        <h3 className={titleClass}>{title}</h3>
+        <p className={dekClass}>{dek}</p>
         
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">{author}</span>
-          <span className="text-xs text-gray-500">{readTime}</span>
+          <span className={metaClass}>{author}</span>
+          <span className={metaClass}>{readTime}</span>
         </div>
       </div>
     </div>
@@ -135,16 +158,25 @@ export const FeatureCard = ({ title, dek, author, readTime, image }: {
 }
 
 // Event Card
-export const EventCard = ({ title, date, city, venue, image, ctaHref }: { 
+export const EventCard = ({ title, date, city, venue, image, ctaHref, density = 'comfortable' }: { 
   title: string; 
   date: string; 
   city: string; 
   venue: string;
   image?: string;
   ctaHref?: string;
+  density?: 'comfortable' | 'compact';
 }) => {
+  const compact = density === 'compact'
+  const padClass = compact ? 'p-3' : 'p-5'
+  const titleClass = compact ? 'font-bold text-ink dark:text-gray-100 mb-2 text-[15px]' : 'font-bold text-ink dark:text-gray-100 mb-3'
+  const metaRowClass = compact ? 'flex items-center text-sm text-gray-600 dark:text-gray-300 mb-3' : 'flex items-center text-sm text-gray-600 dark:text-gray-300 mb-4'
+  const pinIconClass = compact ? 'h-3.5 w-3.5 mr-1' : 'h-4 w-4 mr-1.5'
+  const ctaClass = compact
+    ? 'w-full inline-flex items-center justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200'
+    : 'w-full inline-flex items-center justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200'
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
       <div className="relative">
         {/* 3:4 poster or placeholder */}
         {image ? (
@@ -153,6 +185,8 @@ export const EventCard = ({ title, date, city, venue, image, ctaHref }: {
               src={image}
               alt={title}
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.onerror = null
@@ -170,11 +204,11 @@ export const EventCard = ({ title, date, city, venue, image, ctaHref }: {
         </div>
       </div>
       
-      <div className="p-5">
-        <h3 className="font-bold text-ink mb-3">{title}</h3>
+      <div className={padClass}>
+        <h3 className={titleClass}>{title}</h3>
         
-        <div className="flex items-center text-sm text-gray-600 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className={metaRowClass}>
+          <svg xmlns="http://www.w3.org/2000/svg" className={pinIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
@@ -186,12 +220,12 @@ export const EventCard = ({ title, date, city, venue, image, ctaHref }: {
             href={ctaHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full inline-flex items-center justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200"
+            className={ctaClass}
           >
             Get Tickets
           </a>
         ) : (
-          <button className="w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-400 cursor-not-allowed">
+          <button className={ctaClass + ' disabled:bg-gray-400 cursor-not-allowed'} disabled>
             Get Tickets
           </button>
         )}

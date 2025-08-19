@@ -268,6 +268,7 @@ export default function Archive() {
                           duration={item.duration || '45 min'}
                           image={item.image}
                           categories={item.categories}
+                          density="compact"
                           onPlay={() => {
                             if (item.audioUrl) {
                               player.play({
@@ -300,6 +301,7 @@ export default function Archive() {
                           author={item.author || 'Afropop Worldwide'}
                           readTime={item.duration ? `${Math.round(parseInt(item.duration)/60)} min read` : '8 min read'}
                           image={item.image}
+                          density="compact"
                         />
                       </div>
                     </Link>
@@ -315,6 +317,7 @@ export default function Archive() {
                         city="Various Locations"
                         venue="Afropop Event"
                         image={item.image}
+                        density="compact"
                       />
                     </div>
                   )
@@ -335,6 +338,7 @@ export default function Archive() {
                         duration={item.duration || '45 min'}
                         image={item.image}
                         categories={item.categories}
+                        density="compact"
                         onPlay={() => {
                           if (item.audioUrl) {
                             player.play({
@@ -355,7 +359,7 @@ export default function Archive() {
 
               if (groupMode === 'none') {
                 return (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {visibleItems.map((item, index) => renderItem(item, index))}
                   </div>
                 )
@@ -383,7 +387,7 @@ export default function Archive() {
                   {groupKeys.map(key => (
                     <div key={key}>
                       <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">{key}</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {groupsMap.get(key)!.map((item, index) => renderItem(item, index))}
                       </div>
                     </div>

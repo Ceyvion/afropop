@@ -97,7 +97,7 @@ export default function ProgramDetail() {
               View all episodes
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {episodes.map((episode, index) => (
               <div key={episode.id} className={`fade-in delay-${(index + 1) * 100}`}>
                 <EpisodeCard
@@ -105,6 +105,7 @@ export default function ProgramDetail() {
                   region={episode.region}
                   genre={episode.genre}
                   duration={episode.duration}
+                  density="compact"
                 />
               </div>
             ))}

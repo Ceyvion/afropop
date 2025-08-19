@@ -96,7 +96,7 @@ export default function Search() {
               Found {data.count} results for "{searchQuery}"
             </p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.items.map((item: any) => {
                 if (item.type === 'Episode') {
                   return (
@@ -106,6 +106,7 @@ export default function Search() {
                       region={item.region || 'Africa'}
                       genre={item.genre || 'World Music'}
                       duration={item.duration || '45 min'}
+                      density="compact"
                     />
                   )
                 }
@@ -118,6 +119,7 @@ export default function Search() {
                       dek={item.description}
                       author={item.author || 'Afropop Worldwide'}
                       readTime={item.duration ? `${Math.round(parseInt(item.duration)/60)} min read` : '8 min read'}
+                      density="compact"
                     />
                   )
                 }
@@ -130,6 +132,7 @@ export default function Search() {
                       date={formatDate(item.pubDate)}
                       city="Various Locations"
                       venue="Afropop Event"
+                      density="compact"
                     />
                   )
                 }
@@ -142,6 +145,7 @@ export default function Search() {
                     region={item.region || 'Africa'}
                     genre={item.genre || 'World Music'}
                     duration={item.duration || '45 min'}
+                    density="compact"
                   />
                 )
               })}

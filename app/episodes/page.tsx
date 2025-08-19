@@ -48,7 +48,7 @@ export default function Episodes() {
               Showing {data?.items?.length || 0} episodes
             </p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data?.items?.map((episode: any, index: number) => (
                 <Link
                   key={episode.id}
@@ -64,6 +64,7 @@ export default function Episodes() {
                       duration={episode.duration || '45 min'}
                       image={episode.image}
                       categories={episode.categories}
+                      density="compact"
                       onPlay={() => {
                         if (episode.audioUrl) {
                           player.play({

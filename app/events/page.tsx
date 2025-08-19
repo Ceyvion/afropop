@@ -496,7 +496,7 @@ export default function Events() {
               return (
                 <section key={key} className="mb-10">
                   <h2 className="text-2xl font-bold text-ink mb-6">{monthLabel(key)}</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {list.map((ev: RawEvent, index: number) => {
                       const { city, venue } = parseLocation(ev.location)
                       const ctaHref = firstUrlFromText(ev.description || '')
@@ -511,6 +511,7 @@ export default function Events() {
                             city={city}
                             venue={venue}
                             ctaHref={ctaHref || undefined}
+                            density="compact"
                           />
                           <div className="mt-2 flex items-center justify-between text-xs text-gray-600">
                             <div className="flex items-center gap-2">
