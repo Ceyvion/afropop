@@ -46,7 +46,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(() => { try { const s = localStorage.getItem('theme'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; const t = s || 'system'; const dark = t === 'dark' || (t === 'system' && sys); const r = document.documentElement; r.classList[dark ? 'add' : 'remove']('dark'); r.setAttribute('data-theme', dark ? 'dark' : 'light'); } catch (e) {} })();`,
+            __html: `(() => { try { const ls = localStorage; const r = document.documentElement; const theme = (ls.getItem('theme') || 'system'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; const dark = theme === 'dark' || (theme === 'system' && sys); r.classList[dark ? 'add' : 'remove']('dark'); r.setAttribute('data-theme', dark ? 'dark' : 'light'); const palette = (ls.getItem('palette') || 'spring'); const palettes = ['spring','summer','autumn','winter']; palettes.forEach(p => r.classList.remove('theme-' + p)); r.classList.add('theme-' + palette); r.setAttribute('data-palette', palette); } catch (e) {} })();`,
           }}
         />
       </head>

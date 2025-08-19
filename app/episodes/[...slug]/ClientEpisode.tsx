@@ -108,7 +108,7 @@ export default function ClientEpisode({ slug }: { slug: string }) {
   const published = new Date(data.pubDate || data.isoDate || '').toLocaleDateString()
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2] dark:bg-neutral-950">
+    <div className="min-h-screen bg-page">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6">
@@ -159,12 +159,12 @@ export default function ClientEpisode({ slug }: { slug: string }) {
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 {audioUrl ? (
                   isCurrent && isPlaying ? (
-                    <button onClick={toggle} className="inline-flex items-center px-5 py-3 rounded-full bg-accent-2 text-white font-bold shadow hover:bg-accent transition-colors">
+                    <button onClick={toggle} className="px-5 py-3 btn-accent">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       Pause
                     </button>
                   ) : (
-                    <button onClick={() => play({ id: data.id, title: data.title, author: data.author, image: data.image, audioUrl, duration: data.duration })} className="inline-flex items-center px-5 py-3 rounded-full bg-accent-2 text-white font-bold shadow hover:bg-accent transition-colors">
+                    <button onClick={() => play({ id: data.id, title: data.title, author: data.author, image: data.image, audioUrl, duration: data.duration })} className="px-5 py-3 btn-accent">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       Play Episode
                     </button>
@@ -202,8 +202,8 @@ export default function ClientEpisode({ slug }: { slug: string }) {
           <div className="lg:col-span-8 space-y-6">
             {/* Progress (if playing/current) */}
             {audioUrl && (
-              <div className="bg-white dark:bg-neutral-900 rounded-xl p-5 shadow-sm">
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
+              <div className="bg-surface rounded-xl p-5 shadow-sm">
+                <div className="flex items-center justify-between text-xs text-muted mb-2">
                   <span>{formatTime(isCurrent ? currentTime : 0)}</span>
                   <span>{formatTime(isCurrent ? duration : 0)}</span>
                 </div>
@@ -215,27 +215,27 @@ export default function ClientEpisode({ slug }: { slug: string }) {
                   value={isCurrent ? currentTime : 0}
                   onChange={(e) => seek(Number(e.target.value))}
                   className="w-full h-2 bg-gray-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer"
-                  style={{ accentColor: '#228B22' }}
+                  style={{ accentColor: 'var(--accent)' }}
                 />
               </div>
             )}
 
             {/* Description */}
-            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-ink dark:text-gray-100 mb-4">Episode Description</h2>
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-body mb-4">Episode Description</h2>
               <div className="prose max-w-none text-gray-700 dark:prose-invert" dangerouslySetInnerHTML={{ __html: data.content || data.description || 'No description available.' }} />
             </div>
 
             {/* Transcript placeholder */}
-            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xl font-bold text-ink dark:text-gray-100">Transcript</h2>
+                <h2 className="text-xl font-bold text-body">Transcript</h2>
                 {audioUrl && (
                   <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-2 hover:text-accent font-bold">Download MP3</a>
                 )}
               </div>
               <div className="bg-gray-50 dark:bg-neutral-800 rounded-lg p-5">
-                <p className="text-gray-600 dark:text-gray-300 mb-3">Transcript content would appear here…</p>
+                <p className="text-muted mb-3">Transcript content would appear here…</p>
                 <button className="text-sm text-accent-2 hover:text-accent font-medium">View full transcript</button>
               </div>
             </div>
@@ -243,27 +243,27 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
           {/* Right sidebar */}
           <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4">Details</h3>
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-4">Details</h3>
               <dl className="space-y-3 text-sm">
-                <div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Published</dt><dd className="text-ink dark:text-gray-100 font-medium">{published || '—'}</dd></div>
-                <div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Duration</dt><dd className="text-ink dark:text-gray-100 font-medium">{prettyDuration(typeof data.duration === 'string' ? data.duration : duration)}</dd></div>
-                {data.region && (<div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Region</dt><dd className="text-ink dark:text-gray-100 font-medium">{data.region}</dd></div>)}
-                {data.genre && (<div className="flex justify-between"><dt className="text-gray-500 dark:text-gray-400">Genre</dt><dd className="text-ink dark:text-gray-100 font-medium">{data.genre}</dd></div>)}
+                <div className="flex justify-between"><dt className="text-muted">Published</dt><dd className="text-body font-medium">{published || '—'}</dd></div>
+                <div className="flex justify-between"><dt className="text-muted">Duration</dt><dd className="text-body font-medium">{prettyDuration(typeof data.duration === 'string' ? data.duration : duration)}</dd></div>
+                {data.region && (<div className="flex justify-between"><dt className="text-muted">Region</dt><dd className="text-body font-medium">{data.region}</dd></div>)}
+                {data.genre && (<div className="flex justify-between"><dt className="text-muted">Genre</dt><dd className="text-body font-medium">{data.genre}</dd></div>)}
               </dl>
               {data.categories?.length > 0 && (
                 <div className="mt-4">
-                  <h4 className="text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">Categories</h4>
+                  <h4 className="text-sm font-bold text-muted mb-2">Categories</h4>
                   <div className="flex flex-wrap gap-2">
                     {data.categories.slice(0, 12).map((c: string, i: number) => (
-                      <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-gray-200">{c}</span>
+                      <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold chip-soft">{c}</span>
                     ))}
                   </div>
                 </div>
               )}
               {data.link && (
                 <div className="mt-6">
-                  <a href={data.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-bold text-accent-2 hover:text-accent">
+                  <a href={data.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-bold text-accent-v hover:bg-accent-strong-v/10 rounded px-1">
                     Open original link
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 3h7m0 0v7m0-7L10 14" /></svg>
                   </a>
@@ -271,8 +271,8 @@ export default function ClientEpisode({ slug }: { slug: string }) {
               )}
             </div>
 
-            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Actions</h3>
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">Actions</h3>
               <div className="flex flex-wrap gap-3">
                 <button onClick={shareEpisode} className="px-4 py-2 rounded-md border border-gray-300 bg-white dark:bg-neutral-900 dark:border-neutral-700 text-ink dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-neutral-800 text-sm font-bold">Share</button>
                 {audioUrl && (

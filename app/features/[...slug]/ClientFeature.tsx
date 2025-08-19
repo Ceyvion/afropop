@@ -66,7 +66,7 @@ export default function ClientFeature({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2]">
+      <div className="min-h-screen bg-page">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-64 sm:h-80 w-full bg-gray-200 rounded-2xl mb-8" />
@@ -88,7 +88,7 @@ export default function ClientFeature({ slug }: { slug: string }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Error Loading Feature</h2>
           <p className="text-gray-600 mb-6">{String(error)}</p>
@@ -105,7 +105,7 @@ export default function ClientFeature({ slug }: { slug: string }) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Feature Not Found</h2>
           <p className="text-gray-600 mb-6">The feature you're looking for could not be found.</p>
@@ -123,7 +123,7 @@ export default function ClientFeature({ slug }: { slug: string }) {
   const published = new Date(data.pubDate || data.isoDate || '').toLocaleDateString()
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2]">
+    <div className="min-h-screen bg-page">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6">
@@ -186,13 +186,13 @@ export default function ClientFeature({ slug }: { slug: string }) {
           {/* Left column */}
           <div className="lg:col-span-8 space-y-6">
             {/* Article Content */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <div className="prose prose-lg max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: data.content || data.description || 'No content available.' }} />
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
+              <div className="prose prose-lg max-w-none text-gray-700 dark:prose-invert" dangerouslySetInnerHTML={{ __html: data.content || data.description || 'No content available.' }} />
             </div>
 
             {/* Related Episodes */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-ink mb-4">Related Episodes</h2>
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-body mb-4">Related Episodes</h2>
               {episodes.loading ? (
                 <div className="text-gray-500 text-sm">Loading related episodes…</div>
               ) : related.length > 0 ? (
@@ -211,6 +211,7 @@ export default function ClientFeature({ slug }: { slug: string }) {
                             player.play({ id: ep.id, title: ep.title, author: ep.author, image: ep.image, audioUrl: ep.audioUrl, duration: ep.duration })
                           }
                         }}
+                        density="compact"
                       />
                     </Link>
                   ))}
@@ -223,32 +224,32 @@ export default function ClientFeature({ slug }: { slug: string }) {
 
           {/* Sidebar */}
           <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
               <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Metadata</h3>
-              <dl className="text-sm text-gray-700 space-y-2">
-                <div className="flex justify-between"><dt className="text-gray-500">Published</dt><dd className="font-medium">{published}</dd></div>
-                {data.region && <div className="flex justify-between"><dt className="text-gray-500">Region</dt><dd className="font-medium">{data.region}</dd></div>}
-                {data.genre && <div className="flex justify-between"><dt className="text-gray-500">Genre</dt><dd className="font-medium">{data.genre}</dd></div>}
+              <dl className="text-sm space-y-2">
+                <div className="flex justify-between"><dt className="text-muted">Published</dt><dd className="text-body font-medium">{published}</dd></div>
+                {data.region && <div className="flex justify-between"><dt className="text-muted">Region</dt><dd className="text-body font-medium">{data.region}</dd></div>}
+                {data.genre && <div className="flex justify-between"><dt className="text-muted">Genre</dt><dd className="text-body font-medium">{data.genre}</dd></div>}
                 {Array.isArray(data.categories) && data.categories.length > 0 && (
                   <div>
-                    <dt className="text-gray-500 mb-1">Categories</dt>
+                    <dt className="text-muted mb-1">Categories</dt>
                     <dd className="flex flex-wrap gap-2">
                       {data.categories.map((c: string, i: number) => (
-                        <span key={i} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{c}</span>
+                        <span key={i} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium chip-soft">{c}</span>
                       ))}
                     </dd>
                   </div>
                 )}
                 {data.link && (
                   <div className="pt-2">
-                    <a href={data.link} target="_blank" rel="noopener noreferrer" className="text-accent-2 hover:text-accent">Original Link</a>
+                    <a href={data.link} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:bg-accent-strong-v/10 rounded px-1">Original Link</a>
                   </div>
                 )}
               </dl>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">Actions</h3>
+            <div className="bg-surface rounded-xl p-6 shadow-sm">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">Actions</h3>
               <div className="flex flex-wrap gap-3">
                 <button onClick={shareFeature} className="px-4 py-2 rounded-md border border-gray-300 bg-white text-ink hover:bg-gray-50 text-sm font-bold">Share</button>
                 {data.link && (
