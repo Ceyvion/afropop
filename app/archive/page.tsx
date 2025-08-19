@@ -202,7 +202,8 @@ export default function Archive() {
               
               <div className="flex flex-wrap gap-3">
                 <select 
-                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none transition-colors duration-200"
+                  style={{ outlineColor: 'var(--accent)' } as any}
                   value={activeFilter}
                   onChange={(e) => setActiveFilter(e.target.value)}
                 >
@@ -212,7 +213,8 @@ export default function Archive() {
                   <option value="event">Events</option>
                 </select>
                 <select
-                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none transition-colors duration-200"
+                  style={{ outlineColor: 'var(--accent)' } as any}
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
                 >
@@ -220,7 +222,8 @@ export default function Archive() {
                   <option value="oldest">Oldest first</option>
                 </select>
                 <select
-                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none transition-colors duration-200"
+                  style={{ outlineColor: 'var(--accent)' } as any}
                   value={groupMode}
                   onChange={(e) => setGroupMode(e.target.value as 'none' | 'year' | 'decade')}
                 >
@@ -235,7 +238,8 @@ export default function Archive() {
                     placeholder="Search archive..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="text-sm border border-gray-300 rounded-md pl-10 pr-4 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200"
+                    className="text-sm border border-gray-300 rounded-md pl-10 pr-4 py-2 w-full sm:w-64 focus:outline-none transition-colors duration-200"
+                    style={{ outlineColor: 'var(--accent)' } as any}
                   />
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-3 top-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

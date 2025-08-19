@@ -75,6 +75,9 @@
 }
 
 @layer utilities {
+  /* Translucent surface background using palette token */
+  .bg-surface-90 { background-color: color-mix(in srgb, var(--surface) 90%, transparent); }
+
   /* Theming utilities */
   .bg-page { background-color: var(--bg); }
   .bg-surface { background-color: var(--surface); }

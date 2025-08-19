@@ -67,8 +67,8 @@ export default function Shop() {
                 <h3 className="font-bold text-ink text-lg mb-2">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-4">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold text-accent-2">{product.price}</span>
-                  <button className="px-4 py-2 bg-accent-2 text-white text-sm font-bold rounded-md hover:bg-accent transition-colors duration-200">
+                  <span className="text-xl font-bold text-accent-v">{product.price}</span>
+                  <button className="px-4 py-2 btn-accent text-white text-sm font-bold rounded-md transition-colors duration-200">
                     Add to Cart
                   </button>
                 </div>
@@ -84,7 +84,7 @@ export default function Shop() {
             <div className="grid grid-cols-1 lg:grid-cols-2">
               <div className="bg-gray-200 border-2 border-dashed aspect-square lg:aspect-auto lg:h-full" />
               <div className="p-8 flex flex-col justify-center">
-                <div className="inline-block bg-accent-100 text-accent-2 text-xs font-bold px-3 py-1 rounded-full mb-4">
+                <div className="inline-block bg-accent-100 text-accent-v text-xs font-bold px-3 py-1 rounded-full mb-4">
                   NEW COLLECTION
                 </div>
                 <h3 className="text-2xl font-bold text-ink mb-4">Afropop Worldwide 2025 Collection</h3>
@@ -93,7 +93,7 @@ export default function Shop() {
                   Each item features exclusive artwork inspired by our favorite album covers.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <button className="px-6 py-3 bg-accent-2 text-white font-bold rounded-md hover:bg-accent transition-colors duration-200">
+                  <button className="px-6 py-3 btn-accent text-white font-bold rounded-md transition-colors duration-200">
                     Shop Collection
                   </button>
                   <button className="px-6 py-3 border border-gray-300 text-ink font-bold rounded-md hover:bg-gray-50 transition-colors duration-200">
@@ -111,7 +111,7 @@ export default function Shop() {
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
             Our full collection is available in our external store with even more merchandise and exclusive items.
           </p>
-          <button className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200 uppercase tracking-wider">
+          <button className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white btn-accent transition-colors duration-200 uppercase tracking-wider">
             Visit External Store
           </button>
         </div>
