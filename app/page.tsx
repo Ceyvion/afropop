@@ -9,7 +9,7 @@ import { useEpisodes, useFeatures } from '@/app/lib/use-rss-data'
 
 export default function Home() {
   // Hardcoded YouTube URL for the hero embed
-  const HERO_YOUTUBE_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  const HERO_YOUTUBE_URL = 'https://www.youtube.com/watch?v=twDtPs5NCjA&list=RDtwDtPs5NCjA&start_radio=1'
 
   // Convert common YouTube URL formats to embed URL
   const getYouTubeEmbedUrl = (url: string) => {
