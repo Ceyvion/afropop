@@ -28,7 +28,7 @@ export default function Programs() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2]">
+    <div className="min-h-screen bg-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-12 fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-ink mb-6">Programs</h1>

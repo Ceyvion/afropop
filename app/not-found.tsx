@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+    <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="max-w-md text-center px-4 fade-in">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent-100 text-accent-2 mb-8">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -4,13 +4,13 @@ import Link from 'next/link'
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-200 mt-20 dark:bg-neutral-900 dark:border-neutral-800">
+    <footer className="bg-surface border-t border-sep mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <h3 className="text-lg font-bold text-ink mb-4 dark:text-gray-100">Afropop Worldwide</h3>
-            <p className="text-sm text-gray-600 mb-6 dark:text-gray-400">
+            <h3 className="text-lg font-bold text-body mb-4">Afropop Worldwide</h3>
+            <p className="text-sm text-muted mb-6">
               Public-service music journalism, powered by listeners.
             </p>
             <div className="flex space-x-4">
@@ -37,7 +37,7 @@ const Footer = () => {
           
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">Explore</h3>
+            <h3 className="text-sm font-bold text-body mb-4 uppercase tracking-wider">Explore</h3>
             <ul className="space-y-3">
               <li><Link href="/archive" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Archive</Link></li>
               <li><Link href="/episodes" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Episodes</Link></li>
@@ -49,7 +49,7 @@ const Footer = () => {
           
           {/* About */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">About</h3>
+            <h3 className="text-sm font-bold text-body mb-4 uppercase tracking-wider">About</h3>
             <ul className="space-y-3">
               <li><Link href="/about" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Our Mission</Link></li>
               <li><Link href="/contributors" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Hosts & Contributors</Link></li>
@@ -61,7 +61,7 @@ const Footer = () => {
           
           {/* Support */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">Support</h3>
+            <h3 className="text-sm font-bold text-body mb-4 uppercase tracking-wider">Support</h3>
             <ul className="space-y-3">
               <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Donate</Link></li>
               <li><Link href="/support" className="text-sm text-gray-600 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Membership</Link></li>
@@ -72,7 +72,7 @@ const Footer = () => {
           
           {/* Newsletter */}
           <div>
-            <h3 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider dark:text-gray-100">Stay Connected</h3>
+            <h3 className="text-sm font-bold text-body mb-4 uppercase tracking-wider">Stay Connected</h3>
             <form className="mb-4">
               <label htmlFor="email-address" className="sr-only">Email address</label>
               <input
@@ -83,7 +83,7 @@ const Footer = () => {
               />
               <button
                 type="submit"
-                className="mt-3 w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200"
+                className="mt-3 w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md btn-accent"
               >
                 Subscribe
               </button>
@@ -91,8 +91,8 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-gray-200 md:flex md:items-center md:justify-between dark:border-neutral-800">
-          <p className="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 Afropop Worldwide. All rights reserved.</p>
+        <div className="mt-12 pt-8 border-t border-sep md:flex md:items-center md:justify-between">
+          <p className="text-sm text-muted">&copy; 2025 Afropop Worldwide. All rights reserved.</p>
           <div className="mt-4 md:mt-0 md:order-1">
             <ul className="flex space-x-6">
               <li><Link href="/privacy" className="text-sm text-gray-500 hover:text-accent-2 transition-colors duration-200 dark:text-gray-400">Privacy</Link></li>

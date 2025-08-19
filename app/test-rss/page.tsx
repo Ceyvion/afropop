@@ -17,7 +17,7 @@ export default function TestPage() {
   console.log('Features error:', featuresError)
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2] p-8">
+    <div className="min-h-screen bg-page p-8">
       <h1 className="text-3xl font-bold mb-8">RSS Data Test</h1>
       
       <div className="mb-8">

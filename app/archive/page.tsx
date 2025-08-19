@@ -165,7 +165,7 @@ export default function Archive() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-2"></div>
       </div>
     )
@@ -173,7 +173,7 @@ export default function Archive() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Error Loading Archive</h2>
           <p className="text-gray-600 mb-6">{String(error)}</p>
@@ -189,7 +189,7 @@ export default function Archive() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2]">
+    <div className="min-h-screen bg-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row">
           {/* Filter Rail (sticky with own scroll; applies on button click) */}

@@ -49,7 +49,7 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2]">
+      <div className="min-h-screen bg-page">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-64 sm:h-80 w-full bg-gray-200 rounded-2xl mb-8" />
@@ -73,7 +73,7 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Error Loading Episode</h2>
           <p className="text-gray-600 mb-6">{String(error)}</p>
@@ -90,7 +90,7 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Episode Not Found</h2>
           <p className="text-gray-600 mb-6">The episode you're looking for could not be found.</p>

@@ -208,7 +208,7 @@ export default function Events() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-2 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading events...</p>
@@ -219,7 +219,7 @@ export default function Events() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f8f7f2] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-500">Error loading events: {error}</p>
           <button 
@@ -243,7 +243,7 @@ export default function Events() {
   const canSuggestNextMonth = !advanced.month && (timePreset !== 'month') && (derived.allMonths.includes(nmKey))
 
   return (
-    <div className="min-h-screen bg-[#f8f7f2]">
+    <div className="min-h-screen bg-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-10 fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-ink mb-6">Events</h1>
