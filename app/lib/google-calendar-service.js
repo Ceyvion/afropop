@@ -14,6 +14,98 @@ let calendarCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
+// -------- Deduping helpers (near-duplicate collapse across different UIDs) --------
+function normalizeTitle(str) {
+  if (!str) return '';
+  let s = String(str).toLowerCase();
+  // normalize quotes and punctuation to spaces
+  s = s.replace(/[“”"'’]+/g, ' ');
+  // strip any non alphanumerics to spaces
+  s = s.replace(/[^a-z0-9]+/g, ' ');
+  // remove common boilerplate words
+  const STOP = new Set(['the','a','an','and','of','ft','feat','featuring','live','launch','album','single','release','concert','show','event','party','tour','vol','volume']);
+  s = s.split(' ').filter(Boolean).filter(w => !STOP.has(w)).join(' ');
+  // collapse spaces
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+function extractCityCandidate(location) {
+  if (!location) return '';
+  const tokens = String(location).split(',').map(s => s.trim()).filter(Boolean);
+  // Prefer the last sufficiently descriptive token
+  const IGNORES = new Set(['usa','united states','united kingdom','uk','canada']);
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    const raw = tokens[i];
+    const t = raw.toLowerCase().replace(/[^a-z]/g, '');
+    if (!t) continue;
+    if (t.length <= 2) continue; // likely region code like QC, NY
+    if (IGNORES.has(t)) continue;
+    return t;
+  }
+  // fallback: first token cleaned
+  return tokens.length ? tokens[0].toLowerCase().replace(/[^a-z]/g, '') : '';
+}
+
+function firstUrlFromText(text) {
+  if (!text) return null;
+  const m = text.match(/https?:\/\/[^\s)]+/i);
+  return m ? m[0] : null;
+}
+
+function urlHostPath(u) {
+  try {
+    const url = new URL(u);
+    return `${url.hostname}${url.pathname}`.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function scoreEventItem(item) {
+  let score = 0;
+  const dlen = (item.description || '').length;
+  if (dlen >= 400) score += 3; else if (dlen >= 200) score += 2; else if (dlen >= 80) score += 1;
+  if ((item.description || '').match(/https?:\/\//i)) score += 1;
+  if ((item.description || '').toLowerCase().includes('ticket')) score += 1;
+  if ((item.title || '').length > 40) score += 1;
+  if ((item.location || '').split(',').length > 2 || (item.location || '').length > 20) score += 1;
+  return score;
+}
+
+function fingerprintEvent(item) {
+  const start = new Date(item.startDate);
+  const y = start.getUTCFullYear();
+  const m = String(start.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(start.getUTCDate()).padStart(2, '0');
+  const hh = String(start.getUTCHours()).padStart(2, '0');
+  const mm = String(start.getUTCMinutes()).padStart(2, '0');
+  const timeBucket = `${y}${m}${d}T${hh}${mm}`;
+  const city = extractCityCandidate(item.location);
+  const titleCore = normalizeTitle(item.title);
+  const strongUrl = firstUrlFromText(item.description || '')
+  const strongKey = strongUrl ? `${urlHostPath(strongUrl)}|${timeBucket}` : null;
+  const weakKey = `${timeBucket}|${city}|${titleCore}`;
+  return { strongKey, weakKey };
+}
+
+function dedupeNearDuplicates(items) {
+  // sort by best-first so better records claim the slot
+  const annotated = items.map(it => ({ it, score: scoreEventItem(it) }))
+    .sort((a, b) => (b.score - a.score) || (new Date(a.it.startDate) - new Date(b.it.startDate)));
+  const usedStrong = new Set();
+  const usedWeak = new Set();
+  const out = [];
+  for (const { it } of annotated) {
+    const { strongKey, weakKey } = fingerprintEvent(it);
+    if (strongKey && usedStrong.has(strongKey)) continue;
+    if (usedWeak.has(weakKey)) continue;
+    out.push(it);
+    if (strongKey) usedStrong.add(strongKey);
+    usedWeak.add(weakKey);
+  }
+  return out;
+}
+
 // Function to fetch and parse events from the Google Calendar iCal feed
 async function getCalendarEvents() {
   try {
@@ -95,8 +187,14 @@ async function getCalendarEvents() {
 
       if (!byKey.has(id)) byKey.set(id, item);
     }
-    const events = Array.from(byKey.values());
-    console.log(`Parsed ${vevents.length} vevents; ${events.length} unique after dedupe`);
+    let events = Array.from(byKey.values());
+    console.log(`Parsed ${vevents.length} vevents; ${events.length} unique after UID-occurrence dedupe`);
+    // Near-duplicate pass across different UIDs
+    const eventsBefore = events.length;
+    events = dedupeNearDuplicates(events);
+    if (events.length !== eventsBefore) {
+      console.log(`Near-duplicate collapse: ${eventsBefore} -> ${events.length}`);
+    }
     
     console.log(`Successfully fetched and parsed ${events.length} events from Google Calendar`);
     
@@ -240,6 +338,12 @@ async function getUpcomingEvents(limit = 10) {
     // Limit the results
     upcomingEvents = upcomingEvents.slice(0, limit);
     
+    // Near-duplicate pass across different UIDs
+    const upBefore = upcomingEvents.length;
+    upcomingEvents = dedupeNearDuplicates(upcomingEvents);
+    if (upcomingEvents.length !== upBefore) {
+      console.log(`Upcoming near-duplicate collapse: ${upBefore} -> ${upcomingEvents.length}`);
+    }
     console.log(`Successfully fetched and parsed ${upcomingEvents.length} upcoming events from Google Calendar (deduped)`);
     
     // Update cache with all events for future use
@@ -289,8 +393,13 @@ async function getUpcomingEvents(limit = 10) {
       };
       if (!allMap.has(id)) allMap.set(id, item);
     }
-    const allEvents = Array.from(allMap.values());
-    console.log(`All events after dedupe: ${allEvents.length} (from ${vevents.length} vevents)`);
+    let allEvents = Array.from(allMap.values());
+    console.log(`All events after UID-occurrence dedupe: ${allEvents.length} (from ${vevents.length} vevents)`);
+    const allBefore = allEvents.length;
+    allEvents = dedupeNearDuplicates(allEvents);
+    if (allEvents.length !== allBefore) {
+      console.log(`All-events near-duplicate collapse: ${allBefore} -> ${allEvents.length}`);
+    }
     
     // Update cache
     const result = {
