@@ -192,11 +192,25 @@
 
 /* Accent-based button */
 .btn-accent {
-  @apply inline-flex items-center font-bold rounded-full shadow transition-colors duration-200;
+  @apply inline-flex items-center justify-center font-bold rounded-md transition-colors duration-200 shadow-sm;
+  padding: 0.625rem 1.125rem; /* ~py-2.5 px-4.5 */
   background-color: var(--accent);
   color: #fff;
 }
 .btn-accent:hover { background-color: var(--accent-strong); }
+.btn-accent:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
+
+/* Secondary/outline button */
+.btn-secondary {
+  @apply inline-flex items-center justify-center font-semibold rounded-md transition-colors duration-200;
+  padding: 0.625rem 1.125rem;
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background-color: color-mix(in srgb, var(--surface) 92%, var(--bg)); }
+.dark .btn-secondary { background-color: var(--elevated); border-color: var(--border); color: var(--text); }
+.dark .btn-secondary:hover { background-color: color-mix(in srgb, var(--elevated) 92%, #000); }
 
 /* Custom animations */
 @keyframes fadeIn {

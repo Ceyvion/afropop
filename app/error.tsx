@@ -21,7 +21,7 @@ export default function Error() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link 
             href="/" 
-            className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white bg-accent-2 hover:bg-accent text-center transition-colors duration-200 uppercase tracking-wider"
+            className="btn-accent text-base uppercase tracking-wider"
           >
             Go Home
           </Link>

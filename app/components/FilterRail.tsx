@@ -97,7 +97,7 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
         {/* Tasteful apply area pinned at bottom of the rail */}
         <div className="mt-3 pt-3 border-t border-gray-200 bg-white/90">
           <button
-            className="w-full py-2.5 px-4 text-sm font-semibold rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200 shadow-sm"
+            className="w-full btn-accent text-sm"
             onClick={() => onApply?.(selectedFilters)}
           >
             Apply Filters

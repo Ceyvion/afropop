@@ -173,8 +173,8 @@ export const EventCard = ({ title, date, city, venue, image, ctaHref, density = 
   const metaRowClass = compact ? 'flex items-center text-sm text-gray-600 dark:text-gray-300 mb-3' : 'flex items-center text-sm text-gray-600 dark:text-gray-300 mb-4'
   const pinIconClass = compact ? 'h-3.5 w-3.5 mr-1' : 'h-4 w-4 mr-1.5'
   const ctaClass = compact
-    ? 'w-full inline-flex items-center justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200'
-    : 'w-full inline-flex items-center justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-2 hover:bg-accent transition-colors duration-200'
+    ? 'w-full btn-accent text-sm'
+    : 'w-full btn-accent text-sm'
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
       <div className="relative">

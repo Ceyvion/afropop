@@ -67,12 +67,8 @@ export default function Programs() {
                 forging their own paths in contemporary music.
               </p>
               <div className="flex flex-wrap gap-4">
-                <button className="btn-primary bg-accent-2 text-white hover:bg-accent">
-                  View Episodes
-                </button>
-                <button className="btn-secondary border-gray-300 text-ink bg-white hover:bg-gray-50">
-                  Learn More
-                </button>
+                <button className="btn-accent">View Episodes</button>
+                <button className="btn-secondary">Learn More</button>
               </div>
             </div>
           </div>
