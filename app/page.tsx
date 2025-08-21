@@ -64,13 +64,13 @@ export default function Home() {
                 <div className="flex flex-wrap gap-4">
                   <Link 
                     href="/archive" 
-                    className="btn-accent px-6 py-3"
+                    className="btn-accent"
                   >
                     Explore Archive
                   </Link>
                   <Link 
                     href="/episodes" 
-                    className="btn-secondary border-gray-300 text-ink bg-white hover:bg-gray-50"
+                    className="btn-secondary"
                   >
                     Latest Episode
                   </Link>
