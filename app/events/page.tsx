@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { EventCard } from '@/app/components/Cards';
+// Editorial events list layout (no heavy cards)
 
 type RawEvent = {
   id: string
@@ -549,74 +549,70 @@ export default function Events() {
                   </button>
 
                   <Collapsible open={!!openMonths[key]}>
-                  <div id={`month-${key}`} className="pt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {list.map((ev: RawEvent, index: number) => {
-                      const { city, venue } = parseLocation(ev.location)
-                      const ctaHref = firstUrlFromText(ev.description || '')
-                      const start = new Date(ev.startDate).getTime()
-                      const end = new Date(ev.endDate || ev.startDate).getTime()
-                      const live = start <= now && now <= end
-                      return (
-                        <div key={ev.id} className={`fade-in delay-${(index % 6 + 1) * 100}`}>
-                          <EventCard
-                            title={ev.title}
-                            date={formatEventDateTimeRange(ev.startDate, ev.endDate)}
-                            city={city}
-                            venue={venue}
-                            ctaHref={ctaHref || undefined}
-                            density="compact"
-                          />
-                          <div className="mt-2 flex items-center justify-between text-xs text-gray-600">
-                            <div className="flex items-center gap-2">
-                              {live && <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold">Live now</span>}
-                              <span>{formatEventDate(ev.startDate)}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <a
-                                href={`/api/event-ics/${encodeURIComponent(ev.id)}`}
-                                className="text-accent-v hover:opacity-90"
-                                title="Add to your calendar"
-                              >
-                                Add to calendar
-                              </a>
-                              <a
-                                href={`https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(ev.title)}&dates=${new Date(ev.startDate).toISOString().replace(/[-:]|\.\d{3}/g,'')}/${new Date(ev.endDate || ev.startDate).toISOString().replace(/[-:]|\.\d{3}/g,'')}&details=${encodeURIComponent(ev.description || '')}&location=${encodeURIComponent(ev.location || '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-500 hover:text-ink"
-                              >
-                                Google
-                              </a>
-                            </div>
-                          </div>
-
-                          {/* Event progressive details */}
-                          <div className="mt-2">
-                            <button
-                              onClick={() => setOpenEvents((s) => ({ ...s, [ev.id]: !s[ev.id] }))}
-                              className="text-sm text-accent-v hover:opacity-90 inline-flex items-center gap-1"
-                              aria-expanded={!!openEvents[ev.id]}
-                              aria-controls={`ev-${ev.id}`}
-                            >
-                              {openEvents[ev.id] ? 'Hide details' : 'More details'}
-                              <span className={`transition-transform duration-300 ${openEvents[ev.id] ? 'rotate-180' : ''}`}>⌄</span>
-                            </button>
-                            <Collapsible open={!!openEvents[ev.id]}>
-                              <div id={`ev-${ev.id}`} className="mt-2 bg-surface border border-sep rounded-md p-3 text-sm text-gray-700">
-                                <p className="mb-2 line-clamp-5">{ev.description || 'No description available.'}</p>
-                                <div className="flex items-center gap-3">
-                                  {ctaHref && (
-                                    <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:opacity-90">Event page</a>
-                                  )}
-                                  <span className="text-muted">{city}, {venue}</span>
-                                </div>
+                    <ul id={`month-${key}`} className="pt-4 divide-y divide-sep">
+                      {list.map((ev: RawEvent) => {
+                        const { city, venue } = parseLocation(ev.location)
+                        const ctaHref = firstUrlFromText(ev.description || '')
+                        const start = new Date(ev.startDate).getTime()
+                        const end = new Date(ev.endDate || ev.startDate).getTime()
+                        const live = start <= now && now <= end
+                        const startIso = new Date(ev.startDate).toISOString().replace(/[-:]|\.\d{3}/g,'')
+                        const endIso = new Date(ev.endDate || ev.startDate).toISOString().replace(/[-:]|\.\d{3}/g,'')
+                        return (
+                          <li key={ev.id} className="py-4">
+                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                              <div className="text-sm text-muted sm:w-56 shrink-0">
+                                {formatEventDateTimeRange(ev.startDate, ev.endDate)}
                               </div>
-                            </Collapsible>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
+                              <div className="flex-1">
+                                <h3 className="text-ink font-semibold leading-snug">{ev.title}</h3>
+                                <div className="mt-1 text-sm text-gray-600">{city}{city && venue ? ', ' : ''}{venue}</div>
+                                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm">
+                                  {live && (
+                                    <span className="inline-flex items-center gap-1 text-red-600">
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                      Live now
+                                    </span>
+                                  )}
+                                  {ctaHref && (
+                                    <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:opacity-90">Tickets</a>
+                                  )}
+                                  <a
+                                    href={`/api/event-ics/${encodeURIComponent(ev.id)}`}
+                                    className="text-accent-v hover:opacity-90"
+                                    title="Add to your calendar"
+                                  >
+                                    Add to calendar
+                                  </a>
+                                  <a
+                                    href={`https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(ev.title)}&dates=${startIso}/${endIso}&details=${encodeURIComponent(ev.description || '')}&location=${encodeURIComponent(ev.location || '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-500 hover:text-ink"
+                                  >
+                                    Google
+                                  </a>
+                                  <button
+                                    onClick={() => setOpenEvents((s) => ({ ...s, [ev.id]: !s[ev.id] }))}
+                                    className="text-accent-v hover:opacity-90 inline-flex items-center gap-1"
+                                    aria-expanded={!!openEvents[ev.id]}
+                                    aria-controls={`ev-${ev.id}`}
+                                  >
+                                    {openEvents[ev.id] ? 'Hide details' : 'More details'}
+                                    <span className={`transition-transform duration-300 ${openEvents[ev.id] ? 'rotate-180' : ''}`}>⌄</span>
+                                  </button>
+                                </div>
+                                <Collapsible open={!!openEvents[ev.id]}>
+                                  <div id={`ev-${ev.id}`} className="mt-2 text-sm text-gray-700">
+                                    {ev.description || 'No description available.'}
+                                  </div>
+                                </Collapsible>
+                              </div>
+                            </div>
+                          </li>
+                        )
+                      })}
+                    </ul>
                   </Collapsible>
                 </section>
               )

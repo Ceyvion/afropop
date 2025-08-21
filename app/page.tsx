@@ -157,91 +157,78 @@ export default function Home() {
             )}
           </section>
 
-          {/* News from the Diaspora */}
-          <section className="mb-20 fade-in">
-            <div className="flex items-center justify-between mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-ink">News from the Diaspora</h2>
-              <Link href="/features" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
-                View all features
-              </Link>
-            </div>
-            
-            {featuresLoading ? (
-              <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div>
+          {/* News from the Diaspora — temporarily removed */}
+          {false && (
+            <section className="mb-20 fade-in">
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-ink">News from the Diaspora</h2>
+                <Link href="/features" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
+                  View all features
+                </Link>
               </div>
-            ) : featuresError ? (
-              <div className="text-center py-8">
-                <p className="text-muted">Error loading features: {featuresError}</p>
-                <button 
-                  onClick={() => window.location.reload()}
-                  className="mt-4 px-4 py-2 btn-accent rounded-md"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {featuresData?.items?.map((feature: any, index: number) => (
-                  <Link
-                    key={feature.id}
-                    href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
-                    className="block"
+              {featuresLoading ? (
+                <div className="flex justify-center items-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div>
+                </div>
+              ) : featuresError ? (
+                <div className="text-center py-8">
+                  <p className="text-muted">Error loading features: {featuresError}</p>
+                  <button 
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-4 py-2 btn-accent rounded-md"
                   >
-                    <div className={`fade-in delay-${(index + 1) * 100}`}>
-                      <FeatureCard
-                        title={feature.title}
-                        dek={feature.description || 'Learn more about this feature...'}
-                        author={feature.author || 'Afropop Worldwide'}
-                        readTime={feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
-                        image={feature.image}
-                        density="compact"
-                      />
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
+                    Retry
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {featuresData?.items?.map((feature: any, index: number) => (
+                    <Link
+                      key={feature.id}
+                      href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
+                      className="block"
+                    >
+                      <div className={`fade-in delay-${(index + 1) * 100}`}>
+                        <FeatureCard
+                          title={feature.title}
+                          dek={feature.description || 'Learn more about this feature...'}
+                          author={feature.author || 'Afropop Worldwide'}
+                          readTime={feature.duration ? `${Math.round(parseInt(feature.duration)/60)} min read` : '8 min read'}
+                          image={feature.image}
+                          density="compact"
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Events Near You */}
           <section className="fade-in">
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl md:text-3xl font-bold text-ink">Events Near You</h2>
               <Link href="/events" className="text-accent-v hover:opacity-90 text-sm font-bold uppercase tracking-wider transition-colors duration-200">
                 View all events
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <ul className="divide-y divide-sep">
               {events.map((event, index) => (
-                <div key={event.id} className={`fade-in delay-${(index + 1) * 100}`}>
-                  <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
-                    <div className="relative">
-                      <div className="bg-gray-200 border-2 border-dashed aspect-[3/4] w-full" />
-                      <div className="absolute top-4 left-4 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
-                        {event.date}
-                      </div>
+                <li key={event.id} className={`py-4 fade-in delay-${(index + 1) * 100}`}>
+                  <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                    <div className="text-sm text-muted sm:w-40 shrink-0">{event.date}</div>
+                    <div className="flex-1">
+                      <h3 className="text-ink font-semibold leading-snug">{event.title}</h3>
+                      <div className="mt-1 text-sm text-gray-600">{event.city}, {event.venue}</div>
                     </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-ink mb-3">{event.title}</h3>
-                      <div className="flex items-center text-sm text-gray-600 mb-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>{event.city}, {event.venue}</span>
-                      </div>
-                      <Link 
-                        href="/events" 
-                        className="w-full py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white btn-accent text-center block transition-colors duration-200"
-                      >
-                        Get Tickets
-                      </Link>
+                    <div className="sm:ml-auto">
+                      <Link href="/events" className="text-accent-v hover:opacity-90 text-sm font-semibold">Details</Link>
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         </div>
       </main>

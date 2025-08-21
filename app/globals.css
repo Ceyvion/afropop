@@ -8,17 +8,17 @@
     --font-inter: 'Inter', sans-serif;
     --font-ibm-plex-mono: 'IBM Plex Mono', monospace;
 
-    /* Theme tokens (defaults: Spring-like) */
+    /* Theme tokens (defaults: brand) */
     --bg: #f6fbf6;            /* page background */
     --surface: #ffffff;       /* panels/cards */
     --elevated: #ffffff;      /* elevated layers */
     --text: #0b0b0c;          /* primary text */
     --muted: #5b636c;         /* secondary text */
     --border: #e6ece9;        /* subtle separators */
-    --accent: #228B22;        /* brand/cta */
-    --accent-strong: #1a6a1a; /* cta hover */
-    --chip: #e8f4ea;          /* soft label bg */
-    --chip-text: #22543d;     /* soft label text */
+    --accent: #FF5A2F;        /* brand/cta */
+    --accent-strong: #E14A22; /* cta hover */
+    --chip: #FFE6DC;          /* soft label bg */
+    --chip-text: #7C2D12;     /* soft label text */
   }
   
   body {
@@ -120,10 +120,10 @@
   --text: #0b0b0c;
   --muted: #5b636c;
   --border: #e6ece9;
-  --accent: #228B22;
-  --accent-strong: #1a6a1a;
-  --chip: #e8f4ea;
-  --chip-text: #22543d;
+  --accent: #FF5A2F;
+  --accent-strong: #E14A22;
+  --chip: #FFE6DC;
+  --chip-text: #7C2D12;
 }
 
 .theme-summer {

@@ -19,13 +19,13 @@ module.exports = {
       colors: {
         'ink': '#0B0B0C',
         'paper': '#FFFFFF',
-        'accent': '#228B22', // Forest Green
-        'accent-2': '#228B22', // Forest Green (same as accent)
-        'accent-50': '#f0f9f0', // Light green for backgrounds
-        'accent-100': '#e1f3e1', // Light green for backgrounds
+        // Brand accents per spec
+        'accent': '#FF5A2F',
+        'accent-2': '#1460F2',
+        'accent-50': '#FFF3ED',
+        'accent-100': '#FFE6DC',
         'success': '#18A957',
         'warn': '#E7A500',
-        // Neutral colors would be defined here if needed
       },
     },
   },
