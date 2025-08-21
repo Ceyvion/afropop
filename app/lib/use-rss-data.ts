@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { reportError } from '@/app/lib/telemetry.client'
 
 // Hook to fetch RSS feed data
 export function useRSSFeed() {
@@ -25,6 +26,7 @@ export function useRSSFeed() {
       } catch (err: any) {
         setError(err.message || 'Failed to fetch RSS feed')
         console.error('Error fetching RSS feed:', err)
+        reportError(err, { hook: 'useRSSFeed' })
       } finally {
         setLoading(false)
       }
@@ -84,6 +86,7 @@ export function useRSSSearch() {
       }
       setError(err?.message || 'Failed to search RSS feed')
       console.error('Error searching RSS feed:', err)
+      reportError(err, { hook: 'useRSSSearch' })
     } finally {
       setLoading(false)
     }
@@ -120,6 +123,7 @@ export function useEpisodes(limit?: number, offset?: number) {
       } catch (err: any) {
         setError(err.message || 'Failed to fetch episodes')
         console.error('Error fetching episodes:', err)
+        reportError(err, { hook: 'useEpisodes' })
       } finally {
         setLoading(false)
       }
@@ -159,6 +163,7 @@ export function useFeatures(limit?: number, offset?: number) {
       } catch (err: any) {
         setError(err.message || 'Failed to fetch features')
         console.error('Error fetching features:', err)
+        reportError(err, { hook: 'useFeatures' })
       } finally {
         setLoading(false)
       }
@@ -200,6 +205,7 @@ export function useItemById(id: string) {
       } catch (err: any) {
         setError(err.message || 'Failed to fetch item')
         console.error('Error fetching item:', err)
+        reportError(err, { hook: 'useItemById', id })
       } finally {
         setLoading(false)
       }

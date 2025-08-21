@@ -5,6 +5,7 @@ import MiniPlayer from '@/app/components/MiniPlayer'
 import { PlayerProvider } from '@/app/components/PlayerProvider'
 import Footer from '@/app/components/Footer'
 import DonateBanner from '@/app/components/DonateBanner'
+import SentryInit from '@/app/components/SentryInit'
 import '@/app/globals.css'
 import type { Metadata } from 'next'
 import { DM_Sans, Inter, IBM_Plex_Mono } from 'next/font/google'
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable}`}>
       <head>
+        <SentryInit />
         <script
           dangerouslySetInnerHTML={{
             __html: `(() => { try { const ls = localStorage; const r = document.documentElement; const theme = (ls.getItem('theme') || 'system'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; const dark = theme === 'dark' || (theme === 'system' && sys); r.classList[dark ? 'add' : 'remove']('dark'); r.setAttribute('data-theme', dark ? 'dark' : 'light'); const palette = (ls.getItem('palette') || 'spring'); const palettes = ['spring','summer','autumn','winter']; palettes.forEach(p => r.classList.remove('theme-' + p)); r.classList.add('theme-' + palette); r.setAttribute('data-palette', palette); } catch (e) {} })();`,

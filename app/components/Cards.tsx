@@ -158,77 +158,26 @@ export const FeatureCard = ({ title, dek, author, readTime, image, density = 'co
 }
 
 // Event Card
-export const EventCard = ({ title, date, city, venue, image, ctaHref, density = 'comfortable' }: { 
+export const EventCard = ({ title, date, city, venue, ctaHref }: { 
   title: string; 
   date: string; 
   city: string; 
   venue: string;
-  image?: string;
   ctaHref?: string;
-  density?: 'comfortable' | 'compact';
 }) => {
-  const compact = density === 'compact'
-  const padClass = compact ? 'p-3' : 'p-5'
-  const titleClass = compact ? 'font-bold text-ink dark:text-gray-100 mb-2 text-[15px]' : 'font-bold text-ink dark:text-gray-100 mb-3'
-  const metaRowClass = compact ? 'flex items-center text-sm text-gray-600 dark:text-gray-300 mb-3' : 'flex items-center text-sm text-gray-600 dark:text-gray-300 mb-4'
-  const pinIconClass = compact ? 'h-3.5 w-3.5 mr-1' : 'h-4 w-4 mr-1.5'
-  const ctaClass = compact
-    ? 'w-full btn-accent text-sm'
-    : 'w-full btn-accent text-sm'
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
-      <div className="relative">
-        {/* 3:4 poster or placeholder */}
-        {image ? (
-          <div className="aspect-[3/4] w-full overflow-hidden">
-            <img 
-              src={image}
-              alt={title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.onerror = null
-                target.parentElement!.innerHTML = '<div class="bg-gray-200 border-2 border-dashed aspect-[3/4] w-full"></div>'
-              }}
-            />
+    <div className="bg-white dark:bg-neutral-900 rounded-md border border-sep p-4">
+      <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+        <div className="text-sm text-muted sm:w-40 shrink-0">{date}</div>
+        <div className="flex-1">
+          <h3 className="text-ink font-semibold leading-snug">{title}</h3>
+          <div className="mt-1 text-sm text-gray-600 dark:text-gray-300">{city}{city && venue ? ', ' : ''}{venue}</div>
+          <div className="mt-2 flex items-center gap-4 text-sm">
+            {ctaHref ? (
+              <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:opacity-90">Tickets</a>
+            ) : null}
           </div>
-        ) : (
-          <div className="bg-gray-200 border-2 border-dashed aspect-[3/4] w-full" />
-        )}
-        
-        {/* Date badge */}
-        <div className="absolute top-4 left-4 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
-          {date}
         </div>
-      </div>
-      
-      <div className={padClass}>
-        <h3 className={titleClass}>{title}</h3>
-        
-        <div className={metaRowClass}>
-          <svg xmlns="http://www.w3.org/2000/svg" className={pinIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>{city}, {venue}</span>
-        </div>
-        
-        {ctaHref ? (
-          <a
-            href={ctaHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={ctaClass}
-          >
-            Get Tickets
-          </a>
-        ) : (
-          <button className={ctaClass + ' disabled:bg-gray-400 cursor-not-allowed'} disabled>
-            Get Tickets
-          </button>
-        )}
       </div>
     </div>
   )
