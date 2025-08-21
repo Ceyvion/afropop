@@ -40,52 +40,63 @@ async function getCalendarEvents() {
     const jcalData = ICAL.parse(icalData);
     const comp = new ICAL.Component(jcalData);
     const vevents = comp.getAllSubcomponents('vevent');
-    
-    // Convert to our event format
-    const events = vevents.map(vevent => {
+
+    // Convert to our event format with dedupe and recurrence awareness
+    const byKey = new Map();
+    for (const vevent of vevents) {
+      const status = (vevent.getFirstPropertyValue('status') || '').toString().toUpperCase();
+      if (status.includes('CANCEL')) continue; // skip cancelled instances
+
       const event = new ICAL.Event(vevent);
-      
-      // Get start and end times
       const startDate = event.startDate.toJSDate();
       const endDate = event.endDate.toJSDate();
-      
-      // Format the date for display
-      const formattedDate = startDate.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
+
+      // occurrence key: UID + recurrence-id (if present) else DTSTART
+      const rec = vevent.getFirstPropertyValue('recurrence-id');
+      let occISO;
+      try {
+        occISO = rec && typeof rec.toJSDate === 'function' ? rec.toJSDate().toISOString() : startDate.toISOString();
+      } catch {
+        occISO = startDate.toISOString();
+      }
+      const id = `${event.uid}__${occISO}`;
+
+      const formattedDate = startDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
       });
-      
-      // Extract location from the event
-      let location = '';
-      if (event.location) {
-        location = event.location;
-      }
-      
-      return {
-        id: event.uid,
+
+      const location = event.location ? event.location : '';
+
+      const item = {
+        id,
         title: event.summary,
         description: event.description || '',
         content: event.description || '',
-        link: '', // iCal doesn't typically include links
+        link: '',
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
-        formattedDate: formattedDate,
-        location: location,
+        formattedDate,
+        location,
         venue: location,
         pubDate: startDate.toISOString(),
         isoDate: startDate.toISOString(),
         author: 'Afropop Worldwide',
-        categories: [], // iCal might not have categories in the same way
+        categories: [],
         image: null,
         type: 'Event',
         region: null,
         genre: null
       };
-    });
+
+      if (!byKey.has(id)) byKey.set(id, item);
+    }
+    const events = Array.from(byKey.values());
+    console.log(`Parsed ${vevents.length} vevents; ${events.length} unique after dedupe`);
     
     console.log(`Successfully fetched and parsed ${events.length} events from Google Calendar`);
     
@@ -129,6 +140,10 @@ async function getUpcomingEvents(limit = 10) {
         const eventDate = new Date(event.startDate);
         return eventDate >= nowDate;
       });
+      // Ensure uniqueness by id (defensive)
+      const uMap = new Map();
+      upcomingEvents.forEach(ev => { if (!uMap.has(ev.id)) uMap.set(ev.id, ev); });
+      upcomingEvents = Array.from(uMap.values());
       
       // Sort by date (soonest first)
       upcomingEvents.sort((a, b) => {
@@ -162,52 +177,58 @@ async function getUpcomingEvents(limit = 10) {
     const nowDate = new Date();
     
     // Convert to our event format and filter upcoming events
+    const upcomingMap = new Map();
     let upcomingEvents = [];
-    
+
     for (const vevent of vevents) {
+      const status = (vevent.getFirstPropertyValue('status') || '').toString().toUpperCase();
+      if (status.includes('CANCEL')) continue;
+
       const event = new ICAL.Event(vevent);
-      
-      // Get start time
       const startDate = event.startDate.toJSDate();
-      
-      // Only include upcoming events
-      if (startDate >= nowDate) {
-        // Format the date for display
-        const formattedDate = startDate.toLocaleDateString('en-US', { 
-          weekday: 'short', 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        
-        // Extract location from the event
-        let location = '';
-        if (event.location) {
-          location = event.location;
-        }
-        
-        upcomingEvents.push({
-          id: event.uid,
-          title: event.summary,
-          description: event.description || '',
-          content: event.description || '',
-          link: '', // iCal doesn't typically include links
-          startDate: startDate.toISOString(),
-          endDate: event.endDate.toJSDate().toISOString(),
-          formattedDate: formattedDate,
-          location: location,
-          venue: location,
-          pubDate: startDate.toISOString(),
-          isoDate: startDate.toISOString(),
-          author: 'Afropop Worldwide',
-          categories: [], // iCal might not have categories in the same way
-          image: null,
-          type: 'Event',
-          region: null,
-          genre: null
-        });
+      if (startDate < nowDate) continue;
+
+      const rec = vevent.getFirstPropertyValue('recurrence-id');
+      let occISO;
+      try {
+        occISO = rec && typeof rec.toJSDate === 'function' ? rec.toJSDate().toISOString() : startDate.toISOString();
+      } catch {
+        occISO = startDate.toISOString();
+      }
+      const id = `${event.uid}__${occISO}`;
+
+      const formattedDate = startDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      const location = event.location ? event.location : '';
+      const item = {
+        id,
+        title: event.summary,
+        description: event.description || '',
+        content: event.description || '',
+        link: '',
+        startDate: startDate.toISOString(),
+        endDate: event.endDate.toJSDate().toISOString(),
+        formattedDate,
+        location,
+        venue: location,
+        pubDate: startDate.toISOString(),
+        isoDate: startDate.toISOString(),
+        author: 'Afropop Worldwide',
+        categories: [],
+        image: null,
+        type: 'Event',
+        region: null,
+        genre: null
+      };
+      if (!upcomingMap.has(id)) {
+        upcomingMap.set(id, item);
+        upcomingEvents.push(item);
       }
     }
     
@@ -219,53 +240,57 @@ async function getUpcomingEvents(limit = 10) {
     // Limit the results
     upcomingEvents = upcomingEvents.slice(0, limit);
     
-    console.log(`Successfully fetched and parsed ${upcomingEvents.length} upcoming events from Google Calendar`);
+    console.log(`Successfully fetched and parsed ${upcomingEvents.length} upcoming events from Google Calendar (deduped)`);
     
     // Update cache with all events for future use
-    const allEvents = vevents.map(vevent => {
+    const allMap = new Map();
+    for (const vevent of vevents) {
+      const status = (vevent.getFirstPropertyValue('status') || '').toString().toUpperCase();
+      if (status.includes('CANCEL')) continue;
       const event = new ICAL.Event(vevent);
-      
-      // Get start and end times
       const startDate = event.startDate.toJSDate();
       const endDate = event.endDate.toJSDate();
-      
-      // Format the date for display
-      const formattedDate = startDate.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
+      const rec = vevent.getFirstPropertyValue('recurrence-id');
+      let occISO;
+      try {
+        occISO = rec && typeof rec.toJSDate === 'function' ? rec.toJSDate().toISOString() : startDate.toISOString();
+      } catch {
+        occISO = startDate.toISOString();
+      }
+      const id = `${event.uid}__${occISO}`;
+      const formattedDate = startDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
       });
-      
-      // Extract location from the event
-      let location = '';
-      if (event.location) {
-        location = event.location;
-      }
-      
-      return {
-        id: event.uid,
+      const location = event.location ? event.location : '';
+      const item = {
+        id,
         title: event.summary,
         description: event.description || '',
         content: event.description || '',
-        link: '', // iCl doesn't typically include links
+        link: '', // iCal doesn't typically include links
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
-        formattedDate: formattedDate,
-        location: location,
+        formattedDate,
+        location,
         venue: location,
         pubDate: startDate.toISOString(),
         isoDate: startDate.toISOString(),
         author: 'Afropop Worldwide',
-        categories: [], // iCal might not have categories in the same way
+        categories: [],
         image: null,
         type: 'Event',
         region: null,
         genre: null
       };
-    });
+      if (!allMap.has(id)) allMap.set(id, item);
+    }
+    const allEvents = Array.from(allMap.values());
+    console.log(`All events after dedupe: ${allEvents.length} (from ${vevents.length} vevents)`);
     
     // Update cache
     const result = {
