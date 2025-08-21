@@ -2,6 +2,7 @@
 // API route to fetch events from Google Calendar
 
 const { getCalendarEvents, getUpcomingEvents } = require('../../lib/google-calendar-service');
+const { reportError } = require('../../lib/telemetry')
 
 // GET /api/calendar-events
 export async function GET(request) {
@@ -32,6 +33,7 @@ export async function GET(request) {
     }
   } catch (error) {
     console.error('Error in calendar events API route:', error);
+    try { await reportError(error, { route: 'calendar-events' }) } catch {}
     return new Response(JSON.stringify({ error: 'Failed to fetch calendar events' }), {
       status: 500,
       headers: {

@@ -6,6 +6,7 @@
 const ICAL = require('ical.js')
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getCalendarEvents } = require('../../../lib/google-calendar-service')
+const { reportError } = require('../../../lib/telemetry')
 
 export async function GET(
   request: Request,
@@ -65,10 +66,10 @@ export async function GET(
     })
   } catch (error: any) {
     console.error('Error generating single-event iCal:', error)
+    try { await reportError(error, { route: 'event-ics', id: (await params)?.id }) } catch {}
     return new Response(JSON.stringify({ error: 'Failed to generate iCal' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })
   }
 }
-

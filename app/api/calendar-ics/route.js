@@ -3,6 +3,7 @@
 
 const ICAL = require('ical.js');
 const { getUpcomingEvents } = require('../../lib/google-calendar-service');
+const { reportError } = require('../../lib/telemetry')
 
 // GET /api/calendar-ics
 export async function GET(request) {
@@ -69,6 +70,7 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('Error generating iCal file:', error);
+    try { await reportError(error, { route: 'calendar-ics' }) } catch {}
     return new Response(JSON.stringify({ error: 'Failed to generate iCal file' }), {
       status: 500,
       headers: {

@@ -182,17 +182,19 @@ const Header = () => {
         </div>
       )}
 
-      {/* Now Playing strip (linked to mini player, updates from PlayerProvider) */}
-      <div className="bg-accent-v text-white text-center py-2 text-sm font-medium" aria-live="polite">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="#mini-player" className="inline-flex items-center gap-2 hover:opacity-90">
-            <span className={isPlaying ? 'animate-pulse' : 'opacity-70'}>●</span>
-            <span>
-              Now Playing: {track?.title ? track.title : 'No episode selected'}
-            </span>
-          </Link>
+      {/* Now Playing strip: only show when a track is active */}
+      {track && (
+        <div className="bg-accent-v text-white text-center py-2 text-sm font-medium" aria-live="polite">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Link href="#mini-player" className="inline-flex items-center gap-2 hover:opacity-90">
+              <span className={isPlaying ? 'animate-pulse' : 'opacity-70'}>●</span>
+              <span>
+                Now Playing: {track.title}
+              </span>
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </header>
   )
 }
