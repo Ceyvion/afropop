@@ -90,6 +90,20 @@
   .hover\:bg-accent-strong-v:hover { background-color: var(--accent-strong); }
   .border-accent-v { border-color: var(--accent); }
 
+  /* Dark mode text visibility fixes */
+  .dark .text-ink { color: var(--text) !important; }
+  .dark .hover\:text-ink:hover { color: var(--text) !important; }
+  /* Ensure contrast on white surfaces in dark mode */
+  .dark .bg-white .text-ink,
+  .dark .bg-white.text-ink { color: #0B0B0C !important; }
+  /* Lift common gray text to readable tones in dark */
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700 { color: var(--text) !important; }
+  .dark .text-gray-600,
+  .dark .text-gray-500 { color: var(--muted) !important; }
+  .dark .text-black { color: var(--text) !important; }
+
   .chip-soft {
     background-color: var(--chip);
     color: var(--chip-text);
