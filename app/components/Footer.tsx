@@ -79,7 +79,8 @@ const Footer = () => {
                 id="email-address"
                 type="email"
                 placeholder="Enter your email"
-                className="w-full px-4 py-2.5 text-sm placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-2 focus:border-accent-2 transition-colors duration-200 dark:bg-neutral-900 dark:text-gray-100 dark:placeholder-gray-500 dark:border-neutral-700"
+                className="w-full px-4 py-2.5 text-sm placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors duration-200 dark:bg-neutral-900 dark:text-gray-100 dark:placeholder-gray-500 dark:border-neutral-700"
+                style={{ outlineColor: 'var(--accent)' } as any}
               />
               <button
                 type="submit"

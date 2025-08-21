@@ -55,7 +55,7 @@ export default function Programs() {
           <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
             <div className="relative">
               <div className="bg-gray-200 border-2 border-dashed aspect-video w-full" />
-              <div className="absolute top-6 left-6 bg-accent text-white text-sm font-bold px-4 py-1 rounded-full">
+              <div className="absolute top-6 left-6 bg-accent-v text-white text-sm font-bold px-4 py-1 rounded-full">
                 NEW SERIES
               </div>
             </div>

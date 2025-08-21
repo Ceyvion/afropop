@@ -22,7 +22,7 @@ export default function Features() {
         
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-v"></div>
+            <div className="spinner spinner-lg"></div>
           </div>
         ) : error ? (
           <div className="text-center py-16">

@@ -86,7 +86,7 @@ export default function Search() {
         {/* Search Results */}
         {loading ? (
           <div className="flex justify-center items-center h-64 fade-in">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-accent-2"></div>
+            <div className="spinner spinner-xl"></div>
           </div>
         ) : error ? (
           <div className="text-center py-16 fade-in">

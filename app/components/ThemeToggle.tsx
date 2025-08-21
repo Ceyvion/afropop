@@ -103,8 +103,8 @@ export default function ThemeToggle({ compact = false }: { compact?: boolean }) 
               onClick={() => update(opt)}
               className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                 mode === opt
-                  ? 'text-accent-2 bg-gray-50 dark:bg-neutral-800'
-                  : 'text-ink hover:bg-gray-50 hover:text-accent-2 dark:text-gray-100 dark:hover:bg-neutral-800'
+                  ? 'text-accent-v bg-gray-50 dark:bg-neutral-800'
+                  : 'text-ink hover:bg-gray-50 hover:text-accent-v dark:text-gray-100 dark:hover:bg-neutral-800'
               }`}
             >
               {opt === 'system' ? 'System (Auto)' : opt[0].toUpperCase() + opt.slice(1)}
@@ -115,4 +115,3 @@ export default function ThemeToggle({ compact = false }: { compact?: boolean }) 
     </div>
   )
 }
-

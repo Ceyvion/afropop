@@ -132,7 +132,7 @@ const Header = () => {
               Donate
             </Link>
             <button 
-              className="md:hidden text-body hover:text-accent-2 transition-colors duration-200"
+              className="md:hidden text-body hover:text-accent-v transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Open menu"
             >
@@ -163,8 +163,8 @@ const Header = () => {
                 href={item.href}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === item.href 
-                    ? 'text-accent-2 bg-gray-50' 
-                    : 'text-body hover:bg-gray-50 hover:text-accent-2'
+                    ? 'text-accent-v bg-gray-50' 
+                    : 'text-body hover:bg-gray-50 hover:text-accent-v'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >

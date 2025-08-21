@@ -231,12 +231,12 @@ export default function ClientEpisode({ slug }: { slug: string }) {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-xl font-bold text-body">Transcript</h2>
                 {audioUrl && (
-                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-2 hover:text-accent font-bold">Download MP3</a>
+                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-v hover:opacity-90 font-bold">Download MP3</a>
                 )}
               </div>
               <div className="bg-gray-50 dark:bg-neutral-800 rounded-lg p-5">
                 <p className="text-muted mb-3">Transcript content would appear here…</p>
-                <button className="text-sm text-accent-2 hover:text-accent font-medium">View full transcript</button>
+                <button className="text-sm text-accent-v hover:opacity-90 font-medium">View full transcript</button>
               </div>
             </div>
           </div>

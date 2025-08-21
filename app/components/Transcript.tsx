@@ -19,7 +19,7 @@ const Transcript: React.FC<TranscriptProps> = ({ content }) => {
         <h3 className="text-lg font-medium text-ink font-body">Transcript</h3>
         <button 
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-accent-2 hover:text-ink font-medium font-body"
+          className="text-sm text-accent-v hover:opacity-90 font-medium font-body"
         >
           {isExpanded ? 'Show Less' : 'Show Full Transcript'}
         </button>

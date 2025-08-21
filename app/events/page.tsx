@@ -250,7 +250,7 @@ export default function Events() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-2 mx-auto"></div>
+          <div className="spinner spinner-lg mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading events...</p>
         </div>
       </div>
@@ -417,7 +417,7 @@ export default function Events() {
               <div className="flex items-center justify-between">
                 <div className="text-xs font-bold uppercase tracking-wider text-gray-500">City</div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setUi((u) => ({ ...u, showAllCities: !u.showAllCities }))} className="text-accent-2 text-xs font-semibold">
+                  <button onClick={() => setUi((u) => ({ ...u, showAllCities: !u.showAllCities }))} className="text-accent-v text-xs font-semibold">
                     {ui.showAllCities ? 'Top only' : 'Show all'}
                   </button>
                 </div>

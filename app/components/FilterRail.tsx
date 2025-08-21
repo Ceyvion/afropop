@@ -77,7 +77,8 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
                       type="checkbox"
                       checked={isOptionSelected(facet.name, option)}
                       onChange={() => handleFilterChange(facet.name, option)}
-                      className="h-4 w-4 text-accent-2 border-gray-300 rounded focus:ring-accent-2 transition-colors duration-200"
+                      className="h-4 w-4 border-gray-300 rounded focus:ring-[color:var(--accent)] transition-colors duration-200"
+                      style={{ accentColor: 'var(--accent)' } as any}
                     />
                     <label
                       htmlFor={`${facet.name}-${option}`}

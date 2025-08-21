@@ -76,7 +76,7 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="aspect-video rounded-xl fade-in delay-200 overflow-hidden shadow-sm bg-black">
+              <div className="aspect-video rounded-xl fade-in delay-200 overflow-hidden shadow-sm bg-white dark:bg-elevated">
                 {HERO_YOUTUBE_URL ? (
                   <iframe
                     className="w-full h-full"
@@ -107,7 +107,7 @@ export default function Home() {
             
             {episodesLoading ? (
               <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div>
+                <div className="spinner" />
               </div>
             ) : episodesError ? (
               <div className="text-center py-8">
@@ -167,9 +167,9 @@ export default function Home() {
                 </Link>
               </div>
               {featuresLoading ? (
-                <div className="flex justify-center items-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-accent-v"></div>
-                </div>
+              <div className="flex justify-center items-center h-32">
+                <div className="spinner" />
+              </div>
               ) : featuresError ? (
                 <div className="text-center py-8">
                   <p className="text-muted">Error loading features: {featuresError}</p>
