@@ -213,6 +213,11 @@ async function getCalendarEvents() {
     return result;
   } catch (error) {
     console.error('Error fetching events from Google Calendar:', error);
+    // Serve stale cache if available to keep site stable
+    if (calendarCache) {
+      console.warn('Returning stale cached calendar events due to fetch error');
+      return calendarCache;
+    }
     throw new Error(`Failed to fetch calendar events: ${error.message}`);
   }
 }
@@ -416,6 +421,14 @@ async function getUpcomingEvents(limit = 10) {
     return upcomingEvents;
   } catch (error) {
     console.error('Error getting upcoming events:', error);
+    if (calendarCache?.items) {
+      console.warn('Returning stale upcoming events from cache due to error');
+      const nowDate = new Date();
+      const upcoming = calendarCache.items.filter(e => new Date(e.startDate) >= nowDate)
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+        .slice(0, 10);
+      return upcoming;
+    }
     throw new Error(`Failed to get upcoming events: ${error.message}`);
   }
 }
