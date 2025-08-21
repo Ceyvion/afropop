@@ -146,7 +146,6 @@ export default function Search() {
                       date={formatDate(item.pubDate)}
                       city="Various Locations"
                       venue="Afropop Event"
-                      density="compact"
                     />
                   )
                 }

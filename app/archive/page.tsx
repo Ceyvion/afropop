@@ -320,8 +320,6 @@ export default function Archive() {
                         date={formatDate(item.pubDate)}
                         city="Various Locations"
                         venue="Afropop Event"
-                        image={item.image}
-                        density="compact"
                       />
                     </div>
                   )
