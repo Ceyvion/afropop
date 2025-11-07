@@ -105,7 +105,9 @@ export default function Home() {
   const heroDescription = rawHeroDescription
     ? `${rawHeroDescription.slice(0, 220).trim()}${rawHeroDescription.length > 220 ? '…' : ''}`
     : 'Laurel Halo charts a widescreen trip through experimental jazz, Angolan kuduro, and the sonic afterlives of Detroit techno.'
-  const heroTags = heroEpisode?.categories?.slice(0, 3) || ['Diaspora', 'Podcast', 'Mix']
+  const heroTags: string[] = heroEpisode?.categories
+    ? heroEpisode.categories.filter((tag): tag is string => typeof tag === 'string').slice(0, 3)
+    : ['Diaspora', 'Podcast', 'Mix']
 
   return (
     <div className="bg-page text-white">
