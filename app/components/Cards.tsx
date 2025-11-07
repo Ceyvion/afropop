@@ -26,20 +26,20 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
     .slice(0, 2) || []
 
   const compact = density === 'compact'
-  const padClass = compact ? 'p-3' : 'p-5'
+  const padClass = compact ? 'p-4' : 'p-6'
   const titleClass = compact
-    ? 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-2 text-[15px]'
-    : 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-3'
-  const chipsWrapClass = compact ? 'flex flex-wrap gap-1.5 mb-3' : 'flex flex-wrap gap-2 mb-4'
-  const chipClass = 'inline-flex items-center rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-gray-200 '
+    ? 'font-semibold text-white line-clamp-2 mb-2 text-[15px]'
+    : 'font-semibold text-white line-clamp-2 mb-3 text-lg'
+  const chipsWrapClass = compact ? 'flex flex-wrap gap-1.5 mb-4' : 'flex flex-wrap gap-2 mb-5'
+  const chipClass = 'inline-flex items-center rounded-full text-[0.65rem] font-semibold uppercase tracking-[0.2em] bg-white/10 text-white/70 '
     + (compact ? 'px-2 py-0.5' : 'px-2.5 py-0.5')
   const playIconClass = compact ? 'h-4 w-4' : 'h-5 w-5'
-  const durationClass = 'text-xs ' + (compact ? 'text-gray-500 dark:text-gray-400' : 'text-gray-500 dark:text-gray-400')
+  const durationClass = 'text-xs text-white/60'
   const imageAspect = compact ? 'aspect-[4/3]' : 'aspect-square'
   const showEngage = showEngagement && !compact && id != null
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
+    <div className={`group overflow-hidden border border-white/10 bg-elevated text-white transition duration-300 ease-in-out card-hover ${compact ? 'rounded-2xl shadow-lg' : 'rounded-[28px] shadow-[0_30px_70px_rgba(0,0,0,0.45)] hover:border-accent-v/80'}`}>
       {/* Episode image or placeholder */}
       {image ? (
         <div className={`${imageAspect} w-full overflow-hidden`}>
@@ -83,7 +83,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
         <div className="flex items-center justify-between">
           <span className={durationClass}>{duration}</span>
           <button 
-            className="text-accent-v hover:opacity-90 transition-colors duration-200"
+            className="text-accent-v transition hover:text-white"
             aria-label={`Play ${title}`}
             onClick={(e) => {
               e.preventDefault();
@@ -117,13 +117,13 @@ export const FeatureCard = ({ title, dek, author, readTime, image, density = 'co
   density?: 'comfortable' | 'compact';
 }) => {
   const compact = density === 'compact'
-  const padClass = compact ? 'p-3' : 'p-5'
-  const titleClass = compact ? 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-2 text-[15px]' : 'font-bold text-ink dark:text-gray-100 line-clamp-2 mb-3'
-  const dekClass = compact ? 'text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3' : 'text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-4'
-  const metaClass = 'text-xs text-gray-500 dark:text-gray-400'
+  const padClass = compact ? 'p-4' : 'p-6'
+  const titleClass = compact ? 'font-semibold text-white line-clamp-2 mb-2 text-[15px]' : 'font-semibold text-white line-clamp-2 mb-3 text-lg'
+  const dekClass = compact ? 'text-sm text-white/70 line-clamp-2 mb-3' : 'text-sm text-white/70 line-clamp-2 mb-4'
+  const metaClass = 'text-xs text-white/60'
   const imageAspect = compact ? 'aspect-[16/9]' : 'aspect-[3/2]'
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
+    <div className={`overflow-hidden border border-white/10 bg-elevated text-white transition duration-300 ease-in-out card-hover ${compact ? 'rounded-2xl shadow-lg' : 'rounded-[28px] shadow-[0_30px_70px_rgba(0,0,0,0.45)] hover:border-accent-v/80'}`}>
       {/* 3:2 image or placeholder */}
       {image ? (
         <div className={`${imageAspect} w-full overflow-hidden`}>
