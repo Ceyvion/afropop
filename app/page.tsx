@@ -106,7 +106,7 @@ export default function Home() {
     ? `${rawHeroDescription.slice(0, 220).trim()}${rawHeroDescription.length > 220 ? '…' : ''}`
     : 'Laurel Halo charts a widescreen trip through experimental jazz, Angolan kuduro, and the sonic afterlives of Detroit techno.'
   const heroTags: string[] = heroEpisode?.categories
-    ? heroEpisode.categories.filter((tag): tag is string => typeof tag === 'string').slice(0, 3)
+    ? heroEpisode.categories.filter((tag: unknown): tag is string => typeof tag === 'string').slice(0, 3)
     : ['Diaspora', 'Podcast', 'Mix']
 
   return (
