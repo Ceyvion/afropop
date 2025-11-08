@@ -41,7 +41,9 @@ const getFeatureSummary = (item: any, length = 200) => {
 
 const getPrimaryCategory = (item: any, fallback = 'Feature') => {
   if (item?.sectionHandle) return String(item.sectionHandle).toUpperCase()
-  const category = item?.categories?.find((cat: unknown): cat is string => typeof cat === 'string' && cat.trim().length)
+  const category = item?.categories?.find(
+    (cat: unknown): cat is string => typeof cat === 'string' && cat.trim().length > 0
+  )
   return category ? category.toUpperCase() : fallback.toUpperCase()
 }
 
