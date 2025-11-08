@@ -13,11 +13,12 @@ export default function Episodes() {
   const player = usePlayer()
 
   return (
-    <div className="min-h-screen bg-page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-12 fade-in">
-          <h1 className="text-3xl md:text-4xl font-bold text-ink mb-6">Episodes</h1>
-          <p className="text-lg text-gray-600 max-w-3xl">
+    <div className="min-h-screen bg-page text-white">
+      <div className="page-shell py-12">
+        <div className="mb-12 fade-in space-y-4">
+          <p className="page-kicker">Episodes</p>
+          <h1 className="page-title text-4xl md:text-5xl leading-tight">Broadcasts from every corner of the diaspora.</h1>
+          <p className="text-lg text-white/60 max-w-3xl">
             Explore our collection of episodes covering African music and culture from around the world.
           </p>
         </div>
@@ -27,24 +28,24 @@ export default function Episodes() {
             <div className="spinner spinner-lg"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-16">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 mx-auto text-red-300 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="text-center py-16 space-y-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 mx-auto text-accent-v/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <h3 className="text-2xl font-bold text-ink mb-4">Error Loading Episodes</h3>
-            <p className="text-gray-600 max-w-md mx-auto mb-8">
+            <h3 className="text-2xl font-display-condensed uppercase tracking-tight">Error Loading Episodes</h3>
+            <p className="text-white/60 max-w-md mx-auto">
               {error}
             </p>
             <button 
               onClick={() => window.location.reload()}
-              className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
+              className="btn-outline-ra mx-auto"
             >
               Retry
             </button>
           </div>
         ) : (
           <div className="fade-in">
-            <p className="text-gray-600 mb-8">
+            <p className="text-white/50 mb-8 text-sm uppercase tracking-[0.35em]">
               Showing {data?.items?.length || 0} episodes
             </p>
             
@@ -87,9 +88,7 @@ export default function Episodes() {
         
         {/* Load More */}
         <div className="mt-16 text-center fade-in delay-300">
-          <button className="px-8 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider">
-            Load More Episodes
-          </button>
+          <button className="btn-outline-ra">Load More Episodes</button>
         </div>
       </div>
     </div>

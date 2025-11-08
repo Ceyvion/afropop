@@ -59,16 +59,16 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
   }
 
   return (
-    <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 pr-6 border-r border-gray-200">
+    <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 pr-6 border-r border-white/10 text-white">
       {/* Stick the whole rail below the header */}
       <div className="sticky top-20">
-        <h2 className="text-xl font-bold text-ink mb-4">Filters</h2>
+        <h2 className="text-xl font-semibold tracking-[0.3em] text-white/70 uppercase mb-4">Filters</h2>
 
         {/* Scrollable facet list with its own scrollbar */}
         <div className="max-h-[calc(100vh-9rem)] overflow-y-auto pr-1 custom-scroll space-y-8">
           {facets.map((facet) => (
             <div key={facet.name}>
-              <h3 className="text-xs font-bold text-ink mb-3 uppercase tracking-wider">{facet.name}</h3>
+              <h3 className="text-[0.6rem] font-bold text-white/40 mb-3 uppercase tracking-[0.4em]">{facet.name}</h3>
               <div className="space-y-2.5">
                 {facet.options.map((option) => (
                   <div key={option} className="flex items-center">
@@ -77,12 +77,12 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
                       type="checkbox"
                       checked={isOptionSelected(facet.name, option)}
                       onChange={() => handleFilterChange(facet.name, option)}
-                      className="h-4 w-4 border-gray-300 rounded focus:ring-[color:var(--accent)] transition-colors duration-200"
-                      style={{ accentColor: 'var(--accent)' } as any}
+                      className="h-4 w-4 rounded border-white/30 bg-transparent text-accent-v focus:ring-0 focus:outline-none"
+                      style={{ accentColor: 'var(--accent)', outline: 'none' } as any}
                     />
                     <label
                       htmlFor={`${facet.name}-${option}`}
-                      className="ml-3 text-sm text-gray-700 hover:text-ink transition-colors duration-200 cursor-pointer"
+                      className="ml-3 text-sm text-white/70 hover:text-white transition-colors duration-200 cursor-pointer"
                     >
                       {option}
                     </label>
@@ -96,7 +96,7 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
         </div>
 
         {/* Tasteful apply area pinned at bottom of the rail */}
-        <div className="mt-3 pt-3 border-t border-gray-200 bg-white/90">
+        <div className="mt-3 pt-4 border-t border-white/10 bg-[#0b0b10]/80 backdrop-blur">
           <button
             className="w-full btn-accent text-sm"
             onClick={() => onApply?.(selectedFilters)}

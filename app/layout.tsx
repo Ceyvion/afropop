@@ -8,7 +8,7 @@ import DonateBanner from '@/app/components/DonateBanner'
 import SentryInit from '@/app/components/SentryInit'
 import '@/app/globals.css'
 import type { Metadata } from 'next'
-import { DM_Sans, Inter, IBM_Plex_Mono } from 'next/font/google'
+import { DM_Sans, Inter, IBM_Plex_Mono, Anton } from 'next/font/google'
 
 // Initialize fonts
 const dmSans = DM_Sans({
@@ -32,6 +32,13 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ['400', '500', '600', '700'],
 })
 
+const displayCondensed = Anton({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display-condensed',
+  weight: '400',
+})
+
 export const metadata: Metadata = {
   title: 'Afropop Worldwide',
   description: 'Audio-first storytelling from Afropop Worldwide',
@@ -43,26 +50,24 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable} ${displayCondensed.variable}`}>
       <head>
         <SentryInit />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(() => { try { const ls = localStorage; const r = document.documentElement; const theme = (ls.getItem('theme') || 'system'); const sys = window.matchMedia('(prefers-color-scheme: dark)').matches; const dark = theme === 'dark' || (theme === 'system' && sys); r.classList[dark ? 'add' : 'remove']('dark'); r.setAttribute('data-theme', dark ? 'dark' : 'light'); const palette = (ls.getItem('palette') || 'spring'); const palettes = ['spring','summer','autumn','winter']; palettes.forEach(p => r.classList.remove('theme-' + p)); r.classList.add('theme-' + palette); r.setAttribute('data-palette', palette); } catch (e) {} })();`,
+            __html: `(() => { try { const ls = localStorage; const r = document.documentElement; r.classList.add('dark'); r.setAttribute('data-theme', 'dark'); const palette = (ls.getItem('palette') || 'spring'); const palettes = ['spring','summer','autumn','winter']; palettes.forEach(p => r.classList.remove('theme-' + p)); r.classList.add('theme-' + palette); r.setAttribute('data-palette', palette); } catch (e) {} })();`,
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body className={`app-canvas ${inter.className}`}>
         <PlayerProvider>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow">
-              {children}
-              <DonateBanner />
-            </main>
-            <Footer />
-            <MiniPlayer />
-          </div>
+          <Header />
+          <main>
+            {children}
+            <DonateBanner />
+          </main>
+          <Footer />
+          <MiniPlayer />
         </PlayerProvider>
       </body>
     </html>

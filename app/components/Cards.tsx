@@ -166,17 +166,24 @@ export const EventCard = ({ title, date, city, venue, ctaHref }: {
   ctaHref?: string;
 }) => {
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-md border border-sep p-4">
-      <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
-        <div className="text-sm text-muted sm:w-40 shrink-0">{date}</div>
+    <div className="rounded-2xl border border-white/10 bg-elevated p-4 text-white shadow-[0_20px_45px_rgba(0,0,0,0.35)]">
+      <div className="flex flex-col sm:flex-row sm:items-baseline gap-3">
+        <div className="text-xs uppercase tracking-[0.35em] text-white/50 sm:w-40 shrink-0">{date}</div>
         <div className="flex-1">
-          <h3 className="text-ink font-semibold leading-snug">{title}</h3>
-          <div className="mt-1 text-sm text-gray-600 dark:text-gray-300">{city}{city && venue ? ', ' : ''}{venue}</div>
-          <div className="mt-2 flex items-center gap-4 text-sm">
-            {ctaHref ? (
-              <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:opacity-90">Tickets</a>
-            ) : null}
-          </div>
+          <h3 className="text-lg font-semibold leading-snug">{title}</h3>
+          <div className="mt-1 text-sm text-white/70">{city}{city && venue ? ', ' : ''}{venue}</div>
+          {ctaHref ? (
+            <div className="mt-3">
+              <a
+                href={ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white transition"
+              >
+                Tickets
+              </a>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
@@ -189,20 +196,21 @@ export const ProgramCard = ({ title, purpose }: {
   purpose: string;
 }) => {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ease-in-out card-hover">
+    <div className="rounded-[28px] overflow-hidden border border-white/10 bg-elevated text-white shadow-[0_25px_50px_rgba(0,0,0,0.4)] card-hover">
       {/* 16:9 image placeholder */}
-      <div className="bg-gray-200 border-2 border-dashed aspect-video w-full" />
+      <div className="bg-white/5 border-b border-white/5 aspect-video w-full" />
       
-      <div className="p-5">
-        <h3 className="font-bold text-ink mb-3">{title}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2 mb-4">{purpose}</p>
+      <div className="p-6">
+        <p className="text-xs uppercase tracking-[0.3em] text-white/50 mb-3">Program</p>
+        <h3 className="font-semibold text-2xl mb-3">{title}</h3>
+        <p className="text-sm text-white/70 line-clamp-2 mb-4">{purpose}</p>
         
         {/* Participating artists - placeholder */}
         <div className="flex -space-x-2">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="bg-gray-200 border-2 border-dashed rounded-full w-8 h-8" />
+            <div key={item} className="bg-white/10 border border-white/10 rounded-full w-8 h-8" />
           ))}
-          <span className="flex items-center justify-center w-8 h-8 text-xs font-medium text-gray-500">
+          <span className="flex items-center justify-center w-8 h-8 text-xs font-medium text-white/50">
             +5
           </span>
         </div>

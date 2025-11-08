@@ -49,6 +49,21 @@
   pre {
     font-family: var(--font-ibm-plex-mono);
   }
+
+  :where(div, section, article, li).bg-white {
+    background-color: var(--elevated);
+    color: var(--text);
+  }
+  :where(div, section, article, li).bg-gray-200 {
+    background-color: rgba(255,255,255,0.08);
+  }
+  select.bg-white,
+  input.bg-white,
+  textarea.bg-white {
+    background-color: rgba(255,255,255,0.05);
+    color: #fff;
+    border-color: rgba(255,255,255,0.2);
+  }
 }
 
 @layer components {
@@ -192,6 +207,61 @@
     text-transform: uppercase;
     font-weight: 700;
   }
+
+  /* Inner page scaffolding */
+  .page-shell { @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .page-section { @apply py-12; }
+  .page-stack { @apply space-y-12; }
+  .page-kicker {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+  .page-title {
+    font-family: var(--font-display-condensed);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .btn-outline-ra {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-outline-ra:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .input-dark {
+    width: 100%;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .input-dark::placeholder { color: rgba(255,255,255,0.45); }
+  .input-dark:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(255,255,255,0.1);
+  }
+  .panel-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
 }
 
 @layer utilities {
@@ -214,6 +284,8 @@
   .dark .text-gray-600,
   .dark .text-gray-500 { color: var(--muted); }
   .dark .text-black { color: var(--text); }
+  .dark .border-gray-200,
+  .dark .border-gray-300 { border-color: rgba(255,255,255,0.15); }
 
   .spinner {
     width: 2rem;

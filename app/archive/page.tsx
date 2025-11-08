@@ -165,21 +165,22 @@ export default function Archive() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-      <div className="spinner spinner-lg"></div>
+      <div className="min-h-screen bg-page text-white flex items-center justify-center">
+        <div className="spinner spinner-lg"></div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-ink mb-4">Error Loading Archive</h2>
-          <p className="text-gray-600 mb-6">{String(error)}</p>
+      <div className="min-h-screen bg-page text-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="page-kicker">Archive</p>
+          <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Error Loading Archive</h2>
+          <p className="text-white/60">{String(error)}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
+            className="btn-outline-ra mx-auto"
           >
             Retry
           </button>
@@ -189,21 +190,26 @@ export default function Archive() {
   }
 
   return (
-    <div className="min-h-screen bg-page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-page text-white">
+      <div className="page-shell py-12">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Filter Rail (sticky with own scroll; applies on button click) */}
           <FilterRail initialSelected={facetFilters} onApply={(filters) => setFacetFilters(filters)} />
           
           {/* Main Content */}
           <div className="flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold text-ink mb-4 sm:mb-0">Archive</h1>
-              
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
+              <div>
+                <p className="page-kicker mb-3">Archive</p>
+                <h1 className="page-title text-4xl md:text-5xl leading-none">Every mix, story, and broadcast.</h1>
+                <p className="mt-4 text-white/60 max-w-2xl">
+                  Filter the Afropop Worldwide archive by region, era, mood, or format. Play episodes instantly or dive into features.
+                </p>
+              </div>
+
               <div className="flex flex-wrap gap-3">
-                <select 
-                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none transition-colors duration-200"
-                  style={{ outlineColor: 'var(--accent)' } as any}
+                <select
+                  className="input-dark w-48"
                   value={activeFilter}
                   onChange={(e) => setActiveFilter(e.target.value)}
                 >
@@ -213,8 +219,7 @@ export default function Archive() {
                   <option value="event">Events</option>
                 </select>
                 <select
-                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none transition-colors duration-200"
-                  style={{ outlineColor: 'var(--accent)' } as any}
+                  className="input-dark w-48"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
                 >
@@ -222,8 +227,7 @@ export default function Archive() {
                   <option value="oldest">Oldest first</option>
                 </select>
                 <select
-                  className="text-sm border border-gray-300 rounded-md px-4 py-2 bg-white focus:outline-none transition-colors duration-200"
-                  style={{ outlineColor: 'var(--accent)' } as any}
+                  className="input-dark w-48"
                   value={groupMode}
                   onChange={(e) => setGroupMode(e.target.value as 'none' | 'year' | 'decade')}
                 >
@@ -231,17 +235,15 @@ export default function Archive() {
                   <option value="year">Group by year</option>
                   <option value="decade">Group by decade</option>
                 </select>
-                
-                <div className="relative">
+                <div className="relative w-full sm:w-64">
                   <input
                     type="text"
                     placeholder="Search archive..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="text-sm border border-gray-300 rounded-md pl-10 pr-4 py-2 w-full sm:w-64 focus:outline-none transition-colors duration-200"
-                    style={{ outlineColor: 'var(--accent)' } as any}
+                    className="input-dark pl-10"
                   />
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-3 top-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -249,7 +251,7 @@ export default function Archive() {
             </div>
             
             {/* Results count */}
-            <p className="text-gray-600 mb-6">
+            <p className="text-white/50 mb-6 text-sm uppercase tracking-[0.35em]">
               Showing {Math.min(filteredResults.length, visibleCount)} of {filteredResults.length} items
             </p>
             
@@ -388,7 +390,7 @@ export default function Archive() {
                 <div className="space-y-12">
                   {groupKeys.map(key => (
                     <div key={key}>
-                      <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">{key}</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-white/40 mb-4">{key}</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {groupsMap.get(key)!.map((item, index) => renderItem(item, index))}
                       </div>
@@ -405,10 +407,10 @@ export default function Archive() {
             
             {/* Manual Load More fallback */}
             {visibleCount < filteredResults.length && (
-              <div className="mt-8 text-center">
+              <div className="mt-10 text-center">
                 <button 
                   onClick={() => setVisibleCount(c => c + 12)}
-                  className="px-8 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
+                  className="btn-outline-ra"
                 >
                   Load More
                 </button>
