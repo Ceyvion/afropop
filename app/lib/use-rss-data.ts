@@ -218,3 +218,87 @@ export function useItemById(id: string) {
 
   return { data, loading, error }
 }
+
+// Hook to fetch Craft CMS articles/features via GraphQL bridge
+export function useArticles(limit = 10) {
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+
+    const fetchArticles = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await fetch(`/api/articles?limit=${limit}`)
+        const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
+
+        if (!active) return
+
+        if (response.ok) {
+          setData(result)
+        } else {
+          setError(result?.error || 'Failed to fetch articles')
+        }
+      } catch (err: any) {
+        if (!active) return
+        setError(err?.message || 'Failed to fetch articles')
+        console.error('Error fetching articles:', err)
+        reportError(err, { hook: 'useArticles' })
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    fetchArticles()
+    return () => {
+      active = false
+    }
+  }, [limit])
+
+  return { data, loading, error }
+}
+
+// Hook to fetch upcoming events from the Afropop calendar feed
+export function useUpcomingEvents(limit = 3) {
+  const [data, setData] = useState<any[] | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+
+    const fetchEvents = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await fetch(`/api/calendar-events?type=upcoming&limit=${limit}`)
+        const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
+        if (!active) return
+
+        if (response.ok) {
+          const normalized = Array.isArray(result) ? result : result?.items || []
+          setData(normalized)
+        } else {
+          setError(result?.error || 'Failed to fetch upcoming events')
+        }
+      } catch (err: any) {
+        if (!active) return
+        setError(err?.message || 'Failed to fetch upcoming events')
+        console.error('Error fetching upcoming events:', err)
+        reportError(err, { hook: 'useUpcomingEvents' })
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    fetchEvents()
+    return () => {
+      active = false
+    }
+  }, [limit])
+
+  return { data, loading, error }
+}

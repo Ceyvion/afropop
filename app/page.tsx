@@ -5,80 +5,9 @@ import React from 'react'
 import Link from 'next/link'
 import { EpisodeCard, FeatureCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
-import { useEpisodes, useFeatures } from '@/app/lib/use-rss-data'
+import { useArticles, useEpisodes, useFeatures, useUpcomingEvents } from '@/app/lib/use-rss-data'
 
-const articleSections = [
-  {
-    heading: 'GLOBAL SOUND DESIGN',
-    body: 'Laurel Halo moves through kosmische pulses, Detroit abstraction, and Lagos percussion stems pulled from the Afropop archives. Her APW residency focuses on motion—how rhythm migrates, how textures warp across continents, and how club futurism traces back to diasporic lineages.',
-  },
-  {
-    heading: 'FIELD NOTES',
-    body: 'The mix was captured between Berlin and Brooklyn, with Halo balancing prepared piano fragments against field recordings from Accra’s Highlife Café. Afropop senior producer Georges Collinet threads the conversation around memory, archiving, and the practical magic of radio storytelling.',
-  },
-  {
-    heading: 'SCENE REPORTS',
-    body: 'Halo highlights younger collectives—Johannesburg’s Femme Frequency, Kampala’s Anti-Mass, and Abidjan’s NITEFLEX—underscoring how underground promoters keep infrastructure alive. Each detour in the interview points listeners to new sonic geographies worth supporting.',
-  },
-]
-
-const tracklist = [
-  { time: '00:00', artist: 'Laurel Halo', track: 'In Situ (Live Edit)', label: 'Hyperdub' },
-  { time: '07:42', artist: 'Aybee', track: '11th Sky', label: 'Deepblak' },
-  { time: '14:15', artist: 'Sister Nancy', track: 'Dance Over Africa (Halo Dub)', label: 'VP Records' },
-  { time: '22:04', artist: 'Phillipi & Rodrigo', track: 'Gueto de Santo Amaro', label: 'Deviant' },
-  { time: '34:51', artist: 'Kampire', track: 'Pan African Tendencies', label: 'Nyege Nyege Tapes' },
-  { time: '47:03', artist: 'DJ Satelite x Gama', track: 'Quero Mais', label: 'Seres Produções' },
-  { time: '59:12', artist: 'MC Yallah', track: 'Yallah Beibe (Instrumental)', label: 'Hakuna Kulala' },
-  { time: '73:05', artist: 'Dakota Bones', track: 'New City Ghosts', label: 'APW Dubplate' },
-]
-
-const newsItems = [
-  {
-    title: 'Kinshasa club nights return',
-    summary: 'DIY collectives relaunch underwater techno parties along the Congo River with safety patrols and oral history interludes.',
-    date: 'Jun 7',
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=60',
-  },
-  {
-    title: 'Accra sound labs expand',
-    summary: 'A new residency at Surf Ghana’s Freedom Skatepark pairs beatmakers with visiting poets from Abidjan and London.',
-    date: 'Jun 5',
-    image: 'https://images.unsplash.com/photo-1444824775686-4185f172c44b?w=600&auto=format&fit=crop&q=60',
-  },
-]
-
-const reviewItems = [
-  {
-    title: 'Review: Laurel Halo – Atlas (Live mix)',
-    rating: '4.5/5',
-    blurb: 'A crystalline document that shows Halo listening outward—matching piano minimalism to Sub-Saharan polyrhythms.',
-  },
-  {
-    title: 'Review: Kampire – Alternate Routes EP',
-    rating: '4/5',
-    blurb: 'A fierce, aerodynamic set of percussion workouts primed for sunrise in Goma or 4 A.M. in Queens.',
-  },
-]
-
-const popularNews = [
-  { title: 'Ghanaian highlife takes over Paris Jazz Fest', date: 'Jun 4' },
-  { title: 'Johannesburg collectives lobby for safer warehouses', date: 'Jun 3' },
-  { title: 'Nouakchott radio archive unlocked to the public', date: 'Jun 1' },
-  { title: 'Tunisian synth pioneer Deena Abdelwahed joins APW Live', date: 'May 29' },
-]
-
-const events = [
-  { id: 1, title: 'Afropop Live: Brooklyn Museum', date: 'Jun 15 • New York', details: 'Listening salon + conversation', link: '/events' },
-  { id: 2, title: 'Felabration Lagos Preview', date: 'Oct 8 • Lagos', details: 'Block party + live recording', link: '/events' },
-  { id: 3, title: 'Nairobi Listening Lab', date: 'Jul 2 • Nairobi', details: 'Field recording walk + workshop', link: '/events' },
-]
-
-const artistProfile = {
-  name: 'Laurel Halo',
-  location: 'Brooklyn ↔ Berlin',
-  summary: 'Composer, producer, and sound artist tuning diasporic frequencies with Afropop Worldwide.',
-}
+const FALLBACK_STORY_IMAGE = 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=600&auto=format&fit=crop&q=60'
 
 const formatDate = (value?: string) => {
   if (!value) return ''
@@ -87,14 +16,65 @@ const formatDate = (value?: string) => {
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 }
 
+const formatShortDate = (value?: string) => {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
 const stripHtml = (value?: string) => {
   if (!value) return ''
   return value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+const truncate = (value?: string, length = 200) => {
+  if (!value) return ''
+  return value.length > length ? `${value.slice(0, length).trim()}…` : value
+}
+
+const getFeatureSummary = (item: any, length = 200) => {
+  if (!item) return ''
+  const text = stripHtml(item.excerpt || item.description || item.content || '')
+  return truncate(text, length)
+}
+
+const getPrimaryCategory = (item: any, fallback = 'Feature') => {
+  if (item?.sectionHandle) return String(item.sectionHandle).toUpperCase()
+  const category = item?.categories?.find((cat: unknown): cat is string => typeof cat === 'string' && cat.trim().length)
+  return category ? category.toUpperCase() : fallback.toUpperCase()
+}
+
+const buildFeatureHref = (id?: string | number) => {
+  if (!id) return '/features'
+  const slug = String(id)
+    .split('/')
+    .map((chunk) => encodeURIComponent(chunk))
+    .join('/')
+  return `/features/${slug}`
+}
+
+const buildStoryHref = (item?: any) => {
+  if (!item) return '/features'
+  if (item.url) return item.url
+  if (item.sectionHandle && item.slug) {
+    return `/${item.sectionHandle}/${item.slug}`
+  }
+  return buildFeatureHref(item.id)
+}
+
+const isExternalHref = (href?: string) => !!href && /^https?:\/\//i.test(href)
+
+const getStoryImage = (item?: any) => item?.featuredImage?.url || item?.image || FALLBACK_STORY_IMAGE
+
+const getStoryAuthor = (item?: any) =>
+  item?.author?.fullName || item?.author || 'Afropop Worldwide'
+
 export default function Home() {
   const { data: episodesData, loading: episodesLoading, error: episodesError } = useEpisodes(4)
-  const { data: featuresData, loading: featuresLoading, error: featuresError } = useFeatures(3)
+  const { data: articlesData, loading: articlesLoading, error: articlesError } = useArticles(12)
+  const { data: featuresData, loading: featuresLoading, error: featuresError } = useFeatures(8)
+  const { data: eventsData, loading: eventsLoading, error: eventsError } = useUpcomingEvents(4)
   const player = usePlayer()
 
   const heroEpisode = episodesData?.items?.[0]
@@ -108,6 +88,81 @@ export default function Home() {
   const heroTags: string[] = heroEpisode?.categories
     ? heroEpisode.categories.filter((tag: unknown): tag is string => typeof tag === 'string').slice(0, 3)
     : ['Diaspora', 'Podcast', 'Mix']
+
+  const featureItems = featuresData?.items ?? []
+  const articleItems = articlesData?.items ?? []
+  const hasArticleFeed = articleItems.length > 0
+  const editorialItems = hasArticleFeed ? articleItems : featureItems
+  const editorialLoading = hasArticleFeed
+    ? articlesLoading
+    : (!featureItems.length && (articlesLoading || featuresLoading))
+  const editorialError = editorialItems.length ? null : articlesError || featuresError
+
+  const editorialPanels = editorialItems.slice(0, 3)
+  const newsStories = editorialItems.slice(0, 4)
+  const reviewStories = editorialItems.slice(4, 7)
+  const bulletinStories = editorialItems.slice(0, 5)
+  const timelineStories = editorialItems.slice(0, 6)
+
+  const buildEntry = (story: any) => {
+    const href = buildStoryHref(story)
+    return {
+      id: story?.id,
+      href,
+      external: isExternalHref(href),
+    }
+  }
+
+  const panelEntries = editorialPanels.map((story) => ({
+    ...buildEntry(story),
+    label: getPrimaryCategory(story),
+    title: story.title,
+    body: getFeatureSummary(story, 240),
+  }))
+
+  const newsEntries = newsStories.map((story) => ({
+    ...buildEntry(story),
+    title: story.title,
+    summary: getFeatureSummary(story, 130),
+    date: formatShortDate(story.postDate || story.pubDate),
+    image: getStoryImage(story),
+  }))
+
+  const reviewEntries = reviewStories.map((story) => ({
+    ...buildEntry(story),
+    title: story.title,
+    summary: getFeatureSummary(story, 150),
+    date: formatShortDate(story.postDate || story.pubDate),
+    category: getPrimaryCategory(story, 'Review'),
+  }))
+
+  const bulletinEntries = bulletinStories.map((story) => ({
+    ...buildEntry(story),
+    title: story.title,
+    date: formatShortDate(story.postDate || story.pubDate),
+  }))
+
+  const timelineEntries = timelineStories.map((story, index) => ({
+    ...buildEntry(story),
+    id: story?.id ?? index,
+    time: formatShortDate(story.postDate || story.pubDate) || `#${index + 1}`,
+    label: getPrimaryCategory(story),
+    title: story.title,
+    author: getStoryAuthor(story),
+  }))
+
+  const profileFeature = editorialItems[0]
+  const profileName = getStoryAuthor(profileFeature)
+  const profileSummary = profileFeature
+    ? getFeatureSummary(profileFeature, 180)
+    : 'Stories from across the diaspora.'
+  const profileLocation =
+    profileFeature?.sectionHandle?.toUpperCase() ||
+    getPrimaryCategory(profileFeature, 'Magazine')
+  const profileHref = buildStoryHref(profileFeature)
+  const profileExternal = isExternalHref(profileHref)
+
+  const upcomingEvents = Array.isArray(eventsData) ? eventsData : eventsData?.items || []
 
   return (
     <div className="bg-page text-white">
@@ -159,10 +214,21 @@ export default function Home() {
       {/* Two-column body */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid gap-10 lg:grid-cols-[320px_minmax(0,1fr)]">
         <div className="space-y-6">
-          <div className="rounded-[28px] border border-white/20 bg-gradient-to-b from-[#ff2d55] to-[#b10030] p-6 text-white shadow-2xl">
-            <p className="text-[0.6rem] uppercase tracking-[0.35em] text-white/70">Afropop Worldwide</p>
-            <p className="mt-4 text-3xl font-display-condensed leading-tight">{artistProfile.name}</p>
-            <p className="mt-2 text-sm uppercase tracking-[0.3em] text-white/70">{artistProfile.location}</p>
+          <div className="rounded-[28px] border border-white/20 bg-gradient-to-b from-[#ff2d55] to-[#b10030] p-6 text-white shadow-2xl space-y-4">
+            <p className="text-[0.6rem] uppercase tracking-[0.35em] text-white/70">Feature spotlight</p>
+            <p className="text-3xl font-display-condensed leading-tight">{profileFeature?.title || profileName}</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-white/70">{profileName}</p>
+            <Link
+              href={profileHref}
+              target={profileExternal ? '_blank' : undefined}
+              rel={profileExternal ? 'noreferrer' : undefined}
+              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-white/80 hover:text-white"
+            >
+              Read story
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
+            </Link>
           </div>
 
           <div className="overflow-hidden rounded-[28px] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
@@ -178,26 +244,50 @@ export default function Home() {
           </div>
 
           <div className="ra-panel space-y-4">
-            <p className="section-label">Artist Profile</p>
-            <p className="text-2xl font-display-condensed">{artistProfile.name}</p>
-            <p className="text-sm text-white/70">{artistProfile.summary}</p>
-            <button className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-accent-v hover:text-white">
-              Follow
-            </button>
+            <p className="section-label">Magazine</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/50">{profileLocation}</p>
+            <p className="text-2xl font-display-condensed leading-tight">{profileName}</p>
+            <p className="text-sm text-white/70">{profileSummary}</p>
+            <Link
+              href={profileHref}
+              target={profileExternal ? '_blank' : undefined}
+              rel={profileExternal ? 'noreferrer' : undefined}
+              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-accent-v hover:text-white"
+            >
+              Read feature
+            </Link>
           </div>
         </div>
 
         <div className="space-y-6">
-          {articleSections.map((section) => (
-            <article key={section.heading} className="ra-panel ra-panel-strong space-y-3">
-              <p className="section-label">{section.heading}</p>
-              <p className="text-sm md:text-base leading-relaxed text-white/80">{section.body}</p>
-            </article>
-          ))}
+          {editorialLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="spinner" />
+            </div>
+          ) : editorialError ? (
+            <p className="text-sm text-white/60">Error loading magazine feed: {editorialError}</p>
+          ) : panelEntries.length ? (
+            panelEntries.map((panel) => (
+              <Link
+                key={panel.id || panel.title}
+                href={panel.href}
+                target={panel.external ? '_blank' : undefined}
+                rel={panel.external ? 'noreferrer' : undefined}
+                className="block"
+              >
+                <article className="ra-panel ra-panel-strong space-y-3 hover:border-accent-v/40 transition">
+                  <p className="section-label">{panel.label}</p>
+                  <h3 className="text-xl font-display-condensed uppercase tracking-[0.1em]">{panel.title}</h3>
+                  <p className="text-sm md:text-base leading-relaxed text-white/80">{panel.body}</p>
+                </article>
+              </Link>
+            ))
+          ) : (
+            <p className="text-sm text-white/60">Fresh magazine features will appear here shortly.</p>
+          )}
           <div className="ra-panel">
             <p className="ra-quote">
-              “Laurel Halo stretches the Afropop archive into something widescreen—music for dancers, yes, but also for people plotting the
-              next chapter of community radio.”
+              “{heroDescription || 'Afropop Worldwide stretches the archive into something widescreen—music for dancers, yes, but also for people plotting the next chapter of community radio.'}”
             </p>
           </div>
         </div>
@@ -207,18 +297,34 @@ export default function Home() {
       <section className="section-band">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
           <p className="section-label">Tracklist</p>
-          <div className="grid gap-4 md:grid-cols-2">
-            {tracklist.map((item) => (
-              <div key={item.time + item.track} className="rounded-2xl border border-white/10 bg-[#0d0d13] p-5">
-                <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
-                  <span>{item.time}</span>
-                  <span>{item.label}</span>
-                </div>
-                <p className="mt-3 text-lg font-semibold text-white">{item.track}</p>
-                <p className="text-sm text-white/70">{item.artist}</p>
-              </div>
-            ))}
-          </div>
+          {editorialLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="spinner" />
+            </div>
+          ) : editorialError ? (
+            <p className="text-sm text-white/60">Error loading recent stories: {editorialError}</p>
+          ) : timelineEntries.length ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {timelineEntries.map((item) => (
+                <Link
+                  key={item.id || item.title}
+                  href={item.href}
+                  target={item.external ? '_blank' : undefined}
+                  rel={item.external ? 'noreferrer' : undefined}
+                  className="rounded-2xl border border-white/10 bg-[#0d0d13] p-5 block hover:border-accent-v/50 transition"
+                >
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
+                    <span>{item.time}</span>
+                    <span>{item.label}</span>
+                  </div>
+                  <p className="mt-3 text-lg font-semibold text-white">{item.title}</p>
+                  <p className="text-sm text-white/70">{item.author}</p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-white/60">Recent magazine stories will populate this strip once the feed updates.</p>
+          )}
         </div>
       </section>
 
@@ -237,53 +343,99 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 lg:grid-cols-[1.1fr_minmax(0,0.9fr)]">
         <div className="space-y-6">
           <p className="section-label">Upcoming Events</p>
-          <div className="space-y-4">
-            {events.map((event) => (
-              <div key={event.id} className="rounded-2xl border border-white/10 bg-elevated p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-white/50">{event.date}</p>
-                  <p className="text-xl font-semibold mt-1">{event.title}</p>
-                  <p className="text-sm text-white/70">{event.details}</p>
-                </div>
-                <div className="sm:ml-auto">
-                  <Link href={event.link} className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white">
-                    Details
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+          {eventsLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="spinner" />
+            </div>
+          ) : eventsError ? (
+            <p className="text-sm text-white/60">Error loading events: {eventsError}</p>
+          ) : upcomingEvents.length ? (
+            <div className="space-y-4">
+              {upcomingEvents.map((event: any) => {
+                const dateLabel = event.formattedDate || formatDate(event.startDate) || 'Date TBA'
+                const detail = event.location || event.venue || 'Location TBA'
+                const summary = truncate(stripHtml(event.description || ''), 140) || 'Details coming soon.'
+                return (
+                  <article key={event.id} className="rounded-2xl border border-white/10 bg-elevated p-5 flex flex-col gap-3">
+                    <p className="text-xs uppercase tracking-[0.35em] text-white/50">{dateLabel}</p>
+                    <h3 className="text-xl font-semibold leading-tight">{event.title}</h3>
+                    <p className="text-sm text-white/70">{detail}</p>
+                    <p className="text-sm text-white/60">{summary}</p>
+                    <Link href="/events" className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white">
+                      Details
+                    </Link>
+                  </article>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-white/60">No upcoming events in the calendar feed right now.</p>
+          )}
         </div>
 
         <div className="space-y-8">
           <div className="space-y-4">
             <p className="section-label">News</p>
-            {newsItems.map((news) => (
-              <article key={news.title} className="flex gap-4 rounded-2xl border border-white/10 bg-elevated p-4">
-                <div className="h-20 w-24 overflow-hidden rounded-lg bg-white/5">
-                  <img src={news.image} alt={news.title} className="h-full w-full object-cover" loading="lazy" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-white/50">{news.date}</p>
-                  <h3 className="font-semibold text-white">{news.title}</h3>
-                  <p className="text-sm text-white/70">{news.summary}</p>
-                </div>
-              </article>
-            ))}
+            {editorialLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="spinner" />
+              </div>
+            ) : editorialError ? (
+              <p className="text-sm text-white/60">Error loading news: {editorialError}</p>
+            ) : newsEntries.length ? (
+              newsEntries.map((news) => (
+                <Link
+                  key={news.id || news.title}
+                  href={news.href}
+                  target={news.external ? '_blank' : undefined}
+                  rel={news.external ? 'noreferrer' : undefined}
+                  className="flex gap-4 rounded-2xl border border-white/10 bg-elevated p-4 hover:border-accent-v/40 transition"
+                >
+                  <div className="h-20 w-24 overflow-hidden rounded-lg bg-white/5">
+                    <img src={news.image} alt={news.title} className="h-full w-full object-cover" loading="lazy" />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-white/50">{news.date || 'New'}</p>
+                    <h3 className="font-semibold text-white line-clamp-2">{news.title}</h3>
+                    <p className="text-sm text-white/70 line-clamp-3">{news.summary}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p className="text-sm text-white/60">Magazine stories will populate here when available.</p>
+            )}
           </div>
 
           <div className="space-y-4">
             <p className="section-label">Reviews</p>
-            {reviewItems.map((review) => (
-              <div key={review.title} className="rounded-2xl border border-white/10 bg-elevated p-4">
-                <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
-                  <span>{review.rating}</span>
-                  <span>APW</span>
-                </div>
-                <h3 className="mt-2 font-semibold">{review.title}</h3>
-                <p className="text-sm text-white/70">{review.blurb}</p>
+            {editorialLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="spinner" />
               </div>
-            ))}
+            ) : editorialError ? (
+              <p className="text-sm text-white/60">Error loading reviews: {editorialError}</p>
+            ) : reviewEntries.length ? (
+              reviewEntries.map((review) => (
+                <div key={review.id || review.title} className="rounded-2xl border border-white/10 bg-elevated p-4 space-y-2">
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
+                    <span>{review.date || 'New'}</span>
+                    <span>{review.category}</span>
+                  </div>
+                  <h3 className="font-semibold leading-snug">{review.title}</h3>
+                  <p className="text-sm text-white/70 line-clamp-3">{review.summary}</p>
+                  <Link
+                    href={review.href}
+                    target={review.external ? '_blank' : undefined}
+                    rel={review.external ? 'noreferrer' : undefined}
+                    className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white"
+                  >
+                    Read story
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-white/60">Once the RSS feed updates, review highlights will appear here.</p>
+            )}
           </div>
         </div>
       </section>
@@ -306,7 +458,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-3">
-            {featuresData?.items?.map((feature: any) => (
+            {featuresData?.items?.slice(0, 3)?.map((feature: any) => (
               <Link
                 key={feature.id}
                 href={`/features/${String(feature.id).split('/').map(encodeURIComponent).join('/')}`}
@@ -330,14 +482,31 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 lg:grid-cols-2">
           <div className="space-y-4">
             <p className="section-label">Popular News</p>
-            <ul className="space-y-3">
-              {popularNews.map((item) => (
-                <li key={item.title} className="flex items-center justify-between rounded-full border border-white/10 px-5 py-3">
-                  <span className="text-sm">{item.title}</span>
-                  <span className="text-xs uppercase tracking-[0.3em] text-white/50">{item.date}</span>
-                </li>
-              ))}
-            </ul>
+            {editorialLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="spinner" />
+              </div>
+            ) : editorialError ? (
+              <p className="text-sm text-white/60">Error loading bulletins: {editorialError}</p>
+            ) : bulletinEntries.length ? (
+              <ul className="space-y-3">
+                {bulletinEntries.map((item) => (
+                  <li key={item.id || item.title} className="flex items-center justify-between rounded-full border border-white/10 px-5 py-3">
+                    <Link
+                      href={item.href}
+                      target={item.external ? '_blank' : undefined}
+                      rel={item.external ? 'noreferrer' : undefined}
+                      className="text-sm hover:text-accent-v transition"
+                    >
+                      {item.title}
+                    </Link>
+                    <span className="text-xs uppercase tracking-[0.3em] text-white/50">{item.date || 'New'}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-white/60">News bulletins will update when the Afropop feed publishes.</p>
+            )}
           </div>
 
           <div className="space-y-4">
