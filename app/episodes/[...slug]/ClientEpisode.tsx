@@ -5,34 +5,72 @@ import Link from 'next/link'
 import { useItemById } from '@/app/lib/use-rss-data'
 import { usePlayer } from '@/app/components/PlayerProvider'
 
+const formatTime = (value?: number | null) => {
+  const safe = Math.max(0, Math.floor(value || 0))
+  const minutes = Math.floor(safe / 60)
+  const seconds = String(safe % 60).padStart(2, '0')
+  return `${minutes}:${seconds}`
+}
+
+const prettyDuration = (value?: number | string | null) => {
+  if (value === null || value === undefined || value === '') return '—'
+  if (typeof value === 'string') return value
+  const hours = Math.floor(value / 3600)
+  const minutes = Math.floor((value % 3600) / 60)
+  const seconds = Math.floor(value % 60)
+  if (hours) return `${hours}h ${minutes}m`
+  return `${minutes}m ${seconds.toString().padStart(2, '0')}s`
+}
+
+const stripHtml = (value?: string | null) => {
+  if (!value) return ''
+  return value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+const getSummary = (data?: any) => {
+  if (!data) return ''
+  return data.contentSnippet || data.summary || stripHtml(data.description) || ''
+}
+
 export default function ClientEpisode({ slug }: { slug: string }) {
   const { data, loading, error } = useItemById(slug)
   const { track, isPlaying, currentTime, duration, play, toggle, seek, skip } = usePlayer()
+
   const audioUrl = data?.audioUrl || null
   const isCurrent = track?.id === data?.id
+  const summary = getSummary(data)
+  const publishedSource = data?.pubDate || data?.isoDate || ''
+  const publishedDate = publishedSource ? new Date(publishedSource) : null
+  const hasPublished = !!(publishedDate && !Number.isNaN(publishedDate.getTime()))
+  const publishedLong = hasPublished
+    ? publishedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : null
+  const publishedShort = hasPublished
+    ? publishedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : null
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor((time || 0) / 60)
-    const seconds = Math.floor((time || 0) % 60)
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
-  }
-
-  const prettyDuration = (d?: number | string | null) => {
-    if (!d && d !== 0) return '—'
-    if (typeof d === 'number') {
-      const h = Math.floor(d / 3600)
-      const m = Math.floor((d % 3600) / 60)
-      const s = Math.floor(d % 60)
-      return h ? `${h}h ${m}m` : `${m}m ${s}s`
-    }
-    // already like 01:23:45 or 42:10
-    return d
-  }
+  const durationLabel = prettyDuration(
+    typeof data?.duration === 'number'
+      ? data.duration
+      : typeof data?.duration === 'string'
+        ? data.duration
+        : duration
+  )
+  const numericDuration =
+    typeof data?.duration === 'number'
+      ? data.duration
+      : typeof duration === 'number'
+        ? duration
+        : undefined
+  const sliderMax = Math.max(numericDuration || 0, 1)
+  const sliderValue = Math.min(isCurrent ? currentTime : 0, sliderMax)
+  const categories = Array.isArray(data?.categories) ? data?.categories.filter(Boolean) : []
 
   const shareEpisode = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
+    if (!url) return
     try {
-      // @ts-ignore - not typed on older TS
+      // @ts-ignore - not always typed
       if (navigator?.share) {
         // @ts-ignore
         await navigator.share({ title: data?.title, url })
@@ -47,23 +85,52 @@ export default function ClientEpisode({ slug }: { slug: string }) {
     }
   }
 
+  const handlePrimaryAction = () => {
+    if (!audioUrl) return
+    if (isCurrent) {
+      toggle()
+    } else {
+      play({
+        id: data!.id,
+        title: data!.title,
+        author: data!.author,
+        image: data!.image,
+        audioUrl,
+        duration: data!.duration,
+      })
+    }
+  }
+
+  const handleSeek = (value: number) => {
+    if (!audioUrl || !isCurrent) return
+    seek(value)
+  }
+
+  const handleSkip = (value: number) => {
+    if (!audioUrl || !isCurrent) return
+    skip(value)
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-page">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse">
-            <div className="h-64 sm:h-80 w-full bg-gray-200 rounded-2xl mb-8" />
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8" />
-            <div className="grid lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-8 space-y-4">
-                <div className="h-44 bg-white rounded-xl shadow-sm" />
-                <div className="h-96 bg-white rounded-xl shadow-sm" />
-              </div>
-              <div className="lg:col-span-4 space-y-4">
-                <div className="h-48 bg-white rounded-xl shadow-sm" />
-                <div className="h-48 bg-white rounded-xl shadow-sm" />
-              </div>
+      <div className="min-h-screen bg-page text-body">
+        <div className="page-shell py-14 space-y-8">
+          <div className="space-y-2">
+            <div className="h-4 w-28 rounded-full bg-white/10 animate-pulse" />
+            <div className="h-8 w-64 rounded-full bg-white/10 animate-pulse" />
+          </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2 h-96 rounded-[32px] bg-white/5 animate-pulse" />
+            <div className="h-96 rounded-[32px] bg-white/5 animate-pulse" />
+          </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="h-56 rounded-3xl bg-white/5 animate-pulse" />
+              <div className="h-48 rounded-3xl bg-white/5 animate-pulse" />
+            </div>
+            <div className="space-y-6">
+              <div className="h-48 rounded-3xl bg-white/5 animate-pulse" />
+              <div className="h-32 rounded-3xl bg-white/5 animate-pulse" />
             </div>
           </div>
         </div>
@@ -73,14 +140,12 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-ink mb-4">Error Loading Episode</h2>
-          <p className="text-gray-600 mb-6">{String(error)}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
-          >
+      <div className="min-h-screen bg-page text-body flex items-center justify-center px-6">
+        <div className="ra-panel text-center space-y-4 max-w-md">
+          <p className="page-kicker">Playback issue</p>
+          <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Error loading episode</h2>
+          <p className="text-muted">{String(error)}</p>
+          <button onClick={() => window.location.reload()} className="btn-outline-ra mx-auto">
             Retry
           </button>
         </div>
@@ -90,196 +155,261 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-ink mb-4">Episode Not Found</h2>
-          <p className="text-gray-600 mb-6">The episode you're looking for could not be found.</p>
-          <Link 
-            href="/episodes"
-            className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"
-          >
-            Browse All Episodes
+      <div className="min-h-screen bg-page text-body flex items-center justify-center px-6">
+        <div className="ra-panel text-center space-y-4 max-w-md">
+          <p className="page-kicker">Episode detail</p>
+          <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Episode not found</h2>
+          <p className="text-muted">The episode you are looking for might have moved or no longer exists.</p>
+          <Link href="/episodes" className="btn-outline-ra mx-auto">
+            Browse Episodes
           </Link>
         </div>
       </div>
     )
   }
 
-  const published = new Date(data.pubDate || data.isoDate || '').toLocaleDateString()
+  const detailItems = [
+    { label: 'Published', value: publishedLong },
+    { label: 'Duration', value: durationLabel },
+    { label: 'Region', value: data.region },
+    { label: 'Genre', value: data.genre },
+    { label: 'Author', value: data.author || 'Afropop Worldwide' },
+  ].filter((item) => item.value)
 
   return (
-    <div className="min-h-screen bg-page">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6">
-          <ol className="flex items-center space-x-2 text-sm">
-            <li>
-              <Link href="/" className="text-accent-v hover:opacity-90 transition-colors duration-200">Home</Link>
-            </li>
-            <li className="text-gray-400">/</li>
-            <li>
-              <Link href="/episodes" className="text-accent-v hover:opacity-90 transition-colors duration-200">Episodes</Link>
-            </li>
-            <li className="text-gray-400">/</li>
-            <li className="text-gray-500 truncate max-w-xs">{data.title}</li>
-          </ol>
-        </nav>
+    <div className="min-h-screen bg-page text-body">
+      <div className="page-shell py-12 space-y-10">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="page-kicker">Podcast detail</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-white/50">Afropop Worldwide</p>
+          </div>
+          <Link
+            href="/episodes"
+            className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.35em] uppercase text-white/70 hover:text-accent-v transition-colors"
+          >
+            <span className="hidden sm:inline">Back to episodes</span>
+            <span className="sm:hidden">Episodes</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14m-6-6l6 6-6 6" />
+            </svg>
+          </Link>
+        </div>
 
-        {/* Hero with gradient overlay */}
-        <div className="relative mb-10 overflow-hidden rounded-2xl">
-          <div className="aspect-video w-full bg-gray-200 dark:bg-neutral-800">
-            {data.image && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <article className="relative overflow-hidden rounded-[32px] border border-white/5 bg-elevated min-h-[380px] lg:col-span-2">
+            {data.image ? (
               <img
                 src={data.image}
                 alt={data.title}
-                className="h-full w-full object-cover"
-                loading="eager"
+                className="absolute inset-0 h-full w-full object-cover opacity-70"
                 onError={(e) => {
-                  const t = e.target as HTMLImageElement
-                  t.onerror = null
-                  t.style.display = 'none'
+                  const target = e.target as HTMLImageElement
+                  target.onerror = null
+                  target.style.display = 'none'
                 }}
               />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />
             )}
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
-            <div className="max-w-3xl">
-              <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight">
-                {data.title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 text-white/85 text-sm">
-                <span>By {data.author || 'Afropop Worldwide'}</span>
-                <span className="opacity-50">•</span>
-                <span>{published}</span>
-                {(data.duration || isCurrent) && <><span className="opacity-50">•</span><span>{prettyDuration(typeof data.duration === 'string' ? data.duration : duration)}</span></>}
-                {data.region && (<><span className="opacity-50">•</span><span>{data.region}</span></>)}
-                {data.genre && (<><span className="opacity-50">•</span><span>{data.genre}</span></>)}
-              </div>
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                {audioUrl ? (
-                  isCurrent && isPlaying ? (
-                    <button onClick={toggle} className="px-5 py-3 btn-accent">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      Pause
-                    </button>
-                  ) : (
-                    <button onClick={() => play({ id: data.id, title: data.title, author: data.author, image: data.image, audioUrl, duration: data.duration })} className="px-5 py-3 btn-accent">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      Play Episode
-                    </button>
-                  )
-                ) : (
-                  <button className="inline-flex items-center px-5 py-3 rounded-full bg-gray-400 text-white font-bold cursor-not-allowed">
-                    Audio Not Available
-                  </button>
-                )}
-                {audioUrl && (
-                  <>
-                    <button onClick={() => skip(-15)} className="px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 border border-white/20 text-sm">-15s</button>
-                    <button onClick={() => skip(30)} className="px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 border border-white/20 text-sm">+30s</button>
-                  </>
-                )}
-                <button onClick={shareEpisode} className="px-4 py-2 rounded-full bg-white text-ink hover:bg-gray-50 text-sm font-bold">Share</button>
-                {audioUrl && (
-                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-full bg-white text-ink hover:bg-gray-50 text-sm font-bold">Download</a>
+            <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-black/10" />
+            <div className="relative h-full p-6 md:p-10 flex flex-col justify-between gap-6">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/70">
+                  <span className="meta-pill">Broadcast</span>
+                  {publishedShort && <span className="meta-pill text-white/60">{publishedShort}</span>}
+                  {data.region && <span className="ra-chip">{data.region}</span>}
+                  {data.genre && <span className="ra-chip">{data.genre}</span>}
+                </div>
+                <h1 className="page-title text-4xl md:text-5xl text-white leading-[0.95]">
+                  {data.title}
+                </h1>
+                {summary && (
+                  <p className="text-white/75 text-base md:text-lg max-w-3xl leading-relaxed">
+                    {summary}
+                  </p>
                 )}
               </div>
-              {/* Quick meta chips for region/genre */}
-              {(data.region || data.genre) && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {data.region && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20">{data.region}</span>}
-                  {data.genre && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20">{data.genre}</span>}
+              {categories && categories.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {categories.slice(0, 6).map((category: string, index: number) => (
+                    <span key={`${category}-${index}`} className="ra-chip text-xs tracking-[0.2em]">
+                      {category}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
-          </div>
+          </article>
+
+          <aside className="ra-panel ra-panel-strong flex flex-col gap-5 lg:col-span-1">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-[0.35em] text-white/50">Now playing</p>
+              <p className="text-2xl font-semibold text-white leading-tight">{data.title}</p>
+              <p className="text-sm text-white/60">{data.author || 'Afropop Worldwide'}</p>
+            </div>
+
+            {audioUrl ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button
+                    onClick={handlePrimaryAction}
+                    className="btn-accent flex-1 min-w-[160px] justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {isCurrent && isPlaying ? (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 9h2v6H9zm4 0h2v6h-2z" />
+                        </svg>
+                        Pause
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 5v14l11-7z" />
+                        </svg>
+                        Play Episode
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleSkip(-15)}
+                    disabled={!isCurrent}
+                    className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    -15s
+                  </button>
+                  <button
+                    onClick={() => handleSkip(30)}
+                    disabled={!isCurrent}
+                    className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    +30s
+                  </button>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between text-[0.7rem] font-mono uppercase tracking-[0.35em] text-white/60 mb-2">
+                    <span>{formatTime(sliderValue)}</span>
+                    <span>{formatTime(isCurrent ? duration : numericDuration)}</span>
+                  </div>
+                  <input
+                    aria-label="Seek within episode"
+                    type="range"
+                    min={0}
+                    max={sliderMax}
+                    value={sliderValue}
+                    disabled={!isCurrent}
+                    onChange={(event) => handleSeek(Number(event.target.value))}
+                    className="w-full h-2 rounded-full cursor-pointer accent-[var(--accent)] disabled:cursor-not-allowed bg-white/15"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-white/15 p-4 text-center text-sm text-white/60">
+                Audio not available for this episode.
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={shareEpisode}
+                className="inline-flex flex-1 min-w-[160px] items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 hover:text-white"
+              >
+                Share
+              </button>
+              {audioUrl && (
+                <a
+                  href={audioUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex flex-1 min-w-[160px] items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 hover:text-white"
+                >
+                  Download
+                </a>
+              )}
+            </div>
+          </aside>
         </div>
 
-        {/* Main grid */}
-        <div className="grid lg:grid-cols-12 gap-8">
-          {/* Left column */}
-          <div className="lg:col-span-8 space-y-6">
-            {/* Progress (if playing/current) */}
-            {audioUrl && (
-              <div className="bg-surface rounded-xl p-5 shadow-sm">
-                <div className="flex items-center justify-between text-xs text-muted mb-2">
-                  <span>{formatTime(isCurrent ? currentTime : 0)}</span>
-                  <span>{formatTime(isCurrent ? duration : 0)}</span>
-                </div>
-                <input
-                  aria-label="Seek"
-                  type="range"
-                  min="0"
-                  max={(isCurrent ? duration : 0) || 100}
-                  value={isCurrent ? currentTime : 0}
-                  onChange={(e) => seek(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer"
-                  style={{ accentColor: 'var(--accent)' }}
-                />
+        <div className="grid gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
+            <section className="ra-panel ra-panel-strong space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-lg font-semibold uppercase tracking-[0.35em] text-white/80">Episode overview</h2>
+                {audioUrl && <span className="meta-pill">Deep listen</span>}
               </div>
-            )}
+              <div
+                className="text-base leading-relaxed text-white/80 space-y-4"
+                dangerouslySetInnerHTML={{
+                  __html: data.content || data.description || 'No description available.',
+                }}
+              />
+            </section>
 
-            {/* Description */}
-            <div className="bg-surface rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-body mb-4">Episode Description</h2>
-              <div className="prose max-w-none text-gray-700 dark:prose-invert" dangerouslySetInnerHTML={{ __html: data.content || data.description || 'No description available.' }} />
-            </div>
-
-            {/* Transcript placeholder */}
-            <div className="bg-surface rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xl font-bold text-body">Transcript</h2>
+            <section className="ra-panel space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Transcript</h3>
                 {audioUrl && (
-                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-v hover:opacity-90 font-bold">Download MP3</a>
+                  <a
+                    href={audioUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-semibold uppercase tracking-[0.3em] text-accent-v hover:opacity-80"
+                  >
+                    Download MP3
+                  </a>
                 )}
               </div>
-              <div className="bg-gray-50 dark:bg-neutral-800 rounded-lg p-5">
-                <p className="text-muted mb-3">Transcript content would appear here…</p>
-                <button className="text-sm text-accent-v hover:opacity-90 font-medium">View full transcript</button>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 space-y-2">
+                <p>The full transcript for this broadcast will appear soon.</p>
+                <p className="text-white/50">Want early access? Join the community slack for production notes.</p>
               </div>
-            </div>
+            </section>
           </div>
 
-          {/* Right sidebar */}
-          <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-surface rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-4">Details</h3>
+          <aside className="space-y-6 lg:col-span-4">
+            <section className="ra-panel space-y-4">
+              <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Episode facts</h3>
               <dl className="space-y-3 text-sm">
-                <div className="flex justify-between"><dt className="text-muted">Published</dt><dd className="text-body font-medium">{published || '—'}</dd></div>
-                <div className="flex justify-between"><dt className="text-muted">Duration</dt><dd className="text-body font-medium">{prettyDuration(typeof data.duration === 'string' ? data.duration : duration)}</dd></div>
-                {data.region && (<div className="flex justify-between"><dt className="text-muted">Region</dt><dd className="text-body font-medium">{data.region}</dd></div>)}
-                {data.genre && (<div className="flex justify-between"><dt className="text-muted">Genre</dt><dd className="text-body font-medium">{data.genre}</dd></div>)}
-              </dl>
-              {data.categories?.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="text-sm font-bold text-muted mb-2">Categories</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {data.categories.slice(0, 12).map((c: string, i: number) => (
-                      <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold chip-soft">{c}</span>
-                    ))}
+                {detailItems.map((item) => (
+                  <div key={item.label} className="flex items-center justify-between gap-4 border-b border-white/5 pb-2 last:pb-0 last:border-none">
+                    <dt className="text-white/50 uppercase tracking-[0.3em] text-[0.65rem]">{item.label}</dt>
+                    <dd className="text-white font-semibold text-right">{item.value}</dd>
                   </div>
-                </div>
-              )}
-              {data.link && (
-                <div className="mt-6">
-                  <a href={data.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-bold text-accent-v hover:bg-accent-strong-v/10 rounded px-1">
-                    Open original link
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 3h7m0 0v7m0-7L10 14" /></svg>
-                  </a>
-                </div>
-              )}
-            </div>
+                ))}
+              </dl>
+            </section>
 
-            <div className="bg-surface rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">Actions</h3>
-              <div className="flex flex-wrap gap-3">
-                <button onClick={shareEpisode} className="px-4 py-2 rounded-md border border-gray-300 bg-white dark:bg-neutral-900 dark:border-neutral-700 text-ink dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-neutral-800 text-sm font-bold">Share</button>
-                {audioUrl && (
-                  <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-md border border-gray-300 bg-white dark:bg-neutral-900 dark:border-neutral-700 text-ink dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-neutral-800 text-sm font-bold">Download</a>
-                )}
-              </div>
-            </div>
+            {categories && categories.length > 0 && (
+              <section className="ra-panel space-y-3">
+                <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Signal tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category: string, index: number) => (
+                    <span key={`${category}-${index}`} className="ra-chip text-xs tracking-[0.2em]">
+                      {category}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {data.link && (
+              <section className="ra-panel ra-panel-strong space-y-3">
+                <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Original post</h3>
+                <p className="text-sm text-white/70">
+                  Dive into the producer notes, playlist links, and companion essays on our primary feed.
+                </p>
+                <a
+                  href={data.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-outline-ra w-full text-center"
+                >
+                  Open Link
+                </a>
+              </section>
+            )}
           </aside>
         </div>
       </div>
