@@ -271,7 +271,7 @@ export default function Home() {
           ) : editorialError ? (
             <p className="text-sm text-white/60">Error loading magazine feed: {editorialError}</p>
           ) : panelEntries.length ? (
-            panelEntries.map((panel) => (
+            panelEntries.map((panel: any) => (
               <Link
                 key={panel.id || panel.title}
                 href={panel.href}
@@ -309,7 +309,7 @@ export default function Home() {
             <p className="text-sm text-white/60">Error loading recent stories: {editorialError}</p>
           ) : timelineEntries.length ? (
             <div className="grid gap-4 md:grid-cols-2">
-              {timelineEntries.map((item) => (
+              {timelineEntries.map((item: any) => (
                 <Link
                   key={item.id || item.title}
                   href={item.href}
@@ -387,7 +387,7 @@ export default function Home() {
             ) : editorialError ? (
               <p className="text-sm text-white/60">Error loading news: {editorialError}</p>
             ) : newsEntries.length ? (
-              newsEntries.map((news) => (
+              newsEntries.map((news: any) => (
                 <Link
                   key={news.id || news.title}
                   href={news.href}
@@ -419,7 +419,7 @@ export default function Home() {
             ) : editorialError ? (
               <p className="text-sm text-white/60">Error loading reviews: {editorialError}</p>
             ) : reviewEntries.length ? (
-              reviewEntries.map((review) => (
+              reviewEntries.map((review: any) => (
                 <div key={review.id || review.title} className="rounded-2xl border border-white/10 bg-elevated p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
                     <span>{review.date || 'New'}</span>
@@ -494,7 +494,7 @@ export default function Home() {
               <p className="text-sm text-white/60">Error loading bulletins: {editorialError}</p>
             ) : bulletinEntries.length ? (
               <ul className="space-y-3">
-                {bulletinEntries.map((item) => (
+                {bulletinEntries.map((item: any) => (
                   <li key={item.id || item.title} className="flex items-center justify-between rounded-full border border-white/10 px-5 py-3">
                     <Link
                       href={item.href}
