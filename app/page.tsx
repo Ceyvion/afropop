@@ -164,7 +164,9 @@ export default function Home() {
   const profileHref = buildStoryHref(profileFeature)
   const profileExternal = isExternalHref(profileHref)
 
-  const upcomingEvents = Array.isArray(eventsData) ? eventsData : eventsData?.items || []
+  const upcomingEvents = Array.isArray(eventsData)
+    ? eventsData
+    : ((eventsData as any)?.items ?? [])
 
   return (
     <div className="bg-page text-white">
