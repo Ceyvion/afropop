@@ -115,14 +115,14 @@ export default function Home() {
     }
   }
 
-  const panelEntries = editorialPanels.map((story) => ({
+  const panelEntries = editorialPanels.map((story: any) => ({
     ...buildEntry(story),
     label: getPrimaryCategory(story),
     title: story.title,
     body: getFeatureSummary(story, 240),
   }))
 
-  const newsEntries = newsStories.map((story) => ({
+  const newsEntries = newsStories.map((story: any) => ({
     ...buildEntry(story),
     title: story.title,
     summary: getFeatureSummary(story, 130),
@@ -130,7 +130,7 @@ export default function Home() {
     image: getStoryImage(story),
   }))
 
-  const reviewEntries = reviewStories.map((story) => ({
+  const reviewEntries = reviewStories.map((story: any) => ({
     ...buildEntry(story),
     title: story.title,
     summary: getFeatureSummary(story, 150),
@@ -138,13 +138,13 @@ export default function Home() {
     category: getPrimaryCategory(story, 'Review'),
   }))
 
-  const bulletinEntries = bulletinStories.map((story) => ({
+  const bulletinEntries = bulletinStories.map((story: any) => ({
     ...buildEntry(story),
     title: story.title,
     date: formatShortDate(story.postDate || story.pubDate),
   }))
 
-  const timelineEntries = timelineStories.map((story, index) => ({
+  const timelineEntries = timelineStories.map((story: any, index: number) => ({
     ...buildEntry(story),
     id: story?.id ?? index,
     time: formatShortDate(story.postDate || story.pubDate) || `#${index + 1}`,
