@@ -32,6 +32,23 @@ const getSummary = (data?: any) => {
   return data.contentSnippet || data.summary || stripHtml(data.description) || ''
 }
 
+const buildSummaryExcerpt = (value?: string) => {
+  if (!value) return ''
+  const trimmed = value.trim()
+  if (!trimmed) return ''
+  const sentences = trimmed.match(/[^.!?]+[.!?]?/g) || []
+  const primary = sentences.slice(0, 2).join(' ').trim() || trimmed
+  let excerpt = primary
+  let truncated = primary.length < trimmed.length
+
+  if (excerpt.length > 420) {
+    excerpt = excerpt.slice(0, 420).trim()
+    truncated = true
+  }
+
+  return truncated ? `${excerpt}…` : excerpt
+}
+
 export default function ClientEpisode({ slug }: { slug: string }) {
   const { data, loading, error } = useItemById(slug)
   const { track, isPlaying, currentTime, duration, play, toggle, seek, skip } = usePlayer()
@@ -39,6 +56,7 @@ export default function ClientEpisode({ slug }: { slug: string }) {
   const audioUrl = data?.audioUrl || null
   const isCurrent = track?.id === data?.id
   const summary = getSummary(data)
+  const summaryExcerpt = buildSummaryExcerpt(summary)
   const publishedSource = data?.pubDate || data?.isoDate || ''
   const publishedDate = publishedSource ? new Date(publishedSource) : null
   const hasPublished = !!(publishedDate && !Number.isNaN(publishedDate.getTime()))
@@ -141,9 +159,9 @@ export default function ClientEpisode({ slug }: { slug: string }) {
   if (error) {
     return (
       <div className="min-h-screen bg-page text-body flex items-center justify-center px-6">
-        <div className="ra-panel text-center space-y-4 max-w-md">
+        <div className="rounded-[28px] border border-white/10 bg-white/5 px-8 py-10 text-center space-y-4 max-w-md">
           <p className="page-kicker">Playback issue</p>
-          <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Error loading episode</h2>
+          <h2 className="text-3xl font-display-condensed uppercase tracking-tight font-light">Error loading episode</h2>
           <p className="text-muted">{String(error)}</p>
           <button onClick={() => window.location.reload()} className="btn-outline-ra mx-auto">
             Retry
@@ -156,9 +174,9 @@ export default function ClientEpisode({ slug }: { slug: string }) {
   if (!data) {
     return (
       <div className="min-h-screen bg-page text-body flex items-center justify-center px-6">
-        <div className="ra-panel text-center space-y-4 max-w-md">
+        <div className="rounded-[28px] border border-white/10 bg-white/5 px-8 py-10 text-center space-y-4 max-w-md">
           <p className="page-kicker">Episode detail</p>
-          <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Episode not found</h2>
+          <h2 className="text-3xl font-display-condensed uppercase tracking-tight font-light">Episode not found</h2>
           <p className="text-muted">The episode you are looking for might have moved or no longer exists.</p>
           <Link href="/episodes" className="btn-outline-ra mx-auto">
             Browse Episodes
@@ -178,166 +196,156 @@ export default function ClientEpisode({ slug }: { slug: string }) {
 
   return (
     <div className="min-h-screen bg-page text-body">
-      <div className="page-shell py-12 space-y-10">
+      <div className="page-shell py-12 space-y-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="page-kicker">Podcast detail</p>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/50">Afropop Worldwide</p>
+          <div className="space-y-1">
+            <p className="text-[0.65rem] uppercase tracking-[0.45em] text-white/40">Podcast detail</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-white/50">Afropop Worldwide</p>
           </div>
           <Link
             href="/episodes"
-            className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.35em] uppercase text-white/70 hover:text-accent-v transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.35em] uppercase text-white/60 hover:text-accent-v transition-colors"
           >
             <span className="hidden sm:inline">Back to episodes</span>
             <span className="sm:hidden">Episodes</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14m-6-6l6 6-6 6" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14m-6-6 6 6-6 6" />
             </svg>
           </Link>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <article className="relative overflow-hidden rounded-[32px] border border-white/5 bg-elevated min-h-[380px] lg:col-span-2">
-            {data.image ? (
-              <img
-                src={data.image}
-                alt={data.title}
-                className="absolute inset-0 h-full w-full object-cover opacity-70"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.onerror = null
-                  target.style.display = 'none'
-                }}
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />
+        <section className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)] items-start">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <p className="text-[0.65rem] uppercase tracking-[0.45em] text-white/40">
+                Broadcast {publishedShort || '—'}
+              </p>
+              <h1 className="font-display-condensed text-[clamp(2.75rem,6vw,4.8rem)] font-light uppercase tracking-[0.06em] leading-[0.9] text-white">
+                {data.title}
+              </h1>
+            </div>
+            {summaryExcerpt && (
+              <p className="text-base md:text-lg leading-relaxed text-white/75 max-w-3xl">
+                {summaryExcerpt}
+              </p>
             )}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-black/10" />
-            <div className="relative h-full p-6 md:p-10 flex flex-col justify-between gap-6">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/70">
-                  <span className="meta-pill">Broadcast</span>
-                  {publishedShort && <span className="meta-pill text-white/60">{publishedShort}</span>}
-                  {data.region && <span className="ra-chip">{data.region}</span>}
-                  {data.genre && <span className="ra-chip">{data.genre}</span>}
-                </div>
-                <h1 className="page-title text-4xl md:text-5xl text-white leading-[0.95]">
-                  {data.title}
-                </h1>
-                {summary && (
-                  <p className="text-white/75 text-base md:text-lg max-w-3xl leading-relaxed">
-                    {summary}
-                  </p>
-                )}
+            <div className="flex flex-wrap gap-4 text-[0.65rem] uppercase tracking-[0.35em] text-white/55">
+              {durationLabel && <span>{durationLabel}</span>}
+              {data.region && <span>{data.region}</span>}
+              {data.genre && <span>{data.genre}</span>}
+            </div>
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {categories.slice(0, 4).map((category: string, index: number) => (
+                  <span
+                    key={`${category}-${index}`}
+                    className="px-3 py-1 rounded-full border border-white/15 text-[0.6rem] uppercase tracking-[0.35em] text-white/65"
+                  >
+                    {category}
+                  </span>
+                ))}
               </div>
-              {categories && categories.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {categories.slice(0, 6).map((category: string, index: number) => (
-                    <span key={`${category}-${index}`} className="ra-chip text-xs tracking-[0.2em]">
-                      {category}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </article>
+            )}
+          </div>
 
-          <aside className="ra-panel ra-panel-strong flex flex-col gap-5 lg:col-span-1">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-[0.35em] text-white/50">Now playing</p>
-              <p className="text-2xl font-semibold text-white leading-tight">{data.title}</p>
-              <p className="text-sm text-white/60">{data.author || 'Afropop Worldwide'}</p>
-            </div>
+          <div className="space-y-4">
+            {data.image && (
+              <figure className="rounded-[28px] overflow-hidden border border-white/10 bg-white/5">
+                <img
+                  src={data.image}
+                  alt={data.title}
+                  className="h-64 w-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.onerror = null
+                    target.style.display = 'none'
+                  }}
+                />
+              </figure>
+            )}
 
-            {audioUrl ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 flex-wrap">
+            <div className="rounded-[28px] border border-white/10 bg-white/[0.02] p-6 space-y-5 backdrop-blur-sm">
+              <div className="space-y-1">
+                <p className="text-[0.55rem] uppercase tracking-[0.55em] text-white/35">Now playing</p>
+                <p className="text-xl font-medium text-white leading-snug">{data.title}</p>
+                <p className="text-sm text-white/60">{data.author || 'Afropop Worldwide'}</p>
+              </div>
+
+              {audioUrl ? (
+                <div className="space-y-4">
                   <button
                     onClick={handlePrimaryAction}
-                    className="btn-accent flex-1 min-w-[160px] justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-full rounded-full border border-white/15 bg-transparent px-6 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.45em] text-white transition-colors hover:border-white/45"
                   >
-                    {isCurrent && isPlaying ? (
-                      <>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 9h2v6H9zm4 0h2v6h-2z" />
-                        </svg>
-                        Pause
-                      </>
-                    ) : (
-                      <>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 5v14l11-7z" />
-                        </svg>
-                        Play Episode
-                      </>
-                    )}
+                    {isCurrent && isPlaying ? 'Pause' : 'Play Episode'}
                   </button>
-                  <button
-                    onClick={() => handleSkip(-15)}
-                    disabled={!isCurrent}
-                    className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    -15s
-                  </button>
-                  <button
-                    onClick={() => handleSkip(30)}
-                    disabled={!isCurrent}
-                    className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    +30s
-                  </button>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-[0.7rem] font-mono uppercase tracking-[0.35em] text-white/60 mb-2">
-                    <span>{formatTime(sliderValue)}</span>
-                    <span>{formatTime(isCurrent ? duration : numericDuration)}</span>
+                  <div className="flex items-center justify-between gap-3 text-[0.65rem] uppercase tracking-[0.35em] text-white/60">
+                    <button
+                      onClick={() => handleSkip(-15)}
+                      disabled={!isCurrent}
+                      className="flex-1 rounded-full border border-white/15 px-4 py-2 hover:border-white/35 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      −15s
+                    </button>
+                    <button
+                      onClick={() => handleSkip(30)}
+                      disabled={!isCurrent}
+                      className="flex-1 rounded-full border border-white/15 px-4 py-2 hover:border-white/35 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      +30s
+                    </button>
                   </div>
-                  <input
-                    aria-label="Seek within episode"
-                    type="range"
-                    min={0}
-                    max={sliderMax}
-                    value={sliderValue}
-                    disabled={!isCurrent}
-                    onChange={(event) => handleSeek(Number(event.target.value))}
-                    className="w-full h-2 rounded-full cursor-pointer accent-[var(--accent)] disabled:cursor-not-allowed bg-white/15"
-                  />
+                  <div>
+                    <div className="flex items-center justify-between text-[0.55rem] font-mono uppercase tracking-[0.35em] text-white/45 mb-2">
+                      <span>{formatTime(sliderValue)}</span>
+                      <span>{formatTime(isCurrent ? duration : numericDuration)}</span>
+                    </div>
+                    <input
+                      aria-label="Seek within episode"
+                      type="range"
+                      min={0}
+                      max={sliderMax}
+                      value={sliderValue}
+                      disabled={!isCurrent}
+                      onChange={(event) => handleSeek(Number(event.target.value))}
+                      className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--accent)] disabled:cursor-not-allowed bg-white/20"
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-white/15 p-4 text-center text-sm text-white/60">
-                Audio not available for this episode.
-              </div>
-            )}
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={shareEpisode}
-                className="inline-flex flex-1 min-w-[160px] items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 hover:text-white"
-              >
-                Share
-              </button>
-              {audioUrl && (
-                <a
-                  href={audioUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-1 min-w-[160px] items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 hover:text-white"
-                >
-                  Download
-                </a>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-white/15 p-4 text-center text-sm text-white/60">
+                  Audio not available for this episode.
+                </div>
               )}
-            </div>
-          </aside>
-        </div>
 
-        <div className="grid gap-6 lg:grid-cols-12">
-          <div className="space-y-6 lg:col-span-8">
-            <section className="ra-panel ra-panel-strong space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <h2 className="text-lg font-semibold uppercase tracking-[0.35em] text-white/80">Episode overview</h2>
-                {audioUrl && <span className="meta-pill">Deep listen</span>}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  onClick={shareEpisode}
+                  className="rounded-full border border-white/15 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-white/70 hover:text-white"
+                >
+                  Share
+                </button>
+                {audioUrl && (
+                  <a
+                    href={audioUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-white/15 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-white/70 hover:text-white text-center"
+                  >
+                    Download
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid gap-10 lg:grid-cols-12">
+          <div className="space-y-8 lg:col-span-8">
+            <section className="rounded-[32px] border border-white/10 p-8 space-y-4 bg-white/[0.02]">
+              <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.45em] text-white/40">
+                <span>Episode overview</span>
+                {audioUrl && <span>Deep listen</span>}
               </div>
               <div
                 className="text-base leading-relaxed text-white/80 space-y-4"
@@ -347,46 +355,49 @@ export default function ClientEpisode({ slug }: { slug: string }) {
               />
             </section>
 
-            <section className="ra-panel space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Transcript</h3>
+            <section className="rounded-[32px] border border-white/10 p-8 space-y-4">
+              <div className="flex items-center justify-between text-[0.65rem] uppercase tracking-[0.45em] text-white/40">
+                <span>Transcript</span>
                 {audioUrl && (
                   <a
                     href={audioUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-semibold uppercase tracking-[0.3em] text-accent-v hover:opacity-80"
+                    className="text-[0.65rem] uppercase tracking-[0.4em] text-accent-v hover:opacity-80"
                   >
                     Download MP3
                   </a>
                 )}
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 space-y-2">
-                <p>The full transcript for this broadcast will appear soon.</p>
-                <p className="text-white/50">Want early access? Join the community slack for production notes.</p>
+              <div className="rounded-[24px] border border-dashed border-white/15 bg-white/[0.03] p-6 text-sm text-white/70 space-y-2">
+                <p>A lightly edited transcript will appear shortly after broadcast.</p>
+                <p className="text-white/50">Join the community channel for early production notes and cue sheets.</p>
               </div>
             </section>
           </div>
 
-          <aside className="space-y-6 lg:col-span-4">
-            <section className="ra-panel space-y-4">
-              <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Episode facts</h3>
+          <aside className="space-y-8 lg:col-span-4">
+            <section className="rounded-[32px] border border-white/10 p-6 space-y-4 bg-white/[0.02]">
+              <h3 className="text-[0.65rem] uppercase tracking-[0.45em] text-white/40">Episode facts</h3>
               <dl className="space-y-3 text-sm">
                 {detailItems.map((item) => (
-                  <div key={item.label} className="flex items-center justify-between gap-4 border-b border-white/5 pb-2 last:pb-0 last:border-none">
-                    <dt className="text-white/50 uppercase tracking-[0.3em] text-[0.65rem]">{item.label}</dt>
-                    <dd className="text-white font-semibold text-right">{item.value}</dd>
+                  <div key={item.label} className="flex items-center justify-between gap-4 border-b border-white/5 pb-2 last:border-none last:pb-0">
+                    <dt className="text-white/45 uppercase tracking-[0.3em] text-[0.6rem]">{item.label}</dt>
+                    <dd className="text-white font-medium text-right">{item.value}</dd>
                   </div>
                 ))}
               </dl>
             </section>
 
-            {categories && categories.length > 0 && (
-              <section className="ra-panel space-y-3">
-                <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Signal tags</h3>
+            {categories.length > 4 && (
+              <section className="rounded-[32px] border border-white/10 p-6 space-y-3">
+                <h3 className="text-[0.65rem] uppercase tracking-[0.45em] text-white/40">Signal tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {categories.map((category: string, index: number) => (
-                    <span key={`${category}-${index}`} className="ra-chip text-xs tracking-[0.2em]">
+                  {categories.slice(4).map((category: string, index: number) => (
+                    <span
+                      key={`meta-${category}-${index}`}
+                      className="px-3 py-1 rounded-full border border-white/15 text-[0.6rem] uppercase tracking-[0.35em] text-white/65"
+                    >
                       {category}
                     </span>
                   ))}
@@ -395,10 +406,10 @@ export default function ClientEpisode({ slug }: { slug: string }) {
             )}
 
             {data.link && (
-              <section className="ra-panel ra-panel-strong space-y-3">
-                <h3 className="text-base font-semibold uppercase tracking-[0.35em] text-white/70">Original post</h3>
-                <p className="text-sm text-white/70">
-                  Dive into the producer notes, playlist links, and companion essays on our primary feed.
+              <section className="rounded-[32px] border border-white/10 p-6 space-y-3">
+                <h3 className="text-[0.65rem] uppercase tracking-[0.45em] text-white/40">Original post</h3>
+                <p className="text-sm text-white/65">
+                  Visit the full program notes, playlists, and producer commentary on our primary feed.
                 </p>
                 <a
                   href={data.link}
