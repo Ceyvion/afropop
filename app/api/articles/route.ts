@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 const CRAFT_GRAPHQL_URL =
-  process.env.CRAFT_GRAPHQL_URL || 'https://afropop.org/api'
+  process.env.CRAFT_GRAPHQL_URL || 'https://afropop.org/actions/graphql/api'
 const CRAFT_API_TOKEN =
   process.env.CRAFT_API_TOKEN || 'eak0Xj8_E_uiijiJRozmWzIn2hiIyCbS'
 
