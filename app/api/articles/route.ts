@@ -7,7 +7,7 @@ const CRAFT_API_TOKEN =
 
 const GET_LATEST_CONTENT = `
   query GetLatestContent($limit: Int!) {
-    entries(section: ["articles", "features"], orderBy: "postDate desc", limit: $limit) {
+    entries(section: ["article", "feature"], orderBy: "postDate desc", limit: $limit) {
       id
       title
       slug
@@ -15,13 +15,15 @@ const GET_LATEST_CONTENT = `
       sectionHandle
       url
       excerpt
-      featuredImage {
-        url
-      }
       author {
         ... on users_User {
           fullName
         }
+      }
+      featuredImage {
+        ... on assets_Asset {
+        url
+      }
       }
     }
   }
