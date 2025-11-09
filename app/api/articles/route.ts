@@ -65,7 +65,19 @@ export async function GET(request: Request) {
 
     const json = await response.json()
     if (json.errors?.length) {
-      throw new Error(json.errors.map((err: any) => err.message).join(', '))
+      console.error(
+        'Craft GraphQL errors:',
+        JSON.stringify(json.errors, null, 2)
+      )
+      return NextResponse.json(
+        {
+          items: [],
+          count: 0,
+          source: 'craft',
+          error: 'Craft GraphQL query failed',
+        },
+        { status: 502 }
+      )
     }
 
     const items = json?.data?.entries || []
