@@ -2,6 +2,7 @@
 // Search API route using FeedBurner integration
 
 import { NextResponse } from 'next/server'
+import { searchRSSFeed } from '@/app/lib/rss-service'
 
 export async function GET(request: Request) {
   try {
@@ -22,13 +23,6 @@ export async function GET(request: Request) {
     if (dateTo) filters.dateTo = dateTo
     
     console.log(`Searching RSS feed: query="${query}", filters=`, filters)
-    
-    // Dynamically import the RSS service
-    const mod: any = await import('../../lib/rss-service-feedburner.js')
-    const searchRSSFeed = (mod as any).searchRSSFeed || mod.default?.searchRSSFeed
-    if (typeof searchRSSFeed !== 'function') {
-      throw new Error('RSS service not loaded correctly')
-    }
     
     // Search the RSS feed
     const results = await searchRSSFeed(query, filters)

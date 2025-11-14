@@ -2,20 +2,16 @@
 // Item API route using FeedBurner integration
 
 import { NextResponse } from 'next/server'
+import { getRSSItemById } from '@/app/lib/rss-service'
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    // Resolve the params promise
-    const { id } = await params;
+    const { id } = params
     
     console.log(`Fetching item by ID: ${id}`)
-    
-    // Dynamically import the RSS service
-    const rssService = await import('../../../lib/rss-service-feedburner.js')
-    const { getRSSItemById } = rssService
     
     // Get item by ID
     const item = await getRSSItemById(id)

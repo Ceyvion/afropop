@@ -3,6 +3,13 @@ import { NextResponse } from 'next/server'
 import Parser from 'rss-parser'
 import { RSS_REQUEST_HEADERS } from '@/app/lib/rss-config'
 
+const ALLOWED_RSS_HOSTS = new Set([
+  'feeds.feedburner.com',
+  'afropop.org',
+  'f.prxu.org',
+  'feeds.prx.org',
+])
+
 // Define the type for our RSS items
 type RSSItem = {
   title: string
@@ -58,12 +65,26 @@ export async function GET(request: Request) {
     }
 
     // Validate URL format
+    let parsed: URL
     try {
-      new URL(url)
-    } catch (e) {
+      parsed = new URL(url)
+    } catch {
       return NextResponse.json(
         { error: 'Invalid URL format' }, 
         { status: 400 }
+      )
+    }
+
+    if (!ALLOWED_RSS_HOSTS.has(parsed.hostname)) {
+      return NextResponse.json(
+        { error: 'Requested host is not permitted' },
+        { status: 403 },
+      )
+    }
+    if (parsed.protocol !== 'https:') {
+      return NextResponse.json(
+        { error: 'Only HTTPS feeds are allowed' },
+        { status: 400 },
       )
     }
 

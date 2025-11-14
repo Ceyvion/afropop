@@ -2,6 +2,7 @@
 // Episodes API route using FeedBurner integration
 
 import { NextResponse } from 'next/server'
+import { getRSSItemsByType } from '@/app/lib/rss-service'
 
 export async function GET(request: Request) {
   try {
@@ -10,13 +11,6 @@ export async function GET(request: Request) {
     const offset = searchParams.get('offset') || '0'
     
     console.log(`Fetching episodes: limit=${limit}, offset=${offset}`)
-    
-    // Dynamically import the RSS service
-    const mod: any = await import('../../lib/rss-service-feedburner.js')
-    const getRSSItemsByType = (mod as any).getRSSItemsByType || mod.default?.getRSSItemsByType
-    if (typeof getRSSItemsByType !== 'function') {
-      throw new Error('RSS service not loaded correctly')
-    }
     
     // Get episodes (items with type 'Episode')
     const items = await getRSSItemsByType('Episode')
