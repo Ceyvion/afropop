@@ -1,1 +1,1 @@
-export * from './rss-service'
+export * from './rss-service/index'
