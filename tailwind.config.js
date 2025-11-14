@@ -13,6 +13,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'display': ['var(--font-dm-sans)'],
+        'display-condensed': ['var(--font-display-condensed)'],
         'body': ['var(--font-inter)'],
         'mono': ['var(--font-ibm-plex-mono)'],
       },
@@ -26,6 +27,18 @@ module.exports = {
         'accent-100': '#FFE6DC',
         'success': '#18A957',
         'warn': '#E7A500',
+        // Poster palette (solid, pop-art)
+        'poster-mustard': '#E0B500',
+        'poster-sky': '#60A5FA',
+        'poster-coral': '#FF6B57',
+        'poster-lilac': '#C084FC',
+        'canvas': '#F3F4F6',
+      },
+      maxWidth: {
+        container: '1200px',
+      },
+      borderRadius: {
+        card: '24px',
       },
     },
   },
