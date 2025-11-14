@@ -1,15 +1,12 @@
 // app/api/item/[id]/route.ts
 // Item API route using FeedBurner integration
 
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { getRSSItemById } from '@/app/lib/rss-service'
 
-export async function GET(
-  request: Request,
-  context: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const raw = context.params?.id ?? ''
+    const raw = params?.id ?? ''
     const id = raw
       .split('/')
       .filter(Boolean)
