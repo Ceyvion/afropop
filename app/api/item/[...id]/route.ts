@@ -6,11 +6,15 @@ import { getRSSItemById } from '@/app/lib/rss-service'
 
 export async function GET(
   request: Request,
-  context: { params: { id: string[] } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id: raw } = context.params
-    const id = raw.map((segment) => decodeURIComponent(segment)).join('/')
+    const raw = context.params?.id ?? ''
+    const id = raw
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => decodeURIComponent(segment))
+      .join('/')
     
     console.log(`Fetching item by ID: ${id}`)
     
