@@ -2,7 +2,7 @@
 // Features API route using FeedBurner integration
 
 import { NextResponse } from 'next/server'
-import { getRSSItemsByType } from '@/app/lib/rss-service'
+import { getRSSItemsByType, NormalizedRSSItem } from '@/app/lib/rss-service'
 
 export async function GET(request: Request) {
   try {
@@ -13,12 +13,12 @@ export async function GET(request: Request) {
     console.log(`Fetching features: limit=${limit}, offset=${offset}`)
     
     // Get features (items with type 'Feature')
-    let items = [];
+    let items: NormalizedRSSItem[] = []
     try {
-      items = await getRSSItemsByType('Feature');
+      items = await getRSSItemsByType('Feature')
     } catch (error) {
-      console.log('No features found in RSS feed, returning empty array');
-      items = [];
+      console.log('No features found in RSS feed, returning empty array')
+      items = []
     }
     
     // Apply pagination
