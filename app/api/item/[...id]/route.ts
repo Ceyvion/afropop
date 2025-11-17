@@ -1,5 +1,5 @@
-// app/api/item/[id]/route.ts
-// Item API route using FeedBurner integration
+// app/api/item/[...id]/route.ts
+// Catch-all Item API route using FeedBurner integration. This preserves IDs that contain '/' characters.
 
 import { NextResponse } from 'next/server'
 import { getRSSItemById } from '@/app/lib/rss-service'
@@ -7,17 +7,20 @@ import { getRSSItemById } from '@/app/lib/rss-service'
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url)
-    const segments = url.pathname.split('/').filter(Boolean)
-    const encodedId = segments.at(-1)
+    const pathname = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
+    const segments = pathname.split('/')
+    const itemIndex = segments.indexOf('item')
+    const encodedSegments = itemIndex >= 0 ? segments.slice(itemIndex + 1) : []
 
-    if (!encodedId) {
+    const hasValidSegment = encodedSegments.some((segment) => segment.length > 0)
+    if (!encodedSegments.length || !hasValidSegment) {
       return NextResponse.json(
         { error: 'Item ID is required in the URL' },
         { status: 400 }
       )
     }
 
-    const id = decodeURIComponent(encodedId)
+    const id = encodedSegments.map((segment) => decodeURIComponent(segment)).join('/')
     console.log(`Fetching item by ID: ${id}`)
 
     // Get item by ID
