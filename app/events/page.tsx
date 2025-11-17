@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { Button } from '@/app/components/Button';
 // Editorial events list layout (no heavy cards)
 
 type RawEvent = {
@@ -262,12 +263,13 @@ export default function Events() {
       <div className="min-h-screen bg-page text-white flex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="text-accent-v">Error loading events: {error}</p>
-          <button
+          <Button
             onClick={() => window.location.reload()}
-            className="btn-outline-ra"
+            variant="outline"
+            size="md"
           >
             Retry
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -649,33 +651,42 @@ export default function Events() {
         <div className="mt-16 fade-in delay-400">
           <h2 className="text-2xl font-display-condensed uppercase tracking-tight text-white mb-6 text-center">Add to Your Calendar</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button
+            <Button
               onClick={() => window.open('/api/calendar-ics', '_blank')}
-              className="btn-outline-ra flex items-center justify-center"
+              variant="outline"
+              size="md"
+              leftIcon={
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              }
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
               Download ICS
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => window.open(`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('c_2c54e0a2af46caecc80ffb8657a18343ac7ec9af0c5f6e9b8cc6b096c7b60422@group.calendar.google.com')}`, '_blank')}
-              className="btn-outline-ra flex items-center justify-center"
+              variant="outline"
+              size="md"
+              leftIcon={
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              }
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
               Add to Google Calendar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => window.open(`webcal://calendar.google.com/calendar/ical/c_2c54e0a2af46caecc80ffb8657a18343ac7ec9af0c5f6e9b8cc6b096c7b60422%40group.calendar.google.com/public/basic.ics`, '_blank')}
-              className="btn-outline-ra flex items-center justify-center"
+              variant="outline"
+              size="md"
+              leftIcon={
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              }
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
               Add to Apple Calendar
-            </button>
+            </Button>
           </div>
         </div>
       </div>

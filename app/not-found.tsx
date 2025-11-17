@@ -1,6 +1,7 @@
 // 404 page with refined design
 import React from 'react'
 import Link from 'next/link'
+import { Button } from '@/app/components/Button'
 
 export default function NotFound() {
   return (
@@ -17,18 +18,12 @@ export default function NotFound() {
           Sorry, we couldn't find the page you're looking for. It might have been removed, had its name changed, or is temporarily unavailable.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link 
-            href="/" 
-            className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white btn-accent text-center transition-colors duration-200 uppercase tracking-wider"
-          >
-            Go Home
-          </Link>
-          <Link 
-            href="/search" 
-            className="px-8 py-4 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 text-center transition-colors duration-200 uppercase tracking-wider"
-          >
-            Search Site
-          </Link>
+          <Button asChild variant="accent" size="lg">
+            <Link href="/">Go Home</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/search">Search Site</Link>
+          </Button>
         </div>
       </div>
     </div>

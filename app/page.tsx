@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { EpisodeCard, FeatureCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useArticles, useEpisodes, useFeatures, useUpcomingEvents } from '@/app/lib/use-rss-data'
+import { Button } from '@/app/components/Button'
 
 const FALLBACK_STORY_IMAGE = 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=600&auto=format&fit=crop&q=60'
 
@@ -197,15 +198,15 @@ export default function Home() {
             </div>
             <p className="hero-copy max-w-3xl">{heroDescription}</p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/episodes" className="btn-hero bg-white text-black">
-                Listen now
-              </Link>
-              <Link href="/archive" className="btn-hero">
-                View archive
-              </Link>
-              <Link href="/pitch" className="btn-hero border-accent-v text-accent-v hover:bg-accent-v hover:text-white">
-                Submit a Pitch
-              </Link>
+              <Button asChild variant="primary" size="lg">
+                <Link href="/episodes">Listen now</Link>
+              </Button>
+              <Button asChild variant="secondary" size="lg">
+                <Link href="/archive">View archive</Link>
+              </Button>
+              <Button asChild variant="accent" size="lg">
+                <Link href="/pitch">Submit a Pitch</Link>
+              </Button>
             </div>
             <div className="flex flex-wrap gap-3">
               {heroTags.map((tag) => (
@@ -255,14 +256,15 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.35em] text-white/50">{profileLocation}</p>
             <p className="text-2xl font-display-condensed leading-tight">{profileName}</p>
             <p className="text-sm text-white/70">{profileSummary}</p>
-            <Link
-              href={profileHref}
-              target={profileExternal ? '_blank' : undefined}
-              rel={profileExternal ? 'noreferrer' : undefined}
-              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-accent-v hover:text-white"
-            >
-              Read feature
-            </Link>
+            <Button asChild variant="primary" size="sm">
+              <Link
+                href={profileHref}
+                target={profileExternal ? '_blank' : undefined}
+                rel={profileExternal ? 'noreferrer' : undefined}
+              >
+                Read feature
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -575,12 +577,9 @@ export default function Home() {
           <p className="text-white/70">
             Afropop Worldwide partners with curators across the diaspora to surface new collectives, venues, and voices.
           </p>
-          <Link
-            href="/events/submit"
-            className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-black transition hover:bg-accent-v hover:text-white"
-          >
-            Submit an event
-          </Link>
+          <Button asChild variant="primary" size="lg">
+            <Link href="/events/submit">Submit an event</Link>
+          </Button>
         </div>
       </section>
     </div>

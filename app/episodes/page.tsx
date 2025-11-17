@@ -1,5 +1,6 @@
 import EpisodeGrid from '@/app/episodes/EpisodeGrid'
 import { getRSSItemsByType } from '@/app/lib/rss-service'
+import { Button } from '@/app/components/Button'
 
 export default async function Episodes() {
   try {
@@ -19,7 +20,7 @@ export default async function Episodes() {
             <EpisodeGrid episodes={episodes} />
           </div>
           <div className="mt-16 text-center fade-in delay-200">
-            <button className="btn-outline-ra">Load More Episodes</button>
+            <Button variant="outline" size="md">Load More Episodes</Button>
           </div>
         </div>
       </div>

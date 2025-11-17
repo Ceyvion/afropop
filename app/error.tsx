@@ -3,6 +3,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { Button } from '@/app/components/Button'
 
 export default function Error() {
   return (
@@ -19,18 +20,12 @@ export default function Error() {
           Sorry, something went wrong on our end. We're working to fix the problem as quickly as possible.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link 
-            href="/" 
-            className="btn-accent text-base uppercase tracking-wider"
-          >
-            Go Home
-          </Link>
-          <Link 
-            href="/support" 
-            className="px-8 py-4 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 text-center transition-colors duration-200 uppercase tracking-wider"
-          >
-            Contact Support
-          </Link>
+          <Button asChild variant="accent" size="lg">
+            <Link href="/">Go Home</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/support">Contact Support</Link>
+          </Button>
         </div>
       </div>
     </div>

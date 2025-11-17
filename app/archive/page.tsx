@@ -8,6 +8,7 @@ import { EpisodeCard, FeatureCard, EventCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useRSSFeed } from '@/app/lib/use-rss-data'
 import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
+import { Button } from '@/app/components/Button'
 
 export default function Archive() {
   const { data: feedData, loading: feedLoading, error: feedError } = useRSSFeed()
@@ -179,12 +180,13 @@ export default function Archive() {
           <p className="page-kicker">Archive</p>
           <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Error Loading Archive</h2>
           <p className="text-white/60">{String(error)}</p>
-          <button 
+          <Button
             onClick={() => window.location.reload()}
-            className="btn-outline-ra mx-auto"
+            variant="outline"
+            size="md"
           >
             Retry
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -409,12 +411,13 @@ export default function Archive() {
             {/* Manual Load More fallback */}
             {visibleCount < filteredResults.length && (
               <div className="mt-10 text-center">
-                <button 
+                <Button
                   onClick={() => setVisibleCount(c => c + 12)}
-                  className="btn-outline-ra"
+                  variant="outline"
+                  size="md"
                 >
                   Load More
-                </button>
+                </Button>
               </div>
             )}
           </div>

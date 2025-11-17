@@ -1,4 +1,5 @@
 import Parser from 'rss-parser'
+import type { RSSItem as ParserItem } from '@/app/lib/rss-parser'
 import { randomUUID } from 'node:crypto'
 import {
   AFROPOP_RSS_URL,
@@ -114,7 +115,7 @@ async function loadFeedFromSources() {
   throw lastError instanceof Error ? lastError : new Error('Unknown RSS error')
 }
 
-function determineContentType(item: Parser.Item): ContentType {
+function determineContentType(item: ParserItem): ContentType {
   const categories = (item.categories || []).map((entry) => entry.toLowerCase())
   if (categories.some((cat) => cat.includes('feature') || cat.includes('article') || cat.includes('story'))) {
     return 'Feature'
@@ -134,7 +135,7 @@ function findKeyword(categories: string[], keywords: string[]): string | null {
   return match ?? null
 }
 
-function normalizeRSSItems(items: Parser.Item[]): NormalizedRSSItem[] {
+function normalizeRSSItems(items: ParserItem[]): NormalizedRSSItem[] {
   return items.map((item) => {
     const categories = item.categories || []
     const type = determineContentType(item)

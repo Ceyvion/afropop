@@ -1,6 +1,7 @@
 // Shop page with refined design
 import React from 'react'
 import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
+import { Button } from '@/app/components/Button'
 
 export default function Shop() {
   // Sample product data
@@ -95,12 +96,12 @@ export default function Shop() {
                   Each item features exclusive artwork inspired by our favorite album covers.
                 </p>
                 <div className="flex flex-wrap gap-4 pt-2">
-                  <button className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-accent-v hover:text-white">
+                  <Button variant="primary" size="lg">
                     Shop Collection
-                  </button>
-                  <button className="btn-outline-ra">
+                  </Button>
+                  <Button variant="outline" size="lg">
                     Learn More
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -113,9 +114,9 @@ export default function Shop() {
           <p className="text-white/70 mb-8 max-w-2xl mx-auto">
             Our full collection is available in our external store with even more merchandise and exclusive items.
           </p>
-          <button className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-xs font-semibold uppercase tracking-[0.35em] text-black transition hover:bg-accent-v hover:text-white">
+          <Button variant="primary" size="lg">
             Visit External Store
-          </button>
+          </Button>
         </div>
       </div>
     </div>

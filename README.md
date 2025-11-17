@@ -57,7 +57,8 @@ Design Tokens
 
 Typography
 - Display: `Anton` via `font-display-condensed` (all-caps in hero)
-- UI/Body: `Inter` via `font-body`
+- Primary Sans: `Outfit` via `font-body`
+- Editorial Sans: `Archivo` via `font-editorial` (use for long-form or labels that need extra structure)
 - Mono: `IBM Plex Mono` via `font-mono`
 
 Layout & Utilities

@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import { Button } from '@/app/components/Button'
 
 type FiltersMap = Record<string, string[]>
 
@@ -97,12 +98,14 @@ const FilterRail = ({ onChange, onApply, initialSelected }: FilterRailProps) => 
 
         {/* Tasteful apply area pinned at bottom of the rail */}
         <div className="mt-3 pt-4 border-t border-white/10 bg-[#0b0b10]/80 backdrop-blur">
-          <button
-            className="w-full btn-accent text-sm"
+          <Button
+            variant="accent"
+            size="sm"
+            fullWidth
             onClick={() => onApply?.(selectedFilters)}
           >
             Apply Filters
-          </button>
+          </Button>
         </div>
       </div>
     </div>

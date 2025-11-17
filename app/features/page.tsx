@@ -5,6 +5,7 @@ import React from 'react'
 import Link from 'next/link'
 import { FeatureCard } from '@/app/components/Cards'
 import { useFeatures } from '@/app/lib/use-rss-data'
+import { Button } from '@/app/components/Button'
 
 export default function Features() {
   // Get all features from the RSS feed
@@ -34,12 +35,13 @@ export default function Features() {
             <p className="text-white/60 max-w-md mx-auto">
               {error}
             </p>
-            <button
+            <Button
               onClick={() => window.location.reload()}
-              className="btn-outline-ra mx-auto"
+              variant="outline"
+              size="md"
             >
               Retry
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="fade-in delay-100">
@@ -69,7 +71,7 @@ export default function Features() {
 
         {/* Load More */}
         <div className="mt-16 text-center fade-in delay-200">
-          <button className="btn-outline-ra">Load More Features</button>
+          <Button variant="outline" size="md">Load More Features</Button>
         </div>
       </div>
     </div>

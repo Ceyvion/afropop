@@ -12,10 +12,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'display': ['var(--font-dm-sans)'],
-        'display-condensed': ['var(--font-display-condensed)'],
-        'body': ['var(--font-inter)'],
-        'mono': ['var(--font-ibm-plex-mono)'],
+        'display': ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        'display-condensed': ['var(--font-display-condensed)', 'sans-serif'],
+        'body': ['var(--font-outfit)', 'var(--font-archivo)', 'sans-serif'],
+        'editorial': ['var(--font-archivo)', 'sans-serif'],
+        'mono': ['var(--font-ibm-plex-mono)', 'monospace'],
       },
       colors: {
         'ink': '#0B0B0C',

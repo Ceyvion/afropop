@@ -1,5 +1,6 @@
 // Support page with refined design
 import React from 'react'
+import { Button } from '@/app/components/Button'
 
 export default function Support() {
   // Sample tier data
@@ -88,15 +89,13 @@ export default function Support() {
                   ))}
                 </ul>
                 
-                <button 
-                  className={`w-full py-4 px-6 border border-transparent text-base font-bold rounded-md transition-colors duration-200 uppercase tracking-wider ${
-                    tier.featured 
-                      ? 'btn-accent hover:bg-accent-strong-v text-white' 
-                      : 'bg-ink text-white hover:bg-gray-900'
-                  }`}
+                <Button
+                  variant={tier.featured ? 'accent' : 'secondary'}
+                  size="lg"
+                  fullWidth
                 >
                   Choose {tier.name}
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -111,19 +110,20 @@ export default function Support() {
           
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             {['$10', '$25', '$50', '$100', 'Other'].map((amount) => (
-              <button
+              <Button
                 key={amount}
-                className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200"
+                variant="outline"
+                size="md"
               >
                 {amount}
-              </button>
+              </Button>
             ))}
           </div>
-          
+
           <div className="text-center">
-            <button className="px-8 py-4 border border-transparent text-base font-bold rounded-md text-white btn-accent transition-colors duration-200 uppercase tracking-wider">
+            <Button variant="accent" size="lg">
               Donate Now
-            </button>
+            </Button>
           </div>
         </div>
         
