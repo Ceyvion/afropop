@@ -248,10 +248,10 @@ export default function Events() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
+      <div className="min-h-screen bg-page text-white flex items-center justify-center">
         <div className="text-center">
           <div className="spinner spinner-lg mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading events...</p>
+          <p className="mt-4 text-white/60">Loading events...</p>
         </div>
       </div>
     );
@@ -259,12 +259,12 @@ export default function Events() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500">Error loading events: {error}</p>
-          <button 
+      <div className="min-h-screen bg-page text-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-accent-v">Error loading events: {error}</p>
+          <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 btn-accent rounded-md transition-colors"
+            className="btn-outline-ra"
           >
             Retry
           </button>
@@ -283,24 +283,25 @@ export default function Events() {
   const canSuggestNextMonth = !advanced.month && (timePreset !== 'month') && (derived.allMonths.includes(nmKey))
 
   return (
-    <div className="min-h-screen bg-page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-10 fade-in">
-          <h1 className="text-3xl md:text-4xl font-bold text-ink mb-6">Events</h1>
-          <p className="text-lg text-gray-600 max-w-3xl">
-            Join us for live performances, workshops, and cultural celebrations around the world.
+    <div className="min-h-screen bg-page text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-10 fade-in space-y-4">
+          <p className="page-kicker">Events</p>
+          <h1 className="page-title text-4xl md:text-5xl leading-tight">Join us across the diaspora.</h1>
+          <p className="text-lg text-white/60 max-w-3xl">
+            Live performances, workshops, and cultural celebrations around the world.
           </p>
         </div>
 
         {/* FilterBar: Search + Time + Location + More (minimal) */}
         <div className="mb-3 fade-in delay-100">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
+          <div className="ra-panel p-4">
             <div className="flex flex-col md:flex-row md:items-center gap-3">
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by artist, city, venue, or keyword"
-                className="w-full md:flex-1 px-4 py-2.5 border border-gray-300 rounded-md bg-white text-sm"
+                className="input-dark w-full md:flex-1"
               />
               <div className="flex items-center gap-2 flex-wrap">
                 {[
@@ -310,29 +311,43 @@ export default function Events() {
                 ].map(({ key, label }) => (
                   <button
                     key={key}
+                    role="button"
+                    aria-pressed={timePreset === key}
                     onClick={() => { setAdvanced((a) => ({ ...a, month: undefined })); setTimePreset(key as any) }}
-                    className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${timePreset === key ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                    className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${timePreset === key ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                   >
                     {label}
                   </button>
                 ))}
                 <button
+                  role="button"
+                  aria-pressed={ui.showCityPicker}
+                  aria-expanded={ui.showCityPicker}
                   onClick={() => setUi((u) => ({ ...u, showCityPicker: !u.showCityPicker }))}
-                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${location ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                  className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${location ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                   title="Filter by city"
                 >
                   {location ? location : 'Anywhere'}
                 </button>
                 <button
+                  role="button"
+                  aria-pressed={ui.showAdvanced}
+                  aria-expanded={ui.showAdvanced}
                   onClick={() => setUi((u) => ({ ...u, showAdvanced: !u.showAdvanced }))}
-                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${ui.showAdvanced ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                  className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${ui.showAdvanced ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                 >
                   More filters
                 </button>
                 {anyActive && (
                   <button
-                    onClick={() => { setQuery(''); setLocation(null); setAdvanced({}); setTimePreset('upcoming'); setUi((u) => ({ ...u, showAdvanced: false })); }}
-                    className="px-3 py-1.5 text-sm font-semibold text-gray-700 hover:text-ink"
+                    onClick={() => {
+                      setQuery('');
+                      setLocation(null);
+                      setAdvanced({});
+                      setTimePreset('upcoming');
+                      setUi({ showAdvanced: false, showCityPicker: false, showAllCities: false });
+                    }}
+                    className="px-3 py-1.5 text-xs uppercase tracking-[0.3em] font-semibold text-white/70 hover:text-accent-v transition"
                   >
                     Clear
                   </button>
@@ -347,11 +362,11 @@ export default function Events() {
           <div className="mb-4 fade-in">
             <div className="flex flex-wrap items-center gap-2">
               {timePreset !== 'upcoming' && !advanced.month && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink text-white text-sm">
+                <span className="ra-chip">
                   {timePreset === 'week' ? 'This Week' : 'This Month'}
                   <button
                     onClick={() => setTimePreset('upcoming')}
-                    className="opacity-80 hover:opacity-100"
+                    className="ml-2 opacity-80 hover:opacity-100"
                     aria-label="Clear time preset"
                   >
                     ×
@@ -359,11 +374,11 @@ export default function Events() {
                 </span>
               )}
               {advanced.month && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink text-white text-sm">
+                <span className="ra-chip">
                   {monthLabel(advanced.month)}
                   <button
                     onClick={() => setAdvanced((a) => ({ ...a, month: undefined }))}
-                    className="opacity-80 hover:opacity-100"
+                    className="ml-2 opacity-80 hover:opacity-100"
                     aria-label="Clear month filter"
                   >
                     ×
@@ -371,11 +386,11 @@ export default function Events() {
                 </span>
               )}
               {location && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink text-white text-sm">
+                <span className="ra-chip">
                   {location}
                   <button
                     onClick={() => setLocation(null)}
-                    className="opacity-80 hover:opacity-100"
+                    className="ml-2 opacity-80 hover:opacity-100"
                     aria-label="Clear city filter"
                   >
                     ×
@@ -383,11 +398,11 @@ export default function Events() {
                 </span>
               )}
               {(advanced.tags && advanced.tags.length > 0) && advanced.tags.map((t) => (
-                <span key={`tag-pill-${t}`} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink text-white text-sm">
+                <span key={`tag-pill-${t}`} className="ra-chip">
                   {t}
                   <button
                     onClick={() => setAdvanced((a) => ({ ...a, tags: (a.tags || []).filter((x) => x !== t) }))}
-                    className="opacity-80 hover:opacity-100"
+                    className="ml-2 opacity-80 hover:opacity-100"
                     aria-label={`Clear tag ${t}`}
                   >
                     ×
@@ -395,11 +410,11 @@ export default function Events() {
                 </span>
               ))}
               {advanced.includePast && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink text-white text-sm">
+                <span className="ra-chip">
                   Past included
                   <button
                     onClick={() => setAdvanced((a) => ({ ...a, includePast: false }))}
-                    className="opacity-80 hover:opacity-100"
+                    className="ml-2 opacity-80 hover:opacity-100"
                     aria-label="Clear include past"
                   >
                     ×
@@ -413,23 +428,25 @@ export default function Events() {
         {/* City inline picker (progressive, inline, not modal) */}
         {ui.showCityPicker && (
           <div className="mb-4 fade-in">
-            <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-200 transition-all duration-300 ease-in-out">
+            <div className="ra-panel p-4">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-bold uppercase tracking-wider text-gray-500">City</div>
+                <div className="text-xs font-bold uppercase tracking-[0.35em] text-white/50">City</div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setUi((u) => ({ ...u, showAllCities: !u.showAllCities }))} className="text-accent-v text-xs font-semibold">
+                  <button onClick={() => setUi((u) => ({ ...u, showAllCities: !u.showAllCities }))} className="text-accent-v text-xs font-semibold uppercase tracking-[0.3em]">
                     {ui.showAllCities ? 'Top only' : 'Show all'}
                   </button>
                 </div>
               </div>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {(
                   ui.showAllCities ? derived.allCities : derived.topCities
                 ).map((c) => (
                   <button
                     key={c}
+                    role="button"
+                    aria-pressed={location === c}
                     onClick={() => { setLocation((cur) => (cur === c ? null : c)); setUi((u) => ({ ...u, showCityPicker: false })) }}
-                    className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${location === c ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                    className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${location === c ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                   >
                     {c}
                   </button>
@@ -442,16 +459,18 @@ export default function Events() {
         {/* AdvancedPanel: Month + Tags + Include past (collapsed by default) */}
         {ui.showAdvanced && (
           <div className="mb-6 fade-in">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 transition-all duration-300 ease-in-out">
+            <div className="ra-panel p-4">
               <div className="grid gap-4 md:grid-cols-3">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Month</div>
+                  <div className="text-xs font-bold uppercase tracking-[0.35em] text-white/50 mb-2">Month</div>
                   <div className="flex flex-wrap gap-2">
                     {derived.allMonths.map((m) => (
                       <button
                         key={m}
+                        role="button"
+                        aria-pressed={advanced.month === m}
                         onClick={() => { setAdvanced((a) => ({ ...a, month: a.month === m ? undefined : m })); setTimePreset('upcoming') }}
-                        className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${advanced.month === m ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                        className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${advanced.month === m ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                       >
                         {monthLabel(m)}
                       </button>
@@ -459,13 +478,15 @@ export default function Events() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Tags</div>
+                  <div className="text-xs font-bold uppercase tracking-[0.35em] text-white/50 mb-2">Tags</div>
                   <div className="flex flex-wrap gap-2">
                     {(derived.topTags.length > 0 ? derived.topTags.slice(0, 6) : CURATED_TAGS.slice(0, 6)).map((t) => (
                       <button
                         key={t}
+                        role="button"
+                        aria-pressed={Boolean(advanced.tags?.includes(t))}
                         onClick={() => setAdvanced((a) => ({ ...a, tags: a.tags?.includes(t) ? (a.tags || []).filter((x) => x !== t) : [ ...(a.tags || []), t ] }))}
-                        className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${advanced.tags?.includes(t) ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                        className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${advanced.tags?.includes(t) ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                       >
                         {t}
                       </button>
@@ -473,14 +494,14 @@ export default function Events() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Options</div>
+                  <div className="text-xs font-bold uppercase tracking-[0.35em] text-white/50 mb-2">Options</div>
                   <div className="flex items-center gap-3">
-                    <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <label className="inline-flex items-center gap-2 text-sm text-white/70">
                       <input
                         type="checkbox"
                         checked={!!advanced.includePast}
                         onChange={(e) => setAdvanced((a) => ({ ...a, includePast: e.target.checked }))}
-                        className="rounded border-gray-300"
+                        className="rounded border-white/20"
                       />
                       Include past events
                     </label>
@@ -490,7 +511,7 @@ export default function Events() {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={() => setAdvanced({})}
-                  className="text-sm text-gray-600 hover:text-ink"
+                  className="text-xs uppercase tracking-[0.3em] text-white/60 hover:text-accent-v transition"
                   title="Clear advanced filters"
                 >
                   Clear advanced
@@ -506,8 +527,10 @@ export default function Events() {
             {derived.topCities.slice(0, 5).map((c) => (
               <button
                 key={`sugg-city-${c}`}
+                role="button"
+                aria-pressed={location === c}
                 onClick={() => setLocation((cur) => (cur === c ? null : c))}
-                className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${location === c ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${location === c ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                 title="Filter by city"
               >
                 {c}
@@ -516,8 +539,10 @@ export default function Events() {
             {canSuggestNextMonth && (
               <button
                 key="sugg-next-month"
+                role="button"
+                aria-pressed={advanced.month === nmKey}
                 onClick={() => setAdvanced((a) => ({ ...a, month: nmKey }))}
-                className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${advanced.month === nmKey ? 'bg-ink text-white border-ink' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                className={`px-3 py-1.5 rounded-full border text-xs uppercase tracking-[0.3em] transition-colors ${advanced.month === nmKey ? 'bg-accent-v text-white border-accent-v' : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'}`}
                 title="Jump to next month"
               >
                 Next Month ({monthLabel(nmKey)})
@@ -529,7 +554,7 @@ export default function Events() {
         {/* Events List (grouped by month) */}
         <div className="fade-in delay-200">
           {derived.orderedKeys.length === 0 ? (
-            <div className="text-gray-600">No events found.</div>
+            <div className="text-white/60 text-center py-12">No events found.</div>
           ) : (
             derived.orderedKeys.map((key) => {
               const list = derived.groups[key]
@@ -537,19 +562,19 @@ export default function Events() {
                 <section key={key} className="mb-6">
                   <button
                     onClick={() => setOpenMonths((m) => ({ ...m, [key]: !m[key] }))}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-md bg-surface border border-sep hover:bg-gray-50 transition-colors"
+                    className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-elevated border border-white/10 hover:border-white/20 transition-colors"
                     aria-expanded={!!openMonths[key]}
                     aria-controls={`month-${key}`}
                   >
                     <span className="text-left">
-                      <span className="text-sm text-muted block">{key}</span>
-                      <span className="text-ink font-bold text-lg">{monthLabel(key)}</span>
+                      <span className="text-xs text-white/50 block uppercase tracking-[0.35em]">{key}</span>
+                      <span className="text-white font-display-condensed text-xl uppercase tracking-tight">{monthLabel(key)}</span>
                     </span>
-                    <span className={`transition-transform duration-300 ${openMonths[key] ? 'rotate-180' : ''}`}>⌄</span>
+                    <span className={`text-white/50 transition-transform duration-300 ${openMonths[key] ? 'rotate-180' : ''}`}>⌄</span>
                   </button>
 
                   <Collapsible open={!!openMonths[key]}>
-                    <ul id={`month-${key}`} className="pt-4 divide-y divide-sep">
+                    <ul id={`month-${key}`} className="pt-4 divide-y divide-white/10">
                       {list.map((ev: RawEvent) => {
                         const { city, venue } = parseLocation(ev.location)
                         const ctaHref = firstUrlFromText(ev.description || '')
@@ -561,25 +586,25 @@ export default function Events() {
                         return (
                           <li key={ev.id} className="py-4">
                             <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
-                              <div className="text-sm text-muted sm:w-56 shrink-0">
+                              <div className="text-xs text-white/50 sm:w-56 shrink-0 uppercase tracking-[0.35em]">
                                 {formatEventDateTimeRange(ev.startDate, ev.endDate)}
                               </div>
                               <div className="flex-1">
-                                <h3 className="text-ink font-semibold leading-snug">{ev.title}</h3>
-                                <div className="mt-1 text-sm text-gray-600">{city}{city && venue ? ', ' : ''}{venue}</div>
-                                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm">
+                                <h3 className="text-white font-semibold leading-snug">{ev.title}</h3>
+                                <div className="mt-1 text-sm text-white/60">{city}{city && venue ? ', ' : ''}{venue}</div>
+                                <div className="mt-2 flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.3em]">
                                   {live && (
-                                    <span className="inline-flex items-center gap-1 text-red-600">
-                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                    <span className="inline-flex items-center gap-1 text-accent-v">
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent-v animate-pulse"></span>
                                       Live now
                                     </span>
                                   )}
                                   {ctaHref && (
-                                    <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:opacity-90">Tickets</a>
+                                    <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="text-accent-v hover:text-white transition">Tickets</a>
                                   )}
                                   <a
                                     href={`/api/event-ics/${encodeURIComponent(ev.id)}`}
-                                    className="text-accent-v hover:opacity-90"
+                                    className="text-accent-v hover:text-white transition"
                                     title="Add to your calendar"
                                   >
                                     Add to calendar
@@ -588,13 +613,13 @@ export default function Events() {
                                     href={`https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(ev.title)}&dates=${startIso}/${endIso}&details=${encodeURIComponent(ev.description || '')}&location=${encodeURIComponent(ev.location || '')}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-500 hover:text-ink"
+                                    className="text-white/50 hover:text-white transition"
                                   >
                                     Google
                                   </a>
                                   <button
                                     onClick={() => setOpenEvents((s) => ({ ...s, [ev.id]: !s[ev.id] }))}
-                                    className="text-accent-v hover:opacity-90 inline-flex items-center gap-1"
+                                    className="text-accent-v hover:text-white transition inline-flex items-center gap-1"
                                     aria-expanded={!!openEvents[ev.id]}
                                     aria-controls={`ev-${ev.id}`}
                                   >
@@ -603,7 +628,7 @@ export default function Events() {
                                   </button>
                                 </div>
                                 <Collapsible open={!!openEvents[ev.id]}>
-                                  <div id={`ev-${ev.id}`} className="mt-2 text-sm text-gray-700">
+                                  <div id={`ev-${ev.id}`} className="mt-3 text-sm text-white/70">
                                     {ev.description || 'No description available.'}
                                   </div>
                                 </Collapsible>
@@ -622,31 +647,31 @@ export default function Events() {
 
         {/* Calendar Integration Options */}
         <div className="mt-16 fade-in delay-400">
-          <h2 className="text-xl font-bold text-ink mb-4 text-center">Add to Your Calendar</h2>
+          <h2 className="text-2xl font-display-condensed uppercase tracking-tight text-white mb-6 text-center">Add to Your Calendar</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button 
+            <button
               onClick={() => window.open('/api/calendar-ics', '_blank')}
-              className="px-6 py-3 border border-gray-300 text-sm font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider flex items-center justify-center"
+              className="btn-outline-ra flex items-center justify-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Download ICS
             </button>
-            <button 
+            <button
               onClick={() => window.open(`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('c_2c54e0a2af46caecc80ffb8657a18343ac7ec9af0c5f6e9b8cc6b096c7b60422@group.calendar.google.com')}`, '_blank')}
-              className="px-6 py-3 border border-gray-300 text-sm font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider flex items-center justify-center"
+              className="btn-outline-ra flex items-center justify-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Add to Google Calendar
             </button>
-            <button 
+            <button
               onClick={() => window.open(`webcal://calendar.google.com/calendar/ical/c_2c54e0a2af46caecc80ffb8657a18343ac7ec9af0c5f6e9b8cc6b096c7b60422%40group.calendar.google.com/public/basic.ics`, '_blank')}
-              className="px-6 py-3 border border-gray-300 text-sm font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider flex items-center justify-center"
+              className="btn-outline-ra flex items-center justify-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Add to Apple Calendar

@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 
 export default function Contributors() {
   const [activeTab, setActiveTab] = useState('people')
@@ -67,7 +68,7 @@ export default function Contributors() {
             {people.map((person, index) => (
               <div
                 key={person.id}
-                className={`rounded-[28px] border border-white/10 bg-elevated text-white shadow-[0_25px_40px_rgba(0,0,0,0.4)] overflow-hidden card-hover fade-in delay-${(index + 1) * 100}`}
+                className={`rounded-[28px] border border-white/10 bg-elevated text-white shadow-[0_25px_40px_rgba(0,0,0,0.4)] overflow-hidden card-hover fade-in ${getStaggeredDelayClass(index, 100)}`}
               >
                 <div className="bg-white/5 border-b border-white/5 aspect-square w-full" />
                 <div className="p-6 space-y-5">
@@ -111,7 +112,7 @@ export default function Contributors() {
             {shows.map((show, index) => (
               <div
                 key={show.id}
-                className={`rounded-[28px] border border-white/10 bg-elevated text-white shadow-[0_25px_40px_rgba(0,0,0,0.4)] overflow-hidden card-hover fade-in delay-${(index + 1) * 100}`}
+                className={`rounded-[28px] border border-white/10 bg-elevated text-white shadow-[0_25px_40px_rgba(0,0,0,0.4)] overflow-hidden card-hover fade-in ${getStaggeredDelayClass(index, 100)}`}
               >
                 <div className="bg-white/5 border-b border-white/5 aspect-video w-full" />
                 <div className="p-6 space-y-4">

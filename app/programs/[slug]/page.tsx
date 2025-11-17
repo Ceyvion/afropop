@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { EpisodeCard } from '@/app/components/Cards'
+import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 
 export default function ProgramDetail() {
   // Sample data
@@ -99,7 +100,7 @@ export default function ProgramDetail() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {episodes.map((episode, index) => (
-              <div key={episode.id} className={`fade-in delay-${(index + 1) * 100}`}>
+              <div key={episode.id} className={`fade-in ${getStaggeredDelayClass(index, 100)}`}>
                 <EpisodeCard
                   title={episode.title}
                   region={episode.region}

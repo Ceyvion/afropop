@@ -1,6 +1,7 @@
 // Programs page with refined design
 import React from 'react'
 import { ProgramCard } from '@/app/components/Cards'
+import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 
 export default function Programs() {
   // Sample program data
@@ -40,7 +41,7 @@ export default function Programs() {
         {/* Programs Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 fade-in delay-100">
           {programs.map((program, index) => (
-            <div key={program.id} className={`fade-in delay-${(index + 1) * 100}`}>
+            <div key={program.id} className={`fade-in ${getStaggeredDelayClass(index, 100)}`}>
               <ProgramCard
                 title={program.title}
                 purpose={program.purpose}

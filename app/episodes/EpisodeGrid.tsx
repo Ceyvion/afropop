@@ -2,6 +2,7 @@
 
 import { EpisodeCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
+import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 import type { NormalizedRSSItem } from '@/app/lib/rss-service'
 
 type EpisodeGridProps = {
@@ -26,7 +27,7 @@ export default function EpisodeGrid({ episodes }: EpisodeGridProps) {
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {episodes.map((episode, index) => (
-          <div key={episode.id} className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+          <div key={episode.id} className={`fade-in ${getStaggeredDelayClass(index, 100, 6)}`}>
             <EpisodeCard
               id={episode.id}
               title={episode.title}

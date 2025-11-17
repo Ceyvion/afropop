@@ -7,6 +7,7 @@ import FilterRail from '@/app/components/FilterRail'
 import { EpisodeCard, FeatureCard, EventCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useRSSFeed } from '@/app/lib/use-rss-data'
+import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 
 export default function Archive() {
   const { data: feedData, loading: feedLoading, error: feedError } = useRSSFeed()
@@ -266,7 +267,7 @@ export default function Archive() {
                       href={`/episodes/${String(item.id).split('/').map(encodeURIComponent).join('/')}`}
                       className="block"
                     >
-                      <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                      <div className={`fade-in ${getStaggeredDelayClass(index, 100, 6)}`}>
                         <EpisodeCard
                           title={item.title}
                           region={item.region || 'Africa'}
@@ -300,7 +301,7 @@ export default function Archive() {
                       href={`/features/${String(item.id).split('/').map(encodeURIComponent).join('/')}`}
                       className="block"
                     >
-                      <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                      <div className={`fade-in ${getStaggeredDelayClass(index, 100, 6)}`}>
                         <FeatureCard
                           title={item.title}
                           dek={item.description}
@@ -316,7 +317,7 @@ export default function Archive() {
                 
                 if (item.type === 'Event') {
                   return (
-                    <div key={item.id} className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                    <div key={item.id} className={`fade-in ${getStaggeredDelayClass(index, 100, 6)}`}>
                       <EventCard
                         title={item.title}
                         date={formatDate(item.pubDate)}
@@ -334,7 +335,7 @@ export default function Archive() {
                     href={`/episodes/${String(item.id).split('/').map(encodeURIComponent).join('/')}`}
                     className="block"
                   >
-                    <div className={`fade-in delay-${(index % 6 + 1) * 100}`}>
+                    <div className={`fade-in ${getStaggeredDelayClass(index, 100, 6)}`}>
                       <EpisodeCard
                         title={item.title}
                         region={item.region || 'Africa'}

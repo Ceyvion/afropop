@@ -1,4 +1,4 @@
-// Resident Advisor-inspired home layout for Afropop Worldwide
+// Home page for Afropop Worldwide
 'use client'
 
 import React from 'react'
@@ -174,8 +174,8 @@ export default function Home() {
       <section className="hero-band">
         <div className="hero-wrap space-y-10">
           <div className="flex flex-wrap items-center justify-between text-[0.65rem] uppercase tracking-[0.4em] text-white/60">
-            <span>Afropop Podcast</span>
-            <span>ra.co / podcasts</span>
+            <span>Afropop Worldwide</span>
+            <span>Music · Culture · Diaspora</span>
           </div>
 
           <div className="space-y-8">
@@ -202,6 +202,9 @@ export default function Home() {
               </Link>
               <Link href="/archive" className="btn-hero">
                 View archive
+              </Link>
+              <Link href="/pitch" className="btn-hero border-accent-v text-accent-v hover:bg-accent-v hover:text-white">
+                Submit a Pitch
               </Link>
             </div>
             <div className="flex flex-wrap gap-3">

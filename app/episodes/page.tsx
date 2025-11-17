@@ -15,10 +15,10 @@ export default async function Episodes() {
               Explore our collection of episodes covering African music and culture from around the world.
             </p>
           </div>
-          <div className="fade-in">
+          <div className="fade-in delay-100">
             <EpisodeGrid episodes={episodes} />
           </div>
-          <div className="mt-16 text-center fade-in delay-300">
+          <div className="mt-16 text-center fade-in delay-200">
             <button className="btn-outline-ra">Load More Episodes</button>
           </div>
         </div>
