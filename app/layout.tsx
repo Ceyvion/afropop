@@ -8,20 +8,20 @@ import DonateBanner from '@/app/components/DonateBanner'
 import SentryInit from '@/app/components/SentryInit'
 import '@/app/globals.css'
 import type { Metadata } from 'next'
-import { DM_Sans, Inter, IBM_Plex_Mono, Anton } from 'next/font/google'
+import { Outfit, Archivo, IBM_Plex_Mono, Anton } from 'next/font/google'
 
-// Initialize fonts
-const dmSans = DM_Sans({
+// Initialize fonts - distinctive choices for cultural context
+const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-dm-sans',
-  weight: ['400', '500', '700'],
+  variable: '--font-outfit',
+  weight: ['400', '500', '600', '700', '800'],
 })
 
-const inter = Inter({
+const archivo = Archivo({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-archivo',
   weight: ['400', '500', '600', '700'],
 })
 
@@ -50,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${dmSans.variable} ${inter.variable} ${ibmPlexMono.variable} ${displayCondensed.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark ${outfit.variable} ${archivo.variable} ${ibmPlexMono.variable} ${displayCondensed.variable}`}>
       <head>
         <SentryInit />
         <script
@@ -59,7 +59,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`app-canvas ${inter.className}`}>
+      <body className={`app-canvas ${outfit.className}`}>
         <PlayerProvider>
           <Header />
           <main>
