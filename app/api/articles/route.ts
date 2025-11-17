@@ -30,9 +30,15 @@ const GET_LATEST_CONTENT = `
 
 export async function GET(request: Request) {
   if (!CRAFT_API_TOKEN) {
+    console.warn('CRAFT_API_TOKEN is not configured. Returning empty editorial feed.')
     return NextResponse.json(
-      { error: 'CRAFT_API_TOKEN is not configured' },
-      { status: 500 }
+      {
+        items: [],
+        count: 0,
+        source: 'craft',
+        error: 'Editorial stories are temporarily unavailable',
+      },
+      { status: 200 }
     )
   }
 
