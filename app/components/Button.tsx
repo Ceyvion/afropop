@@ -8,7 +8,7 @@ const cx = (...classes: Array<string | undefined | null | false>) =>
 
 const buttonVariants = cva(
   // Base styles - applied to all buttons
-  'inline-flex items-center justify-center font-semibold uppercase tracking-[0.3em] transition-[background-color,color,border-color,transform,box-shadow,opacity] duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-v focus-visible:ring-offset-[#050506]',
+  'inline-flex items-center justify-center font-semibold uppercase tracking-[0.25em] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-v focus-visible:ring-offset-[#050506]',
   {
     variants: {
       variant: {
@@ -26,9 +26,9 @@ const buttonVariants = cva(
           'bg-red-600 text-white hover:bg-red-700 border border-transparent',
       },
       size: {
-        sm: 'px-4 py-2 text-[0.65rem] rounded-lg',
-        md: 'px-6 py-2.5 text-xs rounded-xl',
-        lg: 'px-8 py-3 text-sm rounded-xl',
+        sm: 'px-3.5 py-1.5 text-[0.6rem] rounded-lg',
+        md: 'px-5 py-2 text-[0.65rem] rounded-lg',
+        lg: 'px-6 py-2.5 text-xs rounded-lg',
       },
       fullWidth: {
         true: 'w-full',

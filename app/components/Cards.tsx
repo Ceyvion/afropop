@@ -1,14 +1,13 @@
-// Card components with refined design
+// Card components — tighter, sharper, system-consistent
 import React from 'react'
-
-// Episode Card
 import EngagementBar from './EngagementBar'
 
-export const EpisodeCard = ({ id, title, region, genre, duration, image, categories, onPlay, showEngagement = true, density = 'comfortable' }: { 
+// Episode Card
+export const EpisodeCard = ({ id, title, region, genre, duration, image, categories, onPlay, showEngagement = true, density = 'comfortable' }: {
   id?: string | number;
-  title: string; 
-  region: string; 
-  genre: string; 
+  title: string;
+  region: string;
+  genre: string;
   duration: string;
   image?: string;
   categories?: string[];
@@ -16,76 +15,69 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
   showEngagement?: boolean;
   density?: 'comfortable' | 'compact';
 }) => {
-  // Extract additional tags from categories
   const additionalTags = categories
-    ?.filter(cat => 
-      cat.toLowerCase() !== region?.toLowerCase() && 
+    ?.filter(cat =>
+      cat.toLowerCase() !== region?.toLowerCase() &&
       cat.toLowerCase() !== genre?.toLowerCase() &&
       !['episode', 'podcast', 'audio'].includes(cat.toLowerCase())
     )
     .slice(0, 2) || []
 
   const compact = density === 'compact'
-  const padClass = compact ? 'p-4' : 'p-6'
+  const padClass = compact ? 'p-3.5' : 'p-5'
   const titleClass = compact
-    ? 'font-semibold text-white line-clamp-2 mb-2 text-[15px]'
-    : 'font-semibold text-white line-clamp-2 mb-3 text-lg'
-  const chipsWrapClass = compact ? 'flex flex-wrap gap-1.5 mb-4' : 'flex flex-wrap gap-2 mb-5'
-  const chipClass = 'inline-flex items-center rounded-full text-[0.65rem] font-semibold uppercase tracking-[0.2em] bg-white/10 text-white/70 '
-    + (compact ? 'px-2 py-0.5' : 'px-2.5 py-0.5')
+    ? 'font-semibold text-white line-clamp-2 mb-1.5 text-[15px] leading-snug'
+    : 'font-semibold text-white line-clamp-2 mb-2.5 text-lg leading-snug'
+  const chipsWrapClass = compact ? 'flex flex-wrap gap-1.5 mb-3' : 'flex flex-wrap gap-1.5 mb-4'
+  const chipClass = 'inline-flex items-center rounded-md text-[0.6rem] font-semibold uppercase tracking-[0.15em] bg-white/[0.06] text-white/60 '
+    + (compact ? 'px-1.5 py-0.5' : 'px-2 py-0.5')
   const playIconClass = compact ? 'h-4 w-4' : 'h-5 w-5'
-  const durationClass = 'text-xs text-white/60'
+  const durationClass = 'text-xs text-white/45'
   const imageAspect = compact ? 'aspect-[4/3]' : 'aspect-square'
   const showEngage = showEngagement && !compact && id != null
   const canPlay = typeof onPlay === 'function'
 
   return (
-    <div className={`group overflow-hidden border border-white/10 bg-elevated text-white transition duration-300 ease-in-out card-hover ${compact ? 'rounded-2xl shadow-lg' : 'rounded-[28px] shadow-[0_30px_70px_rgba(0,0,0,0.45)] hover:border-accent-v/80'}`}>
-      {/* Episode image or placeholder */}
+    <div className={`group overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white transition-all duration-200 card-hover ${compact ? 'rounded-xl' : 'rounded-xl shadow-[var(--shadow-md)] hover:border-[rgba(255,45,85,0.25)]'}`}>
       {image ? (
         <div className={`${imageAspect} w-full overflow-hidden`}>
-          <img 
-            src={image} 
-            alt={title} 
-            className="w-full h-full object-cover"
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
             decoding="async"
             onError={(e) => {
-              // Fallback to placeholder if image fails to load
               const target = e.target as HTMLImageElement;
               target.onerror = null;
-              target.parentElement!.innerHTML = `<div class=\"bg-gray-200 border-2 border-dashed ${imageAspect} w-full\"></div>`;
+              target.parentElement!.innerHTML = `<div class="bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>`;
             }}
           />
         </div>
       ) : (
-        <div className={`bg-gray-200 border-2 border-dashed ${imageAspect} w-full`} />
+        <div className={`bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center`}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+          </svg>
+        </div>
       )}
-      
+
       <div className={padClass}>
         <h3 className={titleClass}>{title}</h3>
-        
+
         <div className={chipsWrapClass}>
-          {region && (
-            <span className={chipClass}>
-              {region}
-            </span>
-          )}
-          {genre && (
-            <span className={chipClass}>
-              {genre}
-            </span>
-          )}
+          {region && <span className={chipClass}>{region}</span>}
+          {genre && <span className={chipClass}>{genre}</span>}
           {!compact && additionalTags.map((tag, index) => (
             <span key={index} className={chipClass}>{tag}</span>
           ))}
         </div>
-        
+
         <div className="flex items-center justify-between">
           <span className={durationClass}>{duration}</span>
           {canPlay ? (
-            <button 
-              className="text-accent-v transition hover:text-white"
+            <button
+              className="text-accent-v transition-colors hover:text-white"
               aria-label={`Play ${title}`}
               onClick={(e) => {
                 e.preventDefault();
@@ -99,7 +91,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
               </svg>
             </button>
           ) : (
-            <span className="text-white/30" aria-hidden="true">
+            <span className="text-white/20" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" className={playIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -108,7 +100,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
           )}
         </div>
         {showEngage && (
-          <div className="mt-4">
+          <div className="mt-3">
             <EngagementBar targetType="episode" targetId={id} />
           </div>
         )}
@@ -118,46 +110,49 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
 }
 
 // Feature Card
-export const FeatureCard = ({ title, dek, author, readTime, image, density = 'comfortable' }: { 
-  title: string; 
-  dek: string; 
-  author: string; 
+export const FeatureCard = ({ title, dek, author, readTime, image, density = 'comfortable' }: {
+  title: string;
+  dek: string;
+  author: string;
   readTime: string;
   image?: string;
   density?: 'comfortable' | 'compact';
 }) => {
   const compact = density === 'compact'
-  const padClass = compact ? 'p-4' : 'p-6'
-  const titleClass = compact ? 'font-semibold text-white line-clamp-2 mb-2 text-[15px]' : 'font-semibold text-white line-clamp-2 mb-3 text-lg'
-  const dekClass = compact ? 'text-sm text-white/70 line-clamp-2 mb-3' : 'text-sm text-white/70 line-clamp-2 mb-4'
-  const metaClass = 'text-xs text-white/60'
+  const padClass = compact ? 'p-3.5' : 'p-5'
+  const titleClass = compact ? 'font-semibold text-white line-clamp-2 mb-1.5 text-[15px] leading-snug' : 'font-semibold text-white line-clamp-2 mb-2 text-lg leading-snug'
+  const dekClass = compact ? 'text-sm text-white/55 line-clamp-2 mb-2.5' : 'text-sm text-white/55 line-clamp-2 mb-3'
+  const metaClass = 'text-xs text-white/40'
   const imageAspect = compact ? 'aspect-[16/9]' : 'aspect-[3/2]'
   return (
-    <div className={`overflow-hidden border border-white/10 bg-elevated text-white transition duration-300 ease-in-out card-hover ${compact ? 'rounded-2xl shadow-lg' : 'rounded-[28px] shadow-[0_30px_70px_rgba(0,0,0,0.45)] hover:border-accent-v/80'}`}>
-      {/* 3:2 image or placeholder */}
+    <div className={`group overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white transition-all duration-200 card-hover ${compact ? 'rounded-xl' : 'rounded-xl shadow-[var(--shadow-md)] hover:border-[rgba(255,45,85,0.25)]'}`}>
       {image ? (
         <div className={`${imageAspect} w-full overflow-hidden`}>
-          <img 
+          <img
             src={image}
             alt={title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
             decoding="async"
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.onerror = null
-              target.parentElement!.innerHTML = `<div class=\"bg-gray-200 border-2 border-dashed ${imageAspect} w-full\"></div>`
+              target.parentElement!.innerHTML = `<div class="bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>`
             }}
           />
         </div>
       ) : (
-        <div className={`bg-gray-200 border-2 border-dashed ${imageAspect} w-full`} />
+        <div className={`bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center`}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
       )}
-      
+
       <div className={padClass}>
         <h3 className={titleClass}>{title}</h3>
         <p className={dekClass}>{dek}</p>
-        
+
         <div className="flex items-center justify-between">
           <span className={metaClass}>{author}</span>
           <span className={metaClass}>{readTime}</span>
@@ -168,27 +163,27 @@ export const FeatureCard = ({ title, dek, author, readTime, image, density = 'co
 }
 
 // Event Card
-export const EventCard = ({ title, date, city, venue, ctaHref }: { 
-  title: string; 
-  date: string; 
-  city: string; 
+export const EventCard = ({ title, date, city, venue, ctaHref }: {
+  title: string;
+  date: string;
+  city: string;
   venue: string;
   ctaHref?: string;
 }) => {
   return (
-    <div className="rounded-2xl border border-white/10 bg-elevated p-4 text-white shadow-[0_20px_45px_rgba(0,0,0,0.35)]">
-      <div className="flex flex-col sm:flex-row sm:items-baseline gap-3">
-        <div className="text-xs uppercase tracking-[0.35em] text-white/50 sm:w-40 shrink-0">{date}</div>
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-4 text-white">
+      <div className="flex flex-col sm:flex-row sm:items-baseline gap-2.5">
+        <div className="text-2xs uppercase tracking-[0.3em] text-white/40 sm:w-36 shrink-0">{date}</div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold leading-snug">{title}</h3>
-          <div className="mt-1 text-sm text-white/70">{city}{city && venue ? ', ' : ''}{venue}</div>
+          <div className="mt-1 text-sm text-white/55">{city}{city && venue ? ', ' : ''}{venue}</div>
           {ctaHref ? (
-            <div className="mt-3">
+            <div className="mt-2.5">
               <a
                 href={ctaHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white transition"
+                className="text-2xs uppercase tracking-[0.25em] text-accent-v hover:text-white transition-colors"
               >
                 Tickets
               </a>
@@ -201,26 +196,28 @@ export const EventCard = ({ title, date, city, venue, ctaHref }: {
 }
 
 // Program Card
-export const ProgramCard = ({ title, purpose }: { 
-  title: string; 
+export const ProgramCard = ({ title, purpose }: {
+  title: string;
   purpose: string;
 }) => {
   return (
-    <div className="rounded-[28px] overflow-hidden border border-white/10 bg-elevated text-white shadow-[0_25px_50px_rgba(0,0,0,0.4)] card-hover">
-      {/* 16:9 image placeholder */}
-      <div className="bg-white/5 border-b border-white/5 aspect-video w-full" />
-      
-      <div className="p-6">
-        <p className="text-xs uppercase tracking-[0.3em] text-white/50 mb-3">Program</p>
-        <h3 className="font-semibold text-2xl mb-3">{title}</h3>
-        <p className="text-sm text-white/70 line-clamp-2 mb-4">{purpose}</p>
-        
-        {/* Participating artists - placeholder */}
+    <div className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white card-hover">
+      <div className="bg-white/[0.03] border-b border-[var(--border-subtle)] aspect-video w-full flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white/8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      </div>
+
+      <div className="p-5">
+        <p className="text-2xs uppercase tracking-[0.25em] text-white/40 mb-2">Program</p>
+        <h3 className="font-semibold text-xl mb-2 leading-snug">{title}</h3>
+        <p className="text-sm text-white/55 line-clamp-2 mb-3">{purpose}</p>
+
         <div className="flex -space-x-2">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="bg-white/10 border border-white/10 rounded-full w-8 h-8" />
+            <div key={item} className="bg-white/[0.06] border border-[var(--border)] rounded-full w-7 h-7" />
           ))}
-          <span className="flex items-center justify-center w-8 h-8 text-xs font-medium text-white/50">
+          <span className="flex items-center justify-center w-7 h-7 text-xs font-medium text-white/40">
             +5
           </span>
         </div>

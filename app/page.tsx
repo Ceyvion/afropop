@@ -87,7 +87,7 @@ export default function Home() {
   const heroDuration = heroEpisode?.duration || '01:24:49'
   const rawHeroDescription = stripHtml(heroEpisode?.description || '')
   const heroDescription = rawHeroDescription
-    ? `${rawHeroDescription.slice(0, 220).trim()}${rawHeroDescription.length > 220 ? '…' : ''}`
+    ? `${rawHeroDescription.slice(0, 200).trim()}${rawHeroDescription.length > 200 ? '…' : ''}`
     : 'Laurel Halo charts a widescreen trip through experimental jazz, Angolan kuduro, and the sonic afterlives of Detroit techno.'
   const heroTags: string[] = heroEpisode?.categories
     ? heroEpisode.categories.filter((tag: unknown): tag is string => typeof tag === 'string').slice(0, 3)
@@ -121,13 +121,13 @@ export default function Home() {
     ...buildEntry(story),
     label: getPrimaryCategory(story),
     title: story.title,
-    body: getFeatureSummary(story, 240),
+    body: getFeatureSummary(story, 200),
   }))
 
   const newsEntries = newsStories.map((story: any) => ({
     ...buildEntry(story),
     title: story.title,
-    summary: getFeatureSummary(story, 130),
+    summary: getFeatureSummary(story, 120),
     date: formatShortDate(story.postDate || story.pubDate),
     image: getStoryImage(story),
   }))
@@ -135,7 +135,7 @@ export default function Home() {
   const reviewEntries = reviewStories.map((story: any) => ({
     ...buildEntry(story),
     title: story.title,
-    summary: getFeatureSummary(story, 150),
+    summary: getFeatureSummary(story, 140),
     date: formatShortDate(story.postDate || story.pubDate),
     category: getPrimaryCategory(story, 'Review'),
   }))
@@ -158,7 +158,7 @@ export default function Home() {
   const profileFeature = editorialItems[0]
   const profileName = getStoryAuthor(profileFeature)
   const profileSummary = profileFeature
-    ? getFeatureSummary(profileFeature, 180)
+    ? getFeatureSummary(profileFeature, 160)
     : 'Stories from across the diaspora.'
   const profileLocation =
     profileFeature?.sectionHandle?.toUpperCase() ||
@@ -172,33 +172,38 @@ export default function Home() {
 
   return (
     <div className="bg-page text-white">
-      {/* Hero */}
+      {/* ─── Hero ─── */}
       <section className="hero-band">
-        <div className="hero-wrap space-y-10">
-          <div className="flex flex-wrap items-center justify-between text-[0.65rem] uppercase tracking-[0.4em] text-white/60">
+        <div className="hero-wrap space-y-8">
+          <div className="flex items-center gap-3 text-2xs uppercase tracking-[0.4em] text-white/40">
+            <span className="inline-block h-px w-8 bg-white/20" />
             <span>Afropop Worldwide</span>
-            <span>Music · Culture · Diaspora</span>
+            <span className="hidden sm:inline">·</span>
+            <span className="hidden sm:inline">Music · Culture · Diaspora</span>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             <p className="meta-pill">APW SERIES</p>
             <h1 className="hero-title">{heroTitle}</h1>
-            <div className="flex flex-wrap gap-6 text-xs uppercase tracking-[0.35em] text-white/60">
-              <div className="flex items-center gap-2 text-white">
-                <span className="text-white/50">Published</span>
-                <span>{heroDate}</span>
+
+            <div className="flex flex-wrap gap-5 text-2xs uppercase tracking-[0.3em] text-white/50">
+              <div className="flex items-center gap-1.5">
+                <span className="text-white/30">Published</span>
+                <span className="text-white/80">{heroDate}</span>
               </div>
-              <div className="flex items-center gap-2 text-white">
-                <span className="text-white/50">Length</span>
-                <span>{heroDuration}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-white/30">Length</span>
+                <span className="text-white/80">{heroDuration}</span>
               </div>
-              <div className="flex items-center gap-2 text-white">
-                <span className="text-white/50">Source</span>
-                <span>Afropop Worldwide</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-white/30">Source</span>
+                <span className="text-white/80">Afropop Worldwide</span>
               </div>
             </div>
-            <p className="hero-copy max-w-3xl">{heroDescription}</p>
-            <div className="flex flex-wrap gap-3">
+
+            <p className="hero-copy max-w-2xl">{heroDescription}</p>
+
+            <div className="flex flex-wrap items-center gap-3">
               <Button asChild variant="primary" size="lg">
                 <Link href="/episodes">Listen now</Link>
               </Button>
@@ -209,42 +214,44 @@ export default function Home() {
                 <Link href="/pitch">Submit a Pitch</Link>
               </Button>
             </div>
-            <div className="flex flex-wrap gap-3">
+
+            <div className="flex flex-wrap gap-2 pt-1">
               {heroTags.map((tag) => (
-                <span key={tag} className="ra-chip">
-                  {tag}
-                </span>
+                <span key={tag} className="ra-chip">{tag}</span>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Two-column body */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid gap-10 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <div className="space-y-6">
-          <div className="rounded-[28px] border border-white/20 bg-gradient-to-b from-[#ff2d55] to-[#b10030] p-6 text-white shadow-2xl space-y-4">
-            <p className="text-[0.6rem] uppercase tracking-[0.35em] text-white/70">Feature spotlight</p>
-            <p className="text-3xl font-display-condensed leading-tight">{profileFeature?.title || profileName}</p>
-            <p className="text-sm uppercase tracking-[0.3em] text-white/70">{profileName}</p>
+      {/* ─── Featured Content: Sidebar + Editorial ─── */}
+      <section className="container-wide py-10 md:py-14 grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+        {/* Left rail */}
+        <div className="space-y-5">
+          {/* Feature spotlight */}
+          <div className="rounded-xl border border-white/15 bg-gradient-to-b from-[#ff2d55] to-[#b10030] p-5 text-white space-y-3">
+            <p className="text-2xs uppercase tracking-[0.3em] text-white/60">Feature spotlight</p>
+            <p className="text-2xl font-display-condensed leading-tight">{profileFeature?.title || profileName}</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-white/60">{profileName}</p>
             <Link
               href={profileHref}
               target={profileExternal ? '_blank' : undefined}
               rel={profileExternal ? 'noreferrer' : undefined}
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-white/80 hover:text-white"
+              className="inline-flex items-center gap-2 text-2xs uppercase tracking-[0.3em] text-white/70 hover:text-white transition-colors"
             >
               Read story
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14m-6-6 6 6-6 6" />
               </svg>
             </Link>
           </div>
 
-          <div className="overflow-hidden rounded-[28px] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
+          {/* SoundCloud embed */}
+          <div className="overflow-hidden rounded-xl border border-white/8">
             <iframe
               title="Afropop Worldwide SoundCloud Player"
               width="100%"
-              height="200"
+              height="180"
               scrolling="no"
               frameBorder="no"
               allow="autoplay"
@@ -252,11 +259,12 @@ export default function Home() {
             />
           </div>
 
-          <div className="ra-panel space-y-4">
+          {/* Magazine panel */}
+          <div className="ra-panel space-y-3">
             <p className="section-label">Magazine</p>
-            <p className="text-xs uppercase tracking-[0.35em] text-white/50">{profileLocation}</p>
-            <p className="text-2xl font-display-condensed leading-tight">{profileName}</p>
-            <p className="text-sm text-white/70">{profileSummary}</p>
+            <p className="text-2xs uppercase tracking-[0.3em] text-white/40">{profileLocation}</p>
+            <p className="text-xl font-display-condensed leading-tight">{profileName}</p>
+            <p className="text-sm text-white/60 leading-relaxed">{profileSummary}</p>
             <Button asChild variant="primary" size="sm">
               <Link
                 href={profileHref}
@@ -269,7 +277,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        {/* Right main column */}
+        <div className="space-y-5">
           <AsyncSection
             loading={editorialLoading}
             error={editorialError}
@@ -277,34 +286,42 @@ export default function Home() {
             isEmpty={!panelEntries.length}
             emptyLabel="Fresh magazine features will appear here shortly."
           >
-            {panelEntries.map((panel: any) => (
-              <Link
-                key={panel.id || panel.title}
-                href={panel.href}
-                target={panel.external ? '_blank' : undefined}
-                rel={panel.external ? 'noreferrer' : undefined}
-                className="block"
-              >
-                <article className="ra-panel ra-panel-strong space-y-3 hover:border-accent-v/40 transition">
-                  <p className="section-label">{panel.label}</p>
-                  <h3 className="text-xl font-display-condensed uppercase tracking-[0.1em]">{panel.title}</h3>
-                  <p className="text-sm md:text-base leading-relaxed text-white/80">{panel.body}</p>
-                </article>
-              </Link>
-            ))}
+            <div className="space-y-4">
+              {panelEntries.map((panel: any) => (
+                <Link
+                  key={panel.id || panel.title}
+                  href={panel.href}
+                  target={panel.external ? '_blank' : undefined}
+                  rel={panel.external ? 'noreferrer' : undefined}
+                  className="block"
+                >
+                  <article className="ra-panel ra-panel-strong space-y-2.5 hover:border-[rgba(255,45,85,0.3)] transition-all">
+                    <p className="section-label">{panel.label}</p>
+                    <h3 className="text-lg font-display-condensed uppercase tracking-wide">{panel.title}</h3>
+                    <p className="text-sm leading-relaxed text-white/65">{panel.body}</p>
+                  </article>
+                </Link>
+              ))}
+            </div>
           </AsyncSection>
+
           <div className="ra-panel">
             <p className="ra-quote">
-              “{heroDescription || 'Afropop Worldwide stretches the archive into something widescreen—music for dancers, yes, but also for people plotting the next chapter of community radio.'}”
+              &ldquo;{heroDescription || 'Afropop Worldwide stretches the archive into something widescreen—music for dancers, yes, but also for people plotting the next chapter of community radio.'}&rdquo;
             </p>
           </div>
         </div>
       </section>
 
-      {/* Tracklist */}
+      {/* ─── Tracklist ─── */}
       <section className="section-band">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
-          <p className="section-label">Tracklist</p>
+        <div className="container-wide py-10 space-y-5">
+          <div className="flex items-center justify-between">
+            <p className="section-label">Tracklist</p>
+            <Link href="/features" className="text-2xs uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors">
+              View all
+            </Link>
+          </div>
           <AsyncSection
             loading={editorialLoading}
             error={editorialError}
@@ -312,21 +329,21 @@ export default function Home() {
             isEmpty={!timelineEntries.length}
             emptyLabel="Recent magazine stories will populate this strip once the feed updates."
           >
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {timelineEntries.map((item: any) => (
                 <Link
                   key={item.id || item.title}
                   href={item.href}
                   target={item.external ? '_blank' : undefined}
                   rel={item.external ? 'noreferrer' : undefined}
-                  className="rounded-2xl border border-white/10 bg-[#0d0d13] p-5 block hover:border-accent-v/50 transition"
+                  className="group rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-4 block hover:border-[rgba(255,45,85,0.25)] transition-all"
                 >
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
+                  <div className="flex items-center justify-between text-2xs uppercase tracking-[0.3em] text-white/40">
                     <span>{item.time}</span>
-                    <span>{item.label}</span>
+                    <span className="text-accent-v/70">{item.label}</span>
                   </div>
-                  <p className="mt-3 text-lg font-semibold text-white">{item.title}</p>
-                  <p className="text-sm text-white/70">{item.author}</p>
+                  <p className="mt-2.5 text-[15px] font-semibold text-white leading-snug line-clamp-2 group-hover:text-accent-v/90 transition-colors">{item.title}</p>
+                  <p className="mt-1 text-xs text-white/50">{item.author}</p>
                 </Link>
               ))}
             </div>
@@ -334,21 +351,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="cta-band flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      {/* ─── CTA band ─── */}
+      <section className="container-wide py-10">
+        <div className="cta-band flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em]">Explore opportunities</p>
-            <p className="mt-2 text-2xl font-display-condensed">APW Pro connects promoters, stations, and cultural workers.</p>
+            <p className="text-2xs uppercase tracking-[0.3em] opacity-70">Explore opportunities</p>
+            <p className="mt-1.5 text-xl font-display-condensed">APW Pro connects promoters, stations, and cultural workers.</p>
           </div>
           <Link href="/support">Explore now</Link>
         </div>
       </section>
 
-      {/* Events, News, Reviews */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 lg:grid-cols-[1.1fr_minmax(0,0.9fr)]">
-        <div className="space-y-6">
-          <p className="section-label">Upcoming Events</p>
+      {/* ─── Events + News + Reviews ─── */}
+      <section className="container-wide py-10 grid gap-8 lg:grid-cols-[1.1fr_minmax(0,0.9fr)]">
+        {/* Events */}
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <p className="section-label">Upcoming Events</p>
+            <Link href="/events" className="text-2xs uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors">
+              All events
+            </Link>
+          </div>
           <AsyncSection
             loading={eventsLoading}
             error={eventsError}
@@ -356,18 +379,18 @@ export default function Home() {
             isEmpty={!upcomingEvents.length}
             emptyLabel="No upcoming events in the calendar feed right now."
           >
-            <div className="space-y-4">
+            <div className="space-y-3">
               {upcomingEvents.map((event: any) => {
                 const dateLabel = event.formattedDate || formatDate(event.startDate) || 'Date TBA'
                 const detail = event.location || event.venue || 'Location TBA'
-                const summary = truncate(stripHtml(event.description || ''), 140) || 'Details coming soon.'
+                const summary = truncate(stripHtml(event.description || ''), 120) || 'Details coming soon.'
                 return (
-                  <article key={event.id} className="rounded-2xl border border-white/10 bg-elevated p-5 flex flex-col gap-3">
-                    <p className="text-xs uppercase tracking-[0.35em] text-white/50">{dateLabel}</p>
-                    <h3 className="text-xl font-semibold leading-tight">{event.title}</h3>
-                    <p className="text-sm text-white/70">{detail}</p>
-                    <p className="text-sm text-white/60">{summary}</p>
-                    <Link href="/events" className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white">
+                  <article key={event.id} className="rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-4 flex flex-col gap-2">
+                    <p className="text-2xs uppercase tracking-[0.3em] text-white/40">{dateLabel}</p>
+                    <h3 className="text-lg font-semibold leading-tight">{event.title}</h3>
+                    <p className="text-sm text-white/55">{detail}</p>
+                    <p className="text-sm text-white/45 line-clamp-2">{summary}</p>
+                    <Link href="/events" className="text-2xs uppercase tracking-[0.25em] text-accent-v hover:text-white transition-colors mt-1">
                       Details
                     </Link>
                   </article>
@@ -377,6 +400,7 @@ export default function Home() {
           </AsyncSection>
         </div>
 
+        {/* News + Reviews */}
         <div className="space-y-8">
           <div className="space-y-4">
             <p className="section-label">News</p>
@@ -387,24 +411,26 @@ export default function Home() {
               isEmpty={!newsEntries.length}
               emptyLabel="Magazine stories will populate here when available."
             >
-              {newsEntries.map((news: any) => (
-                <Link
-                  key={news.id || news.title}
-                  href={news.href}
-                  target={news.external ? '_blank' : undefined}
-                  rel={news.external ? 'noreferrer' : undefined}
-                  className="flex gap-4 rounded-2xl border border-white/10 bg-elevated p-4 hover:border-accent-v/40 transition"
-                >
-                  <div className="h-20 w-24 overflow-hidden rounded-lg bg-white/5">
-                    <img src={news.image} alt={news.title} className="h-full w-full object-cover" loading="lazy" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-white/50">{news.date || 'New'}</p>
-                    <h3 className="font-semibold text-white line-clamp-2">{news.title}</h3>
-                    <p className="text-sm text-white/70 line-clamp-3">{news.summary}</p>
-                  </div>
-                </Link>
-              ))}
+              <div className="space-y-3">
+                {newsEntries.map((news: any) => (
+                  <Link
+                    key={news.id || news.title}
+                    href={news.href}
+                    target={news.external ? '_blank' : undefined}
+                    rel={news.external ? 'noreferrer' : undefined}
+                    className="flex gap-3.5 rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-3.5 hover:border-[rgba(255,45,85,0.2)] transition-all"
+                  >
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
+                      <img src={news.image} alt={news.title} className="h-full w-full object-cover" loading="lazy" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-2xs uppercase tracking-[0.3em] text-white/40">{news.date || 'New'}</p>
+                      <h3 className="font-semibold text-white text-[15px] leading-snug line-clamp-2 mt-0.5">{news.title}</h3>
+                      <p className="text-sm text-white/55 line-clamp-2 mt-1">{news.summary}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </AsyncSection>
           </div>
 
@@ -417,34 +443,36 @@ export default function Home() {
               isEmpty={!reviewEntries.length}
               emptyLabel="Once the RSS feed updates, review highlights will appear here."
             >
-              {reviewEntries.map((review: any) => (
-                <div key={review.id || review.title} className="rounded-2xl border border-white/10 bg-elevated p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
-                    <span>{review.date || 'New'}</span>
-                    <span>{review.category}</span>
+              <div className="space-y-3">
+                {reviewEntries.map((review: any) => (
+                  <div key={review.id || review.title} className="rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-4 space-y-2">
+                    <div className="flex items-center justify-between text-2xs uppercase tracking-[0.3em] text-white/40">
+                      <span>{review.date || 'New'}</span>
+                      <span className="text-accent-v/60">{review.category}</span>
+                    </div>
+                    <h3 className="font-semibold leading-snug text-[15px]">{review.title}</h3>
+                    <p className="text-sm text-white/55 line-clamp-2">{review.summary}</p>
+                    <Link
+                      href={review.href}
+                      target={review.external ? '_blank' : undefined}
+                      rel={review.external ? 'noreferrer' : undefined}
+                      className="text-2xs uppercase tracking-[0.25em] text-accent-v hover:text-white transition-colors inline-block pt-1"
+                    >
+                      Read story
+                    </Link>
                   </div>
-                  <h3 className="font-semibold leading-snug">{review.title}</h3>
-                  <p className="text-sm text-white/70 line-clamp-3">{review.summary}</p>
-                  <Link
-                    href={review.href}
-                    target={review.external ? '_blank' : undefined}
-                    rel={review.external ? 'noreferrer' : undefined}
-                    className="text-xs uppercase tracking-[0.3em] text-accent-v hover:text-white"
-                  >
-                    Read story
-                  </Link>
-                </div>
-              ))}
+                ))}
+              </div>
             </AsyncSection>
           </div>
         </div>
       </section>
 
-      {/* Latest Features */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-4">
+      {/* ─── Latest Features ─── */}
+      <section className="container-wide py-10 space-y-5">
+        <div className="flex items-center justify-between">
           <p className="section-label">Latest Features</p>
-          <Link href="/features" className="text-xs uppercase tracking-[0.35em] text-accent-v hover:text-white">
+          <Link href="/features" className="text-2xs uppercase tracking-[0.3em] text-accent-v hover:text-white transition-colors">
             View magazine
           </Link>
         </div>
@@ -455,7 +483,7 @@ export default function Home() {
           isEmpty={!featuresData?.items?.length}
           emptyLabel="Feature cards will appear when the feed updates."
         >
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             {featuresData?.items?.slice(0, 3)?.map((feature: any) => (
               <Link
                 key={feature.id}
@@ -475,9 +503,10 @@ export default function Home() {
         </AsyncSection>
       </section>
 
-      {/* Popular news + Latest podcasts */}
+      {/* ─── Popular News + Latest Podcasts ─── */}
       <section className="section-band">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 lg:grid-cols-2">
+        <div className="container-wide py-10 grid gap-8 lg:grid-cols-2">
+          {/* Popular news */}
           <div className="space-y-4">
             <p className="section-label">Popular News</p>
             <AsyncSection
@@ -487,28 +516,29 @@ export default function Home() {
               isEmpty={!bulletinEntries.length}
               emptyLabel="News bulletins will update when the Afropop feed publishes."
             >
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {bulletinEntries.map((item: any) => (
-                  <li key={item.id || item.title} className="flex items-center justify-between rounded-full border border-white/10 px-5 py-3">
+                  <li key={item.id || item.title} className="flex items-center justify-between rounded-lg border border-[var(--border)] px-4 py-2.5 hover:border-[rgba(255,45,85,0.2)] transition-all">
                     <Link
                       href={item.href}
                       target={item.external ? '_blank' : undefined}
                       rel={item.external ? 'noreferrer' : undefined}
-                      className="text-sm hover:text-accent-v transition"
+                      className="text-sm hover:text-accent-v transition-colors line-clamp-1 mr-3"
                     >
                       {item.title}
                     </Link>
-                    <span className="text-xs uppercase tracking-[0.3em] text-white/50">{item.date || 'New'}</span>
+                    <span className="text-2xs uppercase tracking-[0.25em] text-white/35 flex-shrink-0">{item.date || 'New'}</span>
                   </li>
                 ))}
               </ul>
             </AsyncSection>
           </div>
 
+          {/* Latest podcasts */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center justify-between">
               <p className="section-label">Latest Podcasts</p>
-              <Link href="/episodes" className="text-xs uppercase tracking-[0.35em] text-accent-v hover:text-white">
+              <Link href="/episodes" className="text-2xs uppercase tracking-[0.3em] text-accent-v hover:text-white transition-colors">
                 Browse all
               </Link>
             </div>
@@ -519,7 +549,7 @@ export default function Home() {
               isEmpty={!episodesData?.items?.length}
               emptyLabel="Podcast cards will appear when the feed updates."
             >
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
                 {episodesData?.items?.slice(0, 4)?.map((episode: any) => (
                   <Link
                     key={episode.id}
@@ -556,17 +586,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="rounded-[32px] border border-white/10 bg-elevated p-8 text-center space-y-4">
+      {/* ─── Final CTA ─── */}
+      <section className="container-wide py-14">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-8 md:p-10 text-center space-y-4">
           <p className="section-label justify-center">Are you a promoter?</p>
-          <h2 className="text-3xl font-display-condensed">Send us your events and radio stories.</h2>
-          <p className="text-white/70">
+          <h2 className="text-2xl md:text-3xl font-display-condensed">Send us your events and radio stories.</h2>
+          <p className="text-white/55 max-w-xl mx-auto text-sm leading-relaxed">
             Afropop Worldwide partners with curators across the diaspora to surface new collectives, venues, and voices.
           </p>
-          <Button asChild variant="primary" size="lg">
-            <Link href="/pitch">Submit a Pitch</Link>
-          </Button>
+          <div className="pt-2">
+            <Button asChild variant="primary" size="lg">
+              <Link href="/pitch">Submit a Pitch</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
