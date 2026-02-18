@@ -51,7 +51,6 @@
 - [x] Replaced dashed placeholders in `/shop` cards and featured panel with `next/image` media blocks.
 - [x] Added descriptive alt text for each store product tile and featured collection image.
 - [x] Verification passed: `npm run lint` (warnings only) and `npm run build` (success).
-
 ---
 
 # RSS Speed Optimization Work Log
