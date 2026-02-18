@@ -4,6 +4,10 @@
 import { NextResponse } from 'next/server'
 import { getRSSItemById } from '@/app/lib/rss-service'
 
+const ITEM_CACHE_HEADERS = {
+  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+}
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url)
@@ -27,7 +31,7 @@ export async function GET(request: Request) {
     const item = await getRSSItemById(id)
 
     // Return the item
-    return NextResponse.json(item)
+    return NextResponse.json(item, { headers: ITEM_CACHE_HEADERS })
   } catch (error: any) {
     console.error('Error in item API route:', error)
     return NextResponse.json(

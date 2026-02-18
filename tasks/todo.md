@@ -51,3 +51,29 @@
 - [x] Replaced dashed placeholders in `/shop` cards and featured panel with `next/image` media blocks.
 - [x] Added descriptive alt text for each store product tile and featured collection image.
 - [x] Verification passed: `npm run lint` (warnings only) and `npm run build` (success).
+
+---
+
+# RSS Speed Optimization Work Log
+
+## Plan
+- [x] Profile current RSS hot paths and identify avoidable repeated work
+- [x] Precompute RSS item search/date metadata during normalization
+- [x] Cache per-type sorted RSS slices at feed resolution time
+- [x] Refactor RSS filtering/sorting to reuse precomputed metadata
+- [x] Add/adjust API response cache headers for faster repeated RSS reads
+- [x] Verify with tests and production build
+
+## Verification Checklist
+- [x] `npm run test -- --runInBand`
+- [x] `npm run build`
+
+## Review
+- Reworked RSS hot paths to eliminate repeated date parsing/string normalization on each request.
+- Added feed-level indexes (`byType`, `byId`, pre-sorted items) and metadata-backed filtering for faster search/type lookups.
+- Switched source loading from sequential fallback to parallel `Promise.any` resolution to reduce slow-source tail latency.
+- Added response cache headers on RSS-backed API routes (`/api/rss`, `/api/search`, `/api/episodes`, `/api/features`, `/api/item/[...id]`).
+- Verification passed: `npm run test -- --runInBand`, `npm run build`.
+- Benchmark (500-item feed, warm cache):
+- Old vs new `searchRSSFeed` x100: `179.31ms` -> `76.99ms` (~`2.33x` faster)
+- Old vs new `getRSSItemsByType` x100: `22.68ms` -> `0.21ms` (~`108x` faster)

@@ -4,6 +4,10 @@
 import { NextResponse } from 'next/server'
 import { searchRSSFeed } from '@/app/lib/rss-service'
 
+const SEARCH_CACHE_HEADERS = {
+  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+}
+
 function buildEpisodeHref(id: string) {
   return `/episodes/${String(id).split('/').map(encodeURIComponent).join('/')}`
 }
@@ -44,9 +48,7 @@ export async function GET(request: Request) {
     if (genre) filters.genre = genre
     if (dateFrom) filters.dateFrom = dateFrom
     if (dateTo) filters.dateTo = dateTo
-    
-    console.log(`Searching RSS feed: query="${query}", filters=`, filters)
-    
+
     // Search the RSS feed
     const results = await searchRSSFeed(query, filters, { page, pageSize })
     const items = results.items.map((item: any) => {
@@ -66,7 +68,7 @@ export async function GET(request: Request) {
       page: results.page ?? page,
       pageSize: results.pageSize ?? pageSize,
       hasMore: Boolean(results.hasMore),
-    })
+    }, { headers: SEARCH_CACHE_HEADERS })
   } catch (error: any) {
     console.error('Error in search API route:', error)
     return NextResponse.json(
