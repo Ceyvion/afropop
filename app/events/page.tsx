@@ -12,6 +12,8 @@ type RawEvent = {
   startDate: string
   endDate?: string
   location?: string
+  curated?: boolean
+  qualityScore?: number
 }
 
 // Minimal curated tags we can detect in text
@@ -19,15 +21,45 @@ const CURATED_TAGS = [
   'Festival', 'Concert', 'Workshop', 'Dance', 'DJ', 'Panel', 'Screening', 'Tour', 'Talk', 'Meetup'
 ]
 
-// Fetch all events (cached in API) and filter client-side
-async function fetchAllEvents(): Promise<{ items?: RawEvent[] } | RawEvent[]> {
+type CalendarEventsResponse = {
+  items: RawEvent[]
+  count: number
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
+}
+
+// Fetch events page (cached in API) and filter client-side
+async function fetchAllEvents(page = 1, pageSize = 80, quality: 'curated' | 'all' = 'curated'): Promise<CalendarEventsResponse> {
   try {
-    const res = await fetch(`/api/calendar-events?type=all`, { cache: 'no-store' })
+    const params = new URLSearchParams({
+      type: 'all',
+      quality,
+      page: String(page),
+      pageSize: String(pageSize),
+    })
+    const res = await fetch(`/api/calendar-events?${params.toString()}`, { cache: 'no-store' })
     if (!res.ok) throw new Error('Failed to fetch events')
-    return await res.json()
+    const payload = await res.json()
+    return {
+      items: Array.isArray(payload?.items) ? payload.items : [],
+      count: Number(payload?.count) || 0,
+      total: Number(payload?.total) || 0,
+      page: Number(payload?.page) || page,
+      pageSize: Number(payload?.pageSize) || pageSize,
+      hasMore: Boolean(payload?.hasMore),
+    }
   } catch (err) {
     console.error('Error fetching calendar events:', err)
-    return []
+    return {
+      items: [],
+      count: 0,
+      total: 0,
+      page,
+      pageSize,
+      hasMore: false,
+    }
   }
 }
 
@@ -44,11 +76,6 @@ function firstUrlFromText(text?: string): string | null {
   if (!text) return null
   const m = text.match(/https?:\/\/[\w.-]+(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=.]+)?/i)
   return m ? m[0] : null
-}
-
-function formatEventDate(d: string) {
-  const date = new Date(d)
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
 function formatEventDateTimeRange(start: string, end?: string) {
@@ -78,7 +105,11 @@ function extractCuratedTags(ev: RawEvent): string[] {
 export default function Events() {
   const [raw, setRaw] = useState<RawEvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const PAGE_SIZE = 80
 
   // Simplified state
   const [query, setQuery] = useState('')
@@ -105,23 +136,34 @@ export default function Events() {
     } catch {}
   }, [advanced, location])
 
-  useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true)
-        setError(null)
-        const res = await fetchAllEvents()
-        const items = Array.isArray(res) ? (res as any) : (res as any)?.items || []
-        // Sort ascending by start date
-        items.sort((a: RawEvent, b: RawEvent) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-        setRaw(items)
-      } catch (e: any) {
-        setError('Failed to load events')
-      } finally {
-        setLoading(false)
-      }
+  const loadPage = async (nextPage: number, append = false) => {
+    try {
+      if (append) setLoadingMore(true)
+      else setLoading(true)
+      setError(null)
+      const res = await fetchAllEvents(nextPage, PAGE_SIZE, 'curated')
+      setRaw((prev) => {
+        const merged = append ? [...prev, ...res.items] : [...res.items]
+        const byId = new Map<string, RawEvent>()
+        merged.forEach((event) => {
+          if (!byId.has(event.id)) byId.set(event.id, event)
+        })
+        return Array.from(byId.values()).sort(
+          (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        )
+      })
+      setPage(res.page)
+      setHasMore(res.hasMore)
+    } catch (e: any) {
+      setError('Failed to load events')
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    loadPage(1, false)
   }, [])
 
   const now = Date.now()
@@ -252,7 +294,7 @@ export default function Events() {
       <div className="min-h-screen bg-page text-white flex items-center justify-center">
         <div className="text-center">
           <div className="spinner spinner-lg mx-auto"></div>
-          <p className="mt-4 text-white/60">Loading events...</p>
+          <p className="mt-4 text-white/60">Loading events…</p>
         </div>
       </div>
     );
@@ -646,6 +688,19 @@ export default function Events() {
             })
           )}
         </div>
+
+        {hasMore && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => loadPage(page + 1, true)}
+              disabled={loadingMore}
+              className="px-4 py-2 rounded-full border border-white/20 text-xs uppercase tracking-[0.3em] text-white/80 hover:border-white/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingMore ? 'Loading…' : 'Load More Events'}
+            </button>
+          </div>
+        )}
 
         {/* Calendar Integration Options */}
         <div className="mt-16 fade-in delay-400">

@@ -33,12 +33,19 @@ export async function GET(request: Request) {
     console.warn('CRAFT_API_TOKEN is not configured. Returning empty editorial feed.')
     return NextResponse.json(
       {
+        error: 'Editorial stories are temporarily unavailable',
+        code: 'EDITORIAL_UNAVAILABLE',
+        degraded: true,
         items: [],
         count: 0,
         source: 'craft',
-        error: 'Editorial stories are temporarily unavailable',
       },
-      { status: 200 }
+      {
+        status: 503,
+        headers: {
+          'x-service-state': 'degraded',
+        },
+      }
     )
   }
 

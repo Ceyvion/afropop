@@ -61,8 +61,14 @@ export default function RootLayout({
       </head>
       <body className={`app-canvas ${outfit.className}`}>
         <PlayerProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-xs focus:uppercase focus:tracking-[0.3em] focus:text-black"
+          >
+            Skip to main content
+          </a>
           <Header />
-          <main>
+          <main id="main-content">
             {children}
             <DonateBanner />
           </main>

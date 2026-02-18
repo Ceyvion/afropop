@@ -2,9 +2,7 @@
 // Generate an ICS file for a single event by ID
 
 // Use CommonJS requires to match existing ical.js usage in this repo
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ICAL = require('ical.js')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getCalendarEvents } = require('../../../lib/google-calendar-service')
 const { reportError } = require('../../../lib/telemetry')
 

@@ -46,7 +46,12 @@ export function useRSSSearch() {
   const controllerRef = useRef<AbortController | null>(null)
   const requestIdRef = useRef<number>(0)
 
-  const search = async (query: string, filters: any = {}) => {
+  const search = async (
+    query: string,
+    filters: any = {},
+    options: { page?: number; pageSize?: number } = {}
+  ) => {
+    let myId = 0
     try {
       // Abort previous in-flight request
       if (controllerRef.current) {
@@ -66,8 +71,10 @@ export function useRSSSearch() {
           params.append(key, filters[key])
         }
       })
+      if (options.page) params.append('page', String(options.page))
+      if (options.pageSize) params.append('pageSize', String(options.pageSize))
 
-      const myId = ++requestIdRef.current
+      myId = ++requestIdRef.current
       const response = await fetch(`/api/search?${params.toString()}`, { signal })
       const result = await response.json().catch(() => ({ error: 'Invalid JSON from server' }))
 
@@ -88,7 +95,9 @@ export function useRSSSearch() {
       console.error('Error searching RSS feed:', err)
       reportError(err, { hook: 'useRSSSearch' })
     } finally {
-      setLoading(false)
+      if (myId === requestIdRef.current) {
+        setLoading(false)
+      }
     }
   }
 

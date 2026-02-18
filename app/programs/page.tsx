@@ -64,7 +64,7 @@ export default function Programs() {
               <h3 className="text-2xl font-bold text-ink mb-4">Afropop Special: The Afrobeat Generation</h3>
               <p className="text-gray-600 mb-6">
                 A four-part series exploring how the children of Afrobeat legends are 
-                carrying forward their fathers' musical and political legacies while 
+                carrying forward their fathers’ musical and political legacies while 
                 forging their own paths in contemporary music.
               </p>
               <div className="flex flex-wrap gap-4">

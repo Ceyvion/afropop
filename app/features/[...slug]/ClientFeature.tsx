@@ -108,7 +108,7 @@ export default function ClientFeature({ slug }: { slug: string }) {
       <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink mb-4">Feature Not Found</h2>
-          <p className="text-gray-600 mb-6">The feature you're looking for could not be found.</p>
+          <p className="text-gray-600 mb-6">The feature you’re looking for could not be found.</p>
           <Link 
             href="/features"
             className="px-6 py-3 border border-gray-300 text-base font-bold rounded-md text-ink bg-white hover:bg-gray-50 transition-colors duration-200 uppercase tracking-wider"

@@ -4,6 +4,27 @@
 import { NextResponse } from 'next/server'
 import { searchRSSFeed } from '@/app/lib/rss-service'
 
+function buildEpisodeHref(id: string) {
+  return `/episodes/${String(id).split('/').map(encodeURIComponent).join('/')}`
+}
+
+function buildFeatureHref(item: any) {
+  if (item?.link && /^https?:\/\//i.test(item.link)) return item.link
+  if (item?.id) return `/features/${String(item.id).split('/').map(encodeURIComponent).join('/')}`
+  return '/features'
+}
+
+function buildSearchHref(item: any) {
+  if (item?.type === 'Episode' && item?.id) return buildEpisodeHref(item.id)
+  if (item?.type === 'Feature') return buildFeatureHref(item)
+  if (item?.type === 'Event') {
+    return `/events?event=${encodeURIComponent(String(item?.id || item?.title || 'event'))}`
+  }
+  if (item?.type === 'Program') return '/programs'
+  if (item?.link && /^https?:\/\//i.test(item.link)) return item.link
+  return '/archive'
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -13,6 +34,8 @@ export async function GET(request: Request) {
     const genre = searchParams.get('genre') || ''
     const dateFrom = searchParams.get('dateFrom') || ''
     const dateTo = searchParams.get('dateTo') || ''
+    const page = Math.max(1, Number(searchParams.get('page')) || 1)
+    const pageSize = Math.min(50, Math.max(1, Number(searchParams.get('pageSize')) || 24))
     
     // Build filters object
     const filters: any = {}
@@ -25,10 +48,25 @@ export async function GET(request: Request) {
     console.log(`Searching RSS feed: query="${query}", filters=`, filters)
     
     // Search the RSS feed
-    const results = await searchRSSFeed(query, filters)
+    const results = await searchRSSFeed(query, filters, { page, pageSize })
+    const items = results.items.map((item: any) => {
+      const href = buildSearchHref(item)
+      return {
+        ...item,
+        href,
+        external: /^https?:\/\//i.test(href),
+      }
+    })
     
     // Return the results
-    return NextResponse.json(results)
+    return NextResponse.json({
+      ...results,
+      items,
+      total: results.total ?? items.length,
+      page: results.page ?? page,
+      pageSize: results.pageSize ?? pageSize,
+      hasMore: Boolean(results.hasMore),
+    })
   } catch (error: any) {
     console.error('Error in search API route:', error)
     return NextResponse.json(

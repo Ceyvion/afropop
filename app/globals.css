@@ -172,7 +172,12 @@
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.25);
     color: #fff;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
   }
@@ -206,7 +211,7 @@
   /* Helpers */
   .bleed { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
   .card-hover {
-    @apply transition-all duration-200 ease-out;
+    @apply transition-[transform,box-shadow,border-color] duration-200 ease-out;
     position: relative;
   }
   .card-hover:hover {
@@ -214,7 +219,7 @@
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
   }
   .btn-primary {
-    @apply px-6 py-3 rounded-md font-medium transition-all duration-200;
+    @apply px-6 py-3 rounded-md font-medium transition-[transform,box-shadow,opacity] duration-200;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
@@ -224,7 +229,7 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center font-semibold rounded-md transition-all duration-150;
+    @apply inline-flex items-center justify-center font-semibold rounded-md transition-[background-color,color,border-color] duration-150;
     padding: 0.625rem 1.125rem;
     background-color: var(--elevated);
     color: var(--text);
@@ -257,7 +262,7 @@
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
   .ra-panel::before {
     content: '';
@@ -304,7 +309,7 @@
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     border: 1px solid transparent;
   }
   .ra-chip:hover {
@@ -368,7 +373,11 @@
     color: #fff;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-outline-ra::before {
     content: '';
@@ -396,7 +405,10 @@
     padding: 0.65rem 1rem;
     font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .input-dark::placeholder {
     color: rgba(255,255,255,0.45);

@@ -215,10 +215,14 @@ function matchesFilterRange(item, filters) {
   }
   return true;
 }
-async function searchRSSFeed(query, filters = {}) {
+async function searchRSSFeed(query, filters = {}, pagination = {}) {
   const feed = await resolveFeed();
   const loweredQuery = query.trim().toLowerCase();
-  const items = feed.items.filter((item) => {
+  const requestedPage = Number(pagination.page) || 1;
+  const requestedPageSize = Number(pagination.pageSize) || 24;
+  const page = Math.max(1, requestedPage);
+  const pageSize = Math.min(50, Math.max(1, requestedPageSize));
+  const filtered = feed.items.filter((item) => {
     const matchesQuery = !loweredQuery || item.title.toLowerCase().includes(loweredQuery) || item.description.toLowerCase().includes(loweredQuery) || (item.content?.toLowerCase().includes(loweredQuery) ?? false);
     const matchesType = !filters.type || item.type.toLowerCase() === filters.type.toLowerCase();
     const matchesRegion = !filters.region || item.region && item.region.toLowerCase().includes(filters.region.toLowerCase());
@@ -230,9 +234,17 @@ async function searchRSSFeed(query, filters = {}) {
     const bDate = new Date(b.isoDate || b.pubDate || "").getTime();
     return bDate - aDate;
   });
+  const total = filtered.length;
+  const start = (page - 1) * pageSize;
+  const items = filtered.slice(start, start + pageSize);
+  const hasMore = start + items.length < total;
   return {
     items,
     count: items.length,
+    total,
+    page,
+    pageSize,
+    hasMore,
     query,
     filters
   };

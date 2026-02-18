@@ -1,7 +1,15 @@
 import React from 'react'
 import Link from 'next/link'
 
+const SOCIAL_LINKS = [
+  { label: 'Instagram', href: 'https://www.instagram.com/afropopww/' },
+  { label: 'YouTube', href: 'https://www.youtube.com/@afropopworldwide' },
+  { label: 'SoundCloud', href: 'https://soundcloud.com/afropop-worldwide' },
+]
+
 const Footer = () => {
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer className="mt-24 border-t border-white/10 bg-[#050505]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-white/70">
@@ -15,14 +23,16 @@ const Footer = () => {
               We document scenes, host the archive, and keep dance floors in conversation with their communities.
             </p>
             <div className="mt-6 flex gap-4">
-              {['Instagram', 'YouTube', 'SoundCloud'].map((label) => (
+              {SOCIAL_LINKS.map((social) => (
                 <a
-                  key={label}
-                  href="#"
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/60 transition"
-                  aria-label={label}
+                  aria-label={social.label}
                 >
-                  <span className="text-xs tracking-[0.2em] uppercase">{label.substring(0, 2)}</span>
+                  <span className="text-xs tracking-[0.2em] uppercase">{social.label.substring(0, 2)}</span>
                 </a>
               ))}
             </div>
@@ -53,26 +63,17 @@ const Footer = () => {
             <p className="text-sm text-white/70 mb-4">
               Weekly drops on music, events, and reporting across the culture.
             </p>
-            <form className="space-y-3">
-              <label htmlFor="footer-email" className="sr-only">Email address</label>
-              <input
-                id="footer-email"
-                type="email"
-                placeholder="Email address"
-                className="w-full rounded-full border border-white/20 bg-transparent px-4 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-full bg-white/90 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-accent-v hover:text-white"
-              >
-                Subscribe
-              </button>
-            </form>
+            <Link
+              href="/support"
+              className="inline-flex w-full items-center justify-center rounded-full bg-white/90 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-accent-v hover:text-white"
+            >
+              Become a Supporter
+            </Link>
           </div>
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6 text-xs uppercase tracking-[0.35em] text-white/50 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <span>© 2025 Afropop Worldwide</span>
+          <span>© {currentYear} Afropop Worldwide</span>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-white">Privacy</Link>
             <Link href="/terms" className="hover:text-white">Terms</Link>

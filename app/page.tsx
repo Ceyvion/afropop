@@ -7,6 +7,7 @@ import { EpisodeCard, FeatureCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useArticles, useEpisodes, useFeatures, useUpcomingEvents } from '@/app/lib/use-rss-data'
 import { Button } from '@/app/components/Button'
+import AsyncSection from '@/app/components/AsyncSection'
 
 const FALLBACK_STORY_IMAGE = 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=600&auto=format&fit=crop&q=60'
 
@@ -247,7 +248,7 @@ export default function Home() {
               scrolling="no"
               frameBorder="no"
               allow="autoplay"
-              src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/372389991&color=%23ff2d55&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
+              src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/afropop-worldwide&color=%23ff2d55&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
             />
           </div>
 
@@ -269,14 +270,14 @@ export default function Home() {
         </div>
 
         <div className="space-y-6">
-          {editorialLoading ? (
-            <div className="flex justify-center py-10">
-              <div className="spinner" />
-            </div>
-          ) : editorialError ? (
-            <p className="text-sm text-white/60">Error loading magazine feed: {editorialError}</p>
-          ) : panelEntries.length ? (
-            panelEntries.map((panel: any) => (
+          <AsyncSection
+            loading={editorialLoading}
+            error={editorialError}
+            errorLabel="Could not load magazine feed."
+            isEmpty={!panelEntries.length}
+            emptyLabel="Fresh magazine features will appear here shortly."
+          >
+            {panelEntries.map((panel: any) => (
               <Link
                 key={panel.id || panel.title}
                 href={panel.href}
@@ -290,10 +291,8 @@ export default function Home() {
                   <p className="text-sm md:text-base leading-relaxed text-white/80">{panel.body}</p>
                 </article>
               </Link>
-            ))
-          ) : (
-            <p className="text-sm text-white/60">Fresh magazine features will appear here shortly.</p>
-          )}
+            ))}
+          </AsyncSection>
           <div className="ra-panel">
             <p className="ra-quote">
               “{heroDescription || 'Afropop Worldwide stretches the archive into something widescreen—music for dancers, yes, but also for people plotting the next chapter of community radio.'}”
@@ -306,13 +305,13 @@ export default function Home() {
       <section className="section-band">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
           <p className="section-label">Tracklist</p>
-          {editorialLoading ? (
-            <div className="flex justify-center py-10">
-              <div className="spinner" />
-            </div>
-          ) : editorialError ? (
-            <p className="text-sm text-white/60">Error loading recent stories: {editorialError}</p>
-          ) : timelineEntries.length ? (
+          <AsyncSection
+            loading={editorialLoading}
+            error={editorialError}
+            errorLabel="Could not load recent stories."
+            isEmpty={!timelineEntries.length}
+            emptyLabel="Recent magazine stories will populate this strip once the feed updates."
+          >
             <div className="grid gap-4 md:grid-cols-2">
               {timelineEntries.map((item: any) => (
                 <Link
@@ -331,9 +330,7 @@ export default function Home() {
                 </Link>
               ))}
             </div>
-          ) : (
-            <p className="text-sm text-white/60">Recent magazine stories will populate this strip once the feed updates.</p>
-          )}
+          </AsyncSection>
         </div>
       </section>
 
@@ -352,13 +349,13 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 lg:grid-cols-[1.1fr_minmax(0,0.9fr)]">
         <div className="space-y-6">
           <p className="section-label">Upcoming Events</p>
-          {eventsLoading ? (
-            <div className="flex justify-center py-10">
-              <div className="spinner" />
-            </div>
-          ) : eventsError ? (
-            <p className="text-sm text-white/60">Error loading events: {eventsError}</p>
-          ) : upcomingEvents.length ? (
+          <AsyncSection
+            loading={eventsLoading}
+            error={eventsError}
+            errorLabel="Could not load upcoming events."
+            isEmpty={!upcomingEvents.length}
+            emptyLabel="No upcoming events in the calendar feed right now."
+          >
             <div className="space-y-4">
               {upcomingEvents.map((event: any) => {
                 const dateLabel = event.formattedDate || formatDate(event.startDate) || 'Date TBA'
@@ -377,22 +374,20 @@ export default function Home() {
                 )
               })}
             </div>
-          ) : (
-            <p className="text-sm text-white/60">No upcoming events in the calendar feed right now.</p>
-          )}
+          </AsyncSection>
         </div>
 
         <div className="space-y-8">
           <div className="space-y-4">
             <p className="section-label">News</p>
-            {editorialLoading ? (
-              <div className="flex justify-center py-6">
-                <div className="spinner" />
-              </div>
-            ) : editorialError ? (
-              <p className="text-sm text-white/60">Error loading news: {editorialError}</p>
-            ) : newsEntries.length ? (
-              newsEntries.map((news: any) => (
+            <AsyncSection
+              loading={editorialLoading}
+              error={editorialError}
+              errorLabel="Could not load news."
+              isEmpty={!newsEntries.length}
+              emptyLabel="Magazine stories will populate here when available."
+            >
+              {newsEntries.map((news: any) => (
                 <Link
                   key={news.id || news.title}
                   href={news.href}
@@ -409,22 +404,20 @@ export default function Home() {
                     <p className="text-sm text-white/70 line-clamp-3">{news.summary}</p>
                   </div>
                 </Link>
-              ))
-            ) : (
-              <p className="text-sm text-white/60">Magazine stories will populate here when available.</p>
-            )}
+              ))}
+            </AsyncSection>
           </div>
 
           <div className="space-y-4">
             <p className="section-label">Reviews</p>
-            {editorialLoading ? (
-              <div className="flex justify-center py-6">
-                <div className="spinner" />
-              </div>
-            ) : editorialError ? (
-              <p className="text-sm text-white/60">Error loading reviews: {editorialError}</p>
-            ) : reviewEntries.length ? (
-              reviewEntries.map((review: any) => (
+            <AsyncSection
+              loading={editorialLoading}
+              error={editorialError}
+              errorLabel="Could not load reviews."
+              isEmpty={!reviewEntries.length}
+              emptyLabel="Once the RSS feed updates, review highlights will appear here."
+            >
+              {reviewEntries.map((review: any) => (
                 <div key={review.id || review.title} className="rounded-2xl border border-white/10 bg-elevated p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs uppercase tracking-[0.35em] text-white/50">
                     <span>{review.date || 'New'}</span>
@@ -441,10 +434,8 @@ export default function Home() {
                     Read story
                   </Link>
                 </div>
-              ))
-            ) : (
-              <p className="text-sm text-white/60">Once the RSS feed updates, review highlights will appear here.</p>
-            )}
+              ))}
+            </AsyncSection>
           </div>
         </div>
       </section>
@@ -457,15 +448,13 @@ export default function Home() {
             View magazine
           </Link>
         </div>
-        {featuresLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="spinner" />
-          </div>
-        ) : featuresError ? (
-          <div className="text-center text-white/60">
-            Error loading features: {featuresError}
-          </div>
-        ) : (
+        <AsyncSection
+          loading={featuresLoading}
+          error={featuresError}
+          errorLabel="Could not load feature cards."
+          isEmpty={!featuresData?.items?.length}
+          emptyLabel="Feature cards will appear when the feed updates."
+        >
           <div className="grid gap-6 md:grid-cols-3">
             {featuresData?.items?.slice(0, 3)?.map((feature: any) => (
               <Link
@@ -483,7 +472,7 @@ export default function Home() {
               </Link>
             ))}
           </div>
-        )}
+        </AsyncSection>
       </section>
 
       {/* Popular news + Latest podcasts */}
@@ -491,13 +480,13 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 lg:grid-cols-2">
           <div className="space-y-4">
             <p className="section-label">Popular News</p>
-            {editorialLoading ? (
-              <div className="flex justify-center py-6">
-                <div className="spinner" />
-              </div>
-            ) : editorialError ? (
-              <p className="text-sm text-white/60">Error loading bulletins: {editorialError}</p>
-            ) : bulletinEntries.length ? (
+            <AsyncSection
+              loading={editorialLoading}
+              error={editorialError}
+              errorLabel="Could not load bulletins."
+              isEmpty={!bulletinEntries.length}
+              emptyLabel="News bulletins will update when the Afropop feed publishes."
+            >
               <ul className="space-y-3">
                 {bulletinEntries.map((item: any) => (
                   <li key={item.id || item.title} className="flex items-center justify-between rounded-full border border-white/10 px-5 py-3">
@@ -513,9 +502,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="text-sm text-white/60">News bulletins will update when the Afropop feed publishes.</p>
-            )}
+            </AsyncSection>
           </div>
 
           <div className="space-y-4">
@@ -525,13 +512,13 @@ export default function Home() {
                 Browse all
               </Link>
             </div>
-            {episodesLoading ? (
-              <div className="flex justify-center py-12">
-                <div className="spinner" />
-              </div>
-            ) : episodesError ? (
-              <div className="text-white/60">Error loading episodes: {episodesError}</div>
-            ) : (
+            <AsyncSection
+              loading={episodesLoading}
+              error={episodesError}
+              errorLabel="Could not load latest podcasts."
+              isEmpty={!episodesData?.items?.length}
+              emptyLabel="Podcast cards will appear when the feed updates."
+            >
               <div className="grid gap-6 md:grid-cols-2">
                 {episodesData?.items?.slice(0, 4)?.map((episode: any) => (
                   <Link
@@ -564,7 +551,7 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
-            )}
+            </AsyncSection>
           </div>
         </div>
       </section>
@@ -578,7 +565,7 @@ export default function Home() {
             Afropop Worldwide partners with curators across the diaspora to surface new collectives, venues, and voices.
           </p>
           <Button asChild variant="primary" size="lg">
-            <Link href="/events/submit">Submit an event</Link>
+            <Link href="/pitch">Submit a Pitch</Link>
           </Button>
         </div>
       </section>

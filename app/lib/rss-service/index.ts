@@ -48,6 +48,11 @@ export type RSSSearchFilters = {
   dateTo?: string
 }
 
+export type RSSSearchPagination = {
+  page?: number
+  pageSize?: number
+}
+
 const RSS_FETCH_TIMEOUT_MS = 12_000
 
 type CachedFeed = {
@@ -255,11 +260,19 @@ function matchesFilterRange(item: NormalizedRSSItem, filters: RSSSearchFilters) 
   return true
 }
 
-export async function searchRSSFeed(query: string, filters: RSSSearchFilters = {}) {
+export async function searchRSSFeed(
+  query: string,
+  filters: RSSSearchFilters = {},
+  pagination: RSSSearchPagination = {}
+) {
   const feed = await resolveFeed()
   const loweredQuery = query.trim().toLowerCase()
+  const requestedPage = Number(pagination.page) || 1
+  const requestedPageSize = Number(pagination.pageSize) || 24
+  const page = Math.max(1, requestedPage)
+  const pageSize = Math.min(50, Math.max(1, requestedPageSize))
 
-  const items = feed.items
+  const filtered = feed.items
     .filter((item) => {
       const matchesQuery =
         !loweredQuery ||
@@ -284,9 +297,18 @@ export async function searchRSSFeed(query: string, filters: RSSSearchFilters = {
       return bDate - aDate
     })
 
+  const total = filtered.length
+  const start = (page - 1) * pageSize
+  const items = filtered.slice(start, start + pageSize)
+  const hasMore = start + items.length < total
+
   return {
     items,
     count: items.length,
+    total,
+    page,
+    pageSize,
+    hasMore,
     query,
     filters,
   }

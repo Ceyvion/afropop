@@ -57,7 +57,7 @@ export default function Shop() {
           <p className="page-kicker">Shop</p>
           <h1 className="page-title text-4xl md:text-5xl leading-tight">Support the archive.</h1>
           <p className="text-lg text-white/60 max-w-3xl">
-            Show your style while supporting Afropop Worldwide's mission to share African music and culture.
+            Show your style while supporting Afropop Worldwide’s mission to share African music and culture.
           </p>
         </div>
         

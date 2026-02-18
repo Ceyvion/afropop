@@ -17,7 +17,7 @@ export default function Error() {
         <h1 className="text-6xl font-bold text-ink mb-4">500</h1>
         <h2 className="text-2xl font-bold text-ink mb-6">Server Error</h2>
         <p className="text-gray-600 mb-10">
-          Sorry, something went wrong on our end. We're working to fix the problem as quickly as possible.
+          Sorry, something went wrong on our end. We’re working to fix the problem as quickly as possible.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild variant="accent" size="lg">

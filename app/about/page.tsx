@@ -22,7 +22,7 @@ export default function About() {
             <div className="space-y-6 text-white/70">
               <p>
                 Afropop Worldwide began as a radio program on WNYE 91.5 FM in New York City. 
-                Founded by Sean Barlow, the show was initially called "The African Show" 
+                Founded by Sean Barlow, the show was initially called “The African Show” 
                 and focused on traditional African music. Over time, the program evolved 
                 to encompass the full spectrum of African music, including contemporary 
                 genres and diaspora sounds.

@@ -8,7 +8,7 @@ const cx = (...classes: Array<string | undefined | null | false>) =>
 
 const buttonVariants = cva(
   // Base styles - applied to all buttons
-  'inline-flex items-center justify-center font-semibold uppercase tracking-[0.3em] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-v focus-visible:ring-offset-[#050506]',
+  'inline-flex items-center justify-center font-semibold uppercase tracking-[0.3em] transition-[background-color,color,border-color,transform,box-shadow,opacity] duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-v focus-visible:ring-offset-[#050506]',
   {
     variants: {
       variant: {

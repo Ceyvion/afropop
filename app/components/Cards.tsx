@@ -37,6 +37,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
   const durationClass = 'text-xs text-white/60'
   const imageAspect = compact ? 'aspect-[4/3]' : 'aspect-square'
   const showEngage = showEngagement && !compact && id != null
+  const canPlay = typeof onPlay === 'function'
 
   return (
     <div className={`group overflow-hidden border border-white/10 bg-elevated text-white transition duration-300 ease-in-out card-hover ${compact ? 'rounded-2xl shadow-lg' : 'rounded-[28px] shadow-[0_30px_70px_rgba(0,0,0,0.45)] hover:border-accent-v/80'}`}>
@@ -82,20 +83,29 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
         
         <div className="flex items-center justify-between">
           <span className={durationClass}>{duration}</span>
-          <button 
-            className="text-accent-v transition hover:text-white"
-            aria-label={`Play ${title}`}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onPlay?.(e);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className={playIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
+          {canPlay ? (
+            <button 
+              className="text-accent-v transition hover:text-white"
+              aria-label={`Play ${title}`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onPlay?.(e);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className={playIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          ) : (
+            <span className="text-white/30" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" className={playIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+          )}
         </div>
         {showEngage && (
           <div className="mt-4">

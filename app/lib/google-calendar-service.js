@@ -106,6 +106,61 @@ function dedupeNearDuplicates(items) {
   return out;
 }
 
+const QUALITY_BLOCKLIST = [
+  /^busy$/i,
+  /^hold$/i,
+  /^placeholder/i,
+  /^test/i,
+  /^tbd$/i,
+  /^office hours/i,
+]
+const DESCRIPTION_MAX_LENGTH = 320
+
+function stripHtml(text) {
+  if (!text) return ''
+  return String(text).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+function truncate(text, maxLength = DESCRIPTION_MAX_LENGTH) {
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+  return `${text.slice(0, maxLength).trim()}…`
+}
+
+function scoreEventQuality(item) {
+  const title = (item.title || '').trim()
+  const description = stripHtml(item.description || '')
+  const location = (item.location || '').trim()
+  const hasTicketLink = /https?:\/\/[^\s)]+/i.test(item.description || '')
+  const hasActionVerb = /(perform|live|festival|concert|tour|dj|workshop|panel|dance|tickets?|register)/i.test(`${title} ${description}`)
+  const blocked = QUALITY_BLOCKLIST.some((pattern) => pattern.test(title))
+
+  let score = 0
+  if (title.length >= 8) score += 1
+  if (description.length >= 80) score += 2
+  if (location.length >= 3) score += 1
+  if (hasTicketLink) score += 1
+  if (hasActionVerb) score += 1
+  if (blocked) score -= 6
+
+  return score
+}
+
+function enrichEventQuality(item) {
+  const score = scoreEventQuality(item)
+  const curated = score >= 2
+  return {
+    ...item,
+    description: truncate(stripHtml(item.description || '')),
+    curated,
+    qualityScore: score,
+  }
+}
+
+function enrichEvents(events) {
+  return events.map(enrichEventQuality)
+}
+
 // Function to fetch and parse events from the Google Calendar iCal feed
 async function getCalendarEvents() {
   try {
@@ -196,6 +251,7 @@ async function getCalendarEvents() {
       console.log(`Near-duplicate collapse: ${eventsBefore} -> ${events.length}`);
     }
     
+    events = enrichEvents(events)
     console.log(`Successfully fetched and parsed ${events.length} events from Google Calendar`);
     
     // Update cache
@@ -349,6 +405,7 @@ async function getUpcomingEvents(limit = 10) {
     if (upcomingEvents.length !== upBefore) {
       console.log(`Upcoming near-duplicate collapse: ${upBefore} -> ${upcomingEvents.length}`);
     }
+    upcomingEvents = enrichEvents(upcomingEvents)
     console.log(`Successfully fetched and parsed ${upcomingEvents.length} upcoming events from Google Calendar (deduped)`);
     
     // Update cache with all events for future use
@@ -407,6 +464,7 @@ async function getUpcomingEvents(limit = 10) {
     }
     
     // Update cache
+    allEvents = enrichEvents(allEvents)
     const result = {
       title: 'Afropop Worldwide Events',
       description: 'Events from Afropop Worldwide Google Calendar',
