@@ -1,5 +1,6 @@
 // Shop page with refined design
 import React from 'react'
+import Image from 'next/image'
 import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 import { Button } from '@/app/components/Button'
 
@@ -10,42 +11,48 @@ export default function Shop() {
       id: 1,
       name: 'Afropop Worldwide T-Shirt',
       price: '$25',
-      image: '',
+      image: '/images/store/store-tshirt.webp',
+      imageAlt: 'Folded black Afropop t-shirt with geometric coral and amber artwork',
       description: '100% cotton, soft and comfortable'
     },
     {
       id: 2,
       name: 'Afropop Worldwide Mug',
       price: '$15',
-      image: '',
-      description: 'Ceramic mug with our logo'
+      image: '/images/store/store-mug.webp',
+      imageAlt: 'Ceramic Afropop mug with warm geometric stripe motif',
+      description: 'Ceramic mug with signature geometric artwork'
     },
     {
       id: 3,
       name: 'Afropop Worldwide Tote Bag',
       price: '$20',
-      image: '',
+      image: '/images/store/store-tote.webp',
+      imageAlt: 'Canvas tote bag with rhythmic pan-African inspired pattern blocks',
       description: 'Reusable cotton tote bag'
     },
     {
       id: 4,
       name: 'Afropop Worldwide Cap',
       price: '$22',
-      image: '',
+      image: '/images/store/store-cap.webp',
+      imageAlt: 'Black snapback cap styled on dark studio backdrop',
       description: 'Adjustable snapback cap'
     },
     {
       id: 5,
       name: 'Afropop Worldwide Hoodie',
       price: '$45',
-      image: '',
+      image: '/images/store/store-hoodie.webp',
+      imageAlt: 'Folded hoodie with textured fabric and warm accent patterning',
       description: 'Warm and cozy hoodie'
     },
     {
       id: 6,
       name: 'Afropop Worldwide Stickers',
       price: '$8',
-      image: '',
+      image: '/images/store/store-stickers.webp',
+      imageAlt: 'Vinyl sticker set with abstract music and festival-inspired icons',
       description: 'Set of 3 vinyl stickers'
     },
   ]
@@ -65,7 +72,16 @@ export default function Shop() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 fade-in delay-100">
           {products.map((product, index) => (
             <div key={product.id} className={`ra-panel ra-panel-strong overflow-hidden hover:border-accent-v/40 transition fade-in ${getStaggeredDelayClass(index, 100)}`}>
-              <div className="bg-white/5 border-2 border-dashed border-white/10 aspect-square w-full" />
+              <div className="relative aspect-square w-full overflow-hidden bg-white/5">
+                <Image
+                  src={product.image}
+                  alt={product.imageAlt}
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  className="h-full w-full object-cover"
+                  priority={index < 3}
+                />
+              </div>
               <div className="p-6 space-y-3">
                 <h3 className="font-semibold text-white text-lg">{product.name}</h3>
                 <p className="text-white/60 text-sm">{product.description}</p>
@@ -85,7 +101,15 @@ export default function Shop() {
           <p className="section-label mb-6">Featured Collection</p>
           <div className="ra-panel-strong rounded-[32px] border border-white/10 overflow-hidden hover:border-accent-v/40 transition">
             <div className="grid grid-cols-1 lg:grid-cols-2">
-              <div className="bg-white/5 border-2 border-dashed border-white/10 aspect-square lg:aspect-auto lg:h-full" />
+              <div className="relative aspect-square lg:aspect-auto lg:h-full min-h-[320px]">
+                <Image
+                  src="/images/store/store-featured-collection.webp"
+                  alt="Afropop featured merchandise collection including hoodie, tee, tote, cap, mug, and sticker set"
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="h-full w-full object-cover"
+                />
+              </div>
               <div className="p-8 flex flex-col justify-center space-y-4">
                 <div className="inline-flex self-start">
                   <span className="ra-chip">NEW COLLECTION</span>
