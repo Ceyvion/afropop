@@ -34,6 +34,8 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
   const playIconClass = compact ? 'h-4 w-4' : 'h-5 w-5'
   const durationClass = 'text-xs text-white/45'
   const imageAspect = compact ? 'aspect-[4/3]' : 'aspect-square'
+  const imageWidth = compact ? 640 : 800
+  const imageHeight = compact ? 480 : 800
   const showEngage = showEngagement && !compact && id != null
   const canPlay = typeof onPlay === 'function'
 
@@ -44,9 +46,12 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
           <img
             src={image}
             alt={title}
+            width={imageWidth}
+            height={imageHeight}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
             decoding="async"
+            fetchPriority="low"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.onerror = null;
@@ -124,6 +129,8 @@ export const FeatureCard = ({ title, dek, author, readTime, image, density = 'co
   const dekClass = compact ? 'text-sm text-white/55 line-clamp-2 mb-2.5' : 'text-sm text-white/55 line-clamp-2 mb-3'
   const metaClass = 'text-xs text-white/40'
   const imageAspect = compact ? 'aspect-[16/9]' : 'aspect-[3/2]'
+  const imageWidth = compact ? 960 : 1200
+  const imageHeight = compact ? 540 : 800
   return (
     <div className={`group overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white transition-all duration-200 card-hover ${compact ? 'rounded-xl' : 'rounded-xl shadow-[var(--shadow-md)] hover:border-[rgba(255,45,85,0.25)]'}`}>
       {image ? (
@@ -131,9 +138,12 @@ export const FeatureCard = ({ title, dek, author, readTime, image, density = 'co
           <img
             src={image}
             alt={title}
+            width={imageWidth}
+            height={imageHeight}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
             decoding="async"
+            fetchPriority="low"
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.onerror = null

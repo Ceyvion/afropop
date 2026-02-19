@@ -147,7 +147,12 @@ export default function ClientFeature({ slug }: { slug: string }) {
               <img
                 src={data.image}
                 alt={data.title}
+                width={1600}
+                height={900}
                 className="h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 onError={(e) => {
                   const t = e.target as HTMLImageElement
                   t.onerror = null

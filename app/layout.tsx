@@ -52,6 +52,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`dark ${outfit.variable} ${archivo.variable} ${ibmPlexMono.variable} ${displayCondensed.variable}`}>
       <head>
+        <link rel="preconnect" href="https://afropop.org" crossOrigin="" />
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
+        <link rel="preconnect" href="https://f.prxu.org" crossOrigin="" />
+        <link rel="dns-prefetch" href="//afropop.org" />
+        <link rel="dns-prefetch" href="//images.unsplash.com" />
+        <link rel="dns-prefetch" href="//f.prxu.org" />
         <SentryInit />
         <script
           dangerouslySetInnerHTML={{

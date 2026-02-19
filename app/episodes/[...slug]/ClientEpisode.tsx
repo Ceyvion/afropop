@@ -254,7 +254,12 @@ export default function ClientEpisode({ slug }: { slug: string }) {
                 <img
                   src={data.image}
                   alt={data.title}
+                  width={1200}
+                  height={640}
                   className="h-64 w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
                     target.onerror = null

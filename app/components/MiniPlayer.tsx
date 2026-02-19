@@ -30,7 +30,12 @@ const MiniPlayer = () => {
               <img
                 src={track.image}
                 alt={track.title}
+                width={56}
+                height={56}
                 className="h-12 w-12 md:h-14 md:w-14 rounded-xl object-cover shadow-[0_10px_35px_rgba(0,0,0,0.45)]"
+                loading="eager"
+                decoding="async"
+                fetchPriority="low"
               />
             ) : (
               <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl bg-white/10 border border-white/10" />

@@ -410,7 +410,16 @@ export default function Home() {
                     className="flex gap-3.5 rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-3.5 hover:border-[rgba(255,45,85,0.2)] transition-all"
                   >
                     <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
-                      <img src={news.image} alt={news.title} className="h-full w-full object-cover" loading="lazy" />
+                      <img
+                        src={news.image}
+                        alt={news.title}
+                        width={80}
+                        height={80}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority="low"
+                      />
                     </div>
                     <div className="min-w-0">
                       <p className="text-2xs uppercase tracking-[0.3em] text-white/40">{news.date || 'New'}</p>
