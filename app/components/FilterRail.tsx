@@ -102,7 +102,7 @@ export function ActiveFilterChips({
           </svg>
         </button>
       ))}
-      {entries.length > 1 && (
+      {entries.length > 0 && (
         <button
           onClick={clearAll}
           className="text-xs text-white/40 hover:text-white/70 transition-colors underline underline-offset-2"

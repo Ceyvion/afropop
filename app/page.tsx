@@ -224,61 +224,56 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Featured Content: Sidebar + Editorial ─── */}
-      <section className="container-wide py-10 md:py-14 grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
-        {/* Left rail */}
-        <div className="space-y-5">
-          {/* Feature spotlight */}
-          <div className="rounded-xl border border-white/15 bg-gradient-to-b from-[#ff2d55] to-[#b10030] p-5 text-white space-y-3">
-            <p className="text-2xs uppercase tracking-[0.3em] text-white/60">Feature spotlight</p>
-            <p className="text-2xl font-display-condensed leading-tight">{profileFeature?.title || profileName}</p>
-            <p className="text-xs uppercase tracking-[0.25em] text-white/60">{profileName}</p>
-            <Link
-              href={profileHref}
-              target={profileExternal ? '_blank' : undefined}
-              rel={profileExternal ? 'noreferrer' : undefined}
-              className="inline-flex items-center gap-2 text-2xs uppercase tracking-[0.3em] text-white/70 hover:text-white transition-colors"
-            >
-              Read story
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14m-6-6 6 6-6 6" />
-              </svg>
-            </Link>
-          </div>
-
-          {/* SoundCloud embed */}
-          <div className="overflow-hidden rounded-xl border border-white/8">
-            <iframe
-              title="Afropop Worldwide SoundCloud Player"
-              width="100%"
-              height="180"
-              scrolling="no"
-              frameBorder="no"
-              allow="autoplay"
-              src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/afropop-worldwide&color=%23ff2d55&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
-            />
-          </div>
-
-          {/* Magazine panel */}
-          <div className="ra-panel space-y-3">
-            <p className="section-label">Magazine</p>
-            <p className="text-2xs uppercase tracking-[0.3em] text-white/40">{profileLocation}</p>
-            <p className="text-xl font-display-condensed leading-tight">{profileName}</p>
-            <p className="text-sm text-white/60 leading-relaxed">{profileSummary}</p>
-            <Button asChild variant="primary" size="sm">
-              <Link
-                href={profileHref}
-                target={profileExternal ? '_blank' : undefined}
-                rel={profileExternal ? 'noreferrer' : undefined}
-              >
-                Read feature
-              </Link>
-            </Button>
+      {/* ─── Now Playing ─── */}
+      <section className="container-wide py-10 md:py-14 space-y-8">
+        {/* Now Playing strip: episode context + SoundCloud side by side */}
+        <div className="grid gap-5 lg:grid-cols-[1fr_320px] items-start">
+          <Link
+            href={profileHref}
+            target={profileExternal ? '_blank' : undefined}
+            rel={profileExternal ? 'noreferrer' : undefined}
+            className="group block"
+          >
+            <div className="rounded-xl border border-white/15 bg-gradient-to-br from-[#ff2d55]/20 to-transparent p-6 space-y-3 transition-all hover:border-[rgba(255,45,85,0.35)]">
+              <div className="flex items-center gap-3">
+                <span className="flex h-2 w-2 rounded-full bg-[#ff2d55] animate-pulse" />
+                <p className="text-2xs uppercase tracking-[0.3em] text-accent-v font-bold">Now Playing</p>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-display-condensed leading-tight uppercase tracking-wide group-hover:text-accent-v/90 transition-colors">
+                {profileFeature?.title || heroTitle}
+              </h2>
+              <p className="text-sm text-white/55 leading-relaxed max-w-2xl">{profileSummary}</p>
+              <div className="flex items-center gap-4 pt-1">
+                <span className="text-2xs uppercase tracking-[0.25em] text-white/40">{profileName}</span>
+                <span className="text-white/20">·</span>
+                <span className="text-2xs uppercase tracking-[0.25em] text-white/40">{profileLocation}</span>
+              </div>
+            </div>
+          </Link>
+          <div className="space-y-2">
+            <p className="text-2xs uppercase tracking-[0.3em] text-white/40 px-1">Listen on SoundCloud</p>
+            <div className="overflow-hidden rounded-xl border border-white/8">
+              <iframe
+                title="Afropop Worldwide SoundCloud Player"
+                width="100%"
+                height="180"
+                scrolling="no"
+                frameBorder="no"
+                allow="autoplay"
+                src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/afropop-worldwide&color=%23ff2d55&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Right main column */}
-        <div className="space-y-5">
+        {/* Editorial grid: 3 equal-weight panels */}
+        <div>
+          <div className="flex items-center justify-between mb-5">
+            <p className="section-label">From the Magazine</p>
+            <Link href="/features" className="text-2xs uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors">
+              View all
+            </Link>
+          </div>
           <AsyncSection
             loading={editorialLoading}
             error={editorialError}
@@ -286,30 +281,24 @@ export default function Home() {
             isEmpty={!panelEntries.length}
             emptyLabel="Fresh magazine features will appear here shortly."
           >
-            <div className="space-y-4">
-              {panelEntries.map((panel: any) => (
+            <div className="grid gap-4 md:grid-cols-3">
+              {panelEntries.map((panel: any, index: number) => (
                 <Link
                   key={panel.id || panel.title}
                   href={panel.href}
                   target={panel.external ? '_blank' : undefined}
                   rel={panel.external ? 'noreferrer' : undefined}
-                  className="block"
+                  className="block group"
                 >
-                  <article className="ra-panel ra-panel-strong space-y-2.5 hover:border-[rgba(255,45,85,0.3)] transition-all">
+                  <article className={`ra-panel space-y-3 h-full hover:border-[rgba(255,45,85,0.3)] transition-all ${index === 0 ? 'ra-panel-strong' : ''}`}>
                     <p className="section-label">{panel.label}</p>
-                    <h3 className="text-lg font-display-condensed uppercase tracking-wide">{panel.title}</h3>
-                    <p className="text-sm leading-relaxed text-white/65">{panel.body}</p>
+                    <h3 className="text-lg font-display-condensed uppercase tracking-wide group-hover:text-accent-v/90 transition-colors">{panel.title}</h3>
+                    <p className="text-sm leading-relaxed text-white/55 line-clamp-3">{panel.body}</p>
                   </article>
                 </Link>
               ))}
             </div>
           </AsyncSection>
-
-          <div className="ra-panel">
-            <p className="ra-quote">
-              &ldquo;{heroDescription || 'Afropop Worldwide stretches the archive into something widescreen—music for dancers, yes, but also for people plotting the next chapter of community radio.'}&rdquo;
-            </p>
-          </div>
         </div>
       </section>
 

@@ -39,6 +39,12 @@ export default function Archive() {
     return applyFacetFilters(typeFilteredItems, facetFilters, query, sortOrder)
   }, [typeFilteredItems, facetFilters, query, sortOrder])
 
+  // Clear facet selections when content type changes so hidden/invalid filters
+  // from prior context cannot keep filtering results unexpectedly.
+  useEffect(() => {
+    setFacetFilters({})
+  }, [activeFilter])
+
   // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(12)

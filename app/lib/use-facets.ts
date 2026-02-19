@@ -317,12 +317,12 @@ export function applyFacetFilters(
     })
   }
 
-  // Sort
-  result.sort((a, b) => {
+  // Sort (copy first so callers don't observe in-place mutation of source arrays)
+  const sorted = [...result].sort((a, b) => {
     const da = new Date(a.isoDate || a.pubDate || 0).getTime()
     const db = new Date(b.isoDate || b.pubDate || 0).getTime()
     return sortOrder === 'newest' ? db - da : da - db
   })
 
-  return result
+  return sorted
 }

@@ -133,6 +133,35 @@ function extractCuratedTags(ev: RawEvent): string[] {
   return CURATED_TAGS.filter((t) => blob.includes(t.toLowerCase()))
 }
 
+function makeEventKey(ev: RawEvent): string {
+  const id = typeof ev.id === 'string' ? ev.id.trim().toLowerCase() : ''
+  if (id) return `id:${id}`
+
+  const parsedLocation = parseLocation(ev.location)
+  const start = new Date(ev.startDate)
+  const startKey = Number.isNaN(start.getTime()) ? 'invalid-date' : start.toISOString()
+  const titleKey = `${ev.title || ''}`.toLowerCase().replace(/\s+/g, ' ').trim()
+  const cityKey = (normalizeCityLabel(parsedLocation.city) || 'unknown-location').toLowerCase()
+  const venueKey = `${parsedLocation.venue || ''}`.toLowerCase().replace(/\s+/g, ' ').trim() || 'unknown-venue'
+  const descriptionKey = `${ev.description || ''}`
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .trim()
+    .slice(0, 120) || 'no-description'
+
+  return `fallback:${startKey}|${titleKey}|${cityKey}|${venueKey}|${descriptionKey}`
+}
+
+function dedupeEventsByIdentity(events: RawEvent[]): RawEvent[] {
+  const byKey = new Map<string, RawEvent>()
+  for (const ev of events) {
+    const key = makeEventKey(ev)
+    if (!byKey.has(key)) byKey.set(key, ev)
+  }
+  return Array.from(byKey.values())
+}
+
 export default function Events() {
   const [raw, setRaw] = useState<RawEvent[]>([])
   const [loading, setLoading] = useState(true)
@@ -156,7 +185,14 @@ export default function Events() {
       if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed?.advanced) setAdvanced(parsed.advanced)
-        if (parsed?.location !== undefined) setLocation(parsed.location)
+        if (parsed?.location !== undefined) {
+          if (parsed.location) {
+            const restoredLocation = typeof parsed.location === 'string' ? parsed.location : String(parsed.location)
+            setLocation(normalizeCityLabel(restoredLocation) || null)
+          } else {
+            setLocation(null)
+          }
+        }
       }
     } catch {}
   }, [])
@@ -175,11 +211,8 @@ export default function Events() {
       const res = await fetchAllEvents(nextPage, PAGE_SIZE, 'curated')
       setRaw((prev) => {
         const merged = append ? [...prev, ...res.items] : [...res.items]
-        const byId = new Map<string, RawEvent>()
-        merged.forEach((event) => {
-          if (!byId.has(event.id)) byId.set(event.id, event)
-        })
-        return Array.from(byId.values()).sort(
+        const deduped = dedupeEventsByIdentity(merged)
+        return deduped.sort(
           (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
         )
       })
@@ -272,7 +305,7 @@ export default function Events() {
       return true // 'upcoming'
     })
 
-    const filtered = filteredByTime.filter((ev) => {
+    const filtered = dedupeEventsByIdentity(filteredByTime.filter((ev) => {
       const q = query.trim().toLowerCase()
       const text = `${ev.title} ${ev.description || ''}`.toLowerCase()
       const { city: c } = parseLocation(ev.location)
@@ -283,7 +316,7 @@ export default function Events() {
       const required = advanced.tags || []
       const okTags = required.length === 0 || required.every((t) => tags.includes(t))
       return okQ && okCity && okTags
-    })
+    }))
 
     // Group by month key
     const groups: Record<string, RawEvent[]> = {}
