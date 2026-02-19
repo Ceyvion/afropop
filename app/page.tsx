@@ -3,6 +3,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { EpisodeCard, FeatureCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useArticles, useEpisodes, useFeatures, useUpcomingEvents } from '@/app/lib/use-rss-data'
@@ -409,8 +410,15 @@ export default function Home() {
                     rel={news.external ? 'noreferrer' : undefined}
                     className="flex gap-3.5 rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-3.5 hover:border-[rgba(255,45,85,0.2)] transition-all"
                   >
-                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
-                      <img src={news.image} alt={news.title} className="h-full w-full object-cover" loading="lazy" />
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white/5 relative">
+                      <Image
+                        src={news.image}
+                        alt={news.title}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        loading="lazy"
+                      />
                     </div>
                     <div className="min-w-0">
                       <p className="text-2xs uppercase tracking-[0.3em] text-white/40">{news.date || 'New'}</p>

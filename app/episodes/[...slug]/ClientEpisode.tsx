@@ -1,6 +1,7 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useItemById } from '@/app/lib/use-rss-data'
 import { usePlayer } from '@/app/components/PlayerProvider'
@@ -52,6 +53,11 @@ const buildSummaryExcerpt = (value?: string) => {
 export default function ClientEpisode({ slug }: { slug: string }) {
   const { data, loading, error } = useItemById(slug)
   const { track, isPlaying, currentTime, duration, play, toggle, seek, skip } = usePlayer()
+  const [heroImageError, setHeroImageError] = useState(false)
+
+  useEffect(() => {
+    setHeroImageError(false)
+  }, [data?.image])
 
   const audioUrl = data?.audioUrl || null
   const isCurrent = track?.id === data?.id
@@ -248,18 +254,17 @@ export default function ClientEpisode({ slug }: { slug: string }) {
             )}
           </div>
 
-          <div className="space-y-4">
-            {data.image && (
-              <figure className="rounded-[28px] overflow-hidden border border-white/10 bg-white/5">
-                <img
+            <div className="space-y-4">
+            {data.image && !heroImageError && (
+              <figure className="rounded-[28px] h-64 overflow-hidden border border-white/10 bg-white/5 relative">
+                <Image
                   src={data.image}
                   alt={data.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 640px"
+                  priority
                   className="h-64 w-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.onerror = null
-                    target.style.display = 'none'
-                  }}
+                  onError={() => setHeroImageError(true)}
                 />
               </figure>
             )}

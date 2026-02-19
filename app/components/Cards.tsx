@@ -1,19 +1,38 @@
 // Card components — tighter, sharper, system-consistent
-import React from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import EngagementBar from './EngagementBar'
+
+const EpisodeImagePlaceholder = ({ imageAspect }: { imageAspect: string }) => (
+  <div className={`bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center`}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+    </svg>
+  </div>
+)
+
+const FeatureImagePlaceholder = ({ imageAspect }: { imageAspect: string }) => (
+  <div className={`bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center`}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  </div>
+)
 
 // Episode Card
 export const EpisodeCard = ({ id, title, region, genre, duration, image, categories, onPlay, showEngagement = true, density = 'comfortable' }: {
-  id?: string | number;
-  title: string;
-  region: string;
-  genre: string;
-  duration: string;
-  image?: string;
-  categories?: string[];
-  onPlay?: (e: React.MouseEvent) => void;
-  showEngagement?: boolean;
-  density?: 'comfortable' | 'compact';
+  id?: string | number
+  title: string
+  region: string
+  genre: string
+  duration: string
+  image?: string
+  categories?: string[]
+  onPlay?: (e: React.MouseEvent) => void
+  showEngagement?: boolean
+  density?: 'comfortable' | 'compact'
 }) => {
   const additionalTags = categories
     ?.filter(cat =>
@@ -23,6 +42,7 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
     )
     .slice(0, 2) || []
 
+  const [imageFailed, setImageFailed] = useState(false)
   const compact = density === 'compact'
   const padClass = compact ? 'p-3.5' : 'p-5'
   const titleClass = compact
@@ -37,29 +57,26 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
   const showEngage = showEngagement && !compact && id != null
   const canPlay = typeof onPlay === 'function'
 
+  useEffect(() => {
+    setImageFailed(false)
+  }, [image])
+
   return (
     <div className={`group overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white transition-all duration-200 card-hover ${compact ? 'rounded-xl' : 'rounded-xl shadow-[var(--shadow-md)] hover:border-[rgba(255,45,85,0.25)]'}`}>
-      {image ? (
-        <div className={`${imageAspect} w-full overflow-hidden`}>
-          <img
+      {image && !imageFailed ? (
+        <div className={`${imageAspect} w-full overflow-hidden relative`}>
+          <Image
             src={image}
             alt={title}
+            fill
+            sizes={compact ? '(min-width: 768px) 48vw, 90vw' : '(min-width: 1280px) 33vw, (min-width: 1024px) 25vw, 48vw'}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
-            decoding="async"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              target.parentElement!.innerHTML = `<div class="bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>`;
-            }}
+            onError={() => setImageFailed(true)}
           />
         </div>
       ) : (
-        <div className={`bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center`}>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-          </svg>
-        </div>
+        <EpisodeImagePlaceholder imageAspect={imageAspect} />
       )}
 
       <div className={padClass}>
@@ -80,9 +97,9 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
               className="text-accent-v transition-colors hover:text-white"
               aria-label={`Play ${title}`}
               onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onPlay?.(e);
+                e.preventDefault()
+                e.stopPropagation()
+                onPlay?.(e)
               }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className={playIconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,42 +128,41 @@ export const EpisodeCard = ({ id, title, region, genre, duration, image, categor
 
 // Feature Card
 export const FeatureCard = ({ title, dek, author, readTime, image, density = 'comfortable' }: {
-  title: string;
-  dek: string;
-  author: string;
-  readTime: string;
-  image?: string;
-  density?: 'comfortable' | 'compact';
+  title: string
+  dek: string
+  author: string
+  readTime: string
+  image?: string
+  density?: 'comfortable' | 'compact'
 }) => {
+  const [imageFailed, setImageFailed] = useState(false)
   const compact = density === 'compact'
   const padClass = compact ? 'p-3.5' : 'p-5'
   const titleClass = compact ? 'font-semibold text-white line-clamp-2 mb-1.5 text-[15px] leading-snug' : 'font-semibold text-white line-clamp-2 mb-2 text-lg leading-snug'
   const dekClass = compact ? 'text-sm text-white/55 line-clamp-2 mb-2.5' : 'text-sm text-white/55 line-clamp-2 mb-3'
   const metaClass = 'text-xs text-white/40'
   const imageAspect = compact ? 'aspect-[16/9]' : 'aspect-[3/2]'
+
+  useEffect(() => {
+    setImageFailed(false)
+  }, [image])
+
   return (
     <div className={`group overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white transition-all duration-200 card-hover ${compact ? 'rounded-xl' : 'rounded-xl shadow-[var(--shadow-md)] hover:border-[rgba(255,45,85,0.25)]'}`}>
-      {image ? (
-        <div className={`${imageAspect} w-full overflow-hidden`}>
-          <img
+      {image && !imageFailed ? (
+        <div className={`${imageAspect} w-full overflow-hidden relative`}>
+          <Image
             src={image}
             alt={title}
+            fill
+            sizes={compact ? '(max-width: 768px) 80vw, 320px' : '(min-width: 1024px) 34vw, (min-width: 768px) 50vw, 90vw'}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             loading="lazy"
-            decoding="async"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.onerror = null
-              target.parentElement!.innerHTML = `<div class="bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>`
-            }}
+            onError={() => setImageFailed(true)}
           />
         </div>
       ) : (
-        <div className={`bg-white/[0.03] ${imageAspect} w-full flex items-center justify-center`}>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
+        <FeatureImagePlaceholder imageAspect={imageAspect} />
       )}
 
       <div className={padClass}>
@@ -164,11 +180,11 @@ export const FeatureCard = ({ title, dek, author, readTime, image, density = 'co
 
 // Event Card
 export const EventCard = ({ title, date, city, venue, ctaHref }: {
-  title: string;
-  date: string;
-  city: string;
-  venue: string;
-  ctaHref?: string;
+  title: string
+  date: string
+  city: string
+  venue: string
+  ctaHref?: string
 }) => {
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--elevated)] p-4 text-white">
@@ -197,8 +213,8 @@ export const EventCard = ({ title, date, city, venue, ctaHref }: {
 
 // Program Card
 export const ProgramCard = ({ title, purpose }: {
-  title: string;
-  purpose: string;
+  title: string
+  purpose: string
 }) => {
   return (
     <div className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--elevated)] text-white card-hover">
