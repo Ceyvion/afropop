@@ -29,21 +29,60 @@ function normalizeTitle(str) {
   return s.replace(/\s+/g, ' ').trim();
 }
 
+function titleTokens(str) {
+  return normalizeTitle(str)
+    .split(' ')
+    .filter(Boolean)
+    .filter((token) => token.length > 2 && !/^\d+$/.test(token));
+}
+
+function jaccardSimilarity(tokensA, tokensB) {
+  const a = new Set(tokensA);
+  const b = new Set(tokensB);
+  if (a.size === 0 || b.size === 0) return 0;
+  let intersection = 0;
+  for (const token of a) {
+    if (b.has(token)) intersection += 1;
+  }
+  const union = new Set([...a, ...b]).size;
+  return union === 0 ? 0 : intersection / union;
+}
+
+function nearStartTime(isoA, isoB, thresholdMinutes = 45) {
+  const a = new Date(isoA).getTime();
+  const b = new Date(isoB).getTime();
+  if (Number.isNaN(a) || Number.isNaN(b)) return false;
+  return Math.abs(a - b) <= thresholdMinutes * 60 * 1000;
+}
+
+function eventDayKey(isoDate) {
+  const timestamp = new Date(isoDate).getTime();
+  if (Number.isNaN(timestamp)) return 'invalid-date';
+  return new Date(timestamp).toISOString().slice(0, 10);
+}
+
 function extractCityCandidate(location) {
   if (!location) return '';
   const tokens = String(location).split(',').map(s => s.trim()).filter(Boolean);
   // Prefer the last sufficiently descriptive token
   const IGNORES = new Set(['usa','united states','united kingdom','uk','canada']);
+  const canonicalize = (value) => {
+    if (!value) return '';
+    if (value === 'newyorkcity' || value === 'newyorkny') return 'newyork';
+    if (value === 'losangelesca') return 'losangeles';
+    if (value === 'locationtba' || value === 'venuetba') return '';
+    return value;
+  };
   for (let i = tokens.length - 1; i >= 0; i--) {
     const raw = tokens[i];
     const t = raw.toLowerCase().replace(/[^a-z]/g, '');
     if (!t) continue;
     if (t.length <= 2) continue; // likely region code like QC, NY
     if (IGNORES.has(t)) continue;
-    return t;
+    return canonicalize(t);
   }
   // fallback: first token cleaned
-  return tokens.length ? tokens[0].toLowerCase().replace(/[^a-z]/g, '') : '';
+  return tokens.length ? canonicalize(tokens[0].toLowerCase().replace(/[^a-z]/g, '')) : '';
 }
 
 function firstUrlFromText(text) {
@@ -94,14 +133,36 @@ function dedupeNearDuplicates(items) {
     .sort((a, b) => (b.score - a.score) || (new Date(a.it.startDate) - new Date(b.it.startDate)));
   const usedStrong = new Set();
   const usedWeak = new Set();
+  const keptByDay = new Map();
   const out = [];
   for (const { it } of annotated) {
     const { strongKey, weakKey } = fingerprintEvent(it);
     if (strongKey && usedStrong.has(strongKey)) continue;
     if (usedWeak.has(weakKey)) continue;
+
+    const city = extractCityCandidate(it.location);
+    const tokens = titleTokens(it.title);
+    const dayKey = eventDayKey(it.startDate);
+    const candidates = keptByDay.get(dayKey) || [];
+    const fuzzyDuplicate = candidates.some((candidate) => {
+      const sameCity = city && candidate.city ? city === candidate.city : true;
+      if (!sameCity) return false;
+      if (!nearStartTime(it.startDate, candidate.startDate)) return false;
+      const similarity = jaccardSimilarity(tokens, candidate.tokens);
+      return similarity >= 0.72;
+    });
+
+    if (fuzzyDuplicate) continue;
+
     out.push(it);
     if (strongKey) usedStrong.add(strongKey);
     usedWeak.add(weakKey);
+    if (!keptByDay.has(dayKey)) keptByDay.set(dayKey, []);
+    keptByDay.get(dayKey).push({
+      city,
+      startDate: it.startDate,
+      tokens,
+    });
   }
   return out;
 }
@@ -494,5 +555,10 @@ async function getUpcomingEvents(limit = 10) {
 // Export all functions
 module.exports = {
   getCalendarEvents,
-  getUpcomingEvents
+  getUpcomingEvents,
+  __private: {
+    dedupeNearDuplicates,
+    normalizeTitle,
+    extractCityCandidate,
+  },
 };

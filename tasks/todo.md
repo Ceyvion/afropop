@@ -99,3 +99,24 @@
 - Replaced invalid `h-18` with `h-20` for home news thumbnails so media containers no longer collapse.
 - Verified that `line-clamp-*` utilities already compile in current Tailwind output; no plugin patch required.
 - Verification passed: `npm run lint`, `npm run test -- --runInBand`, `npm run build`.
+
+---
+
+# Events Dedupe + City Filter Bugfix
+
+## Plan
+- [x] Reproduce bug symptoms from screenshot and trace `/events` data flow.
+- [x] Improve calendar near-duplicate collapse for same-time/same-city title variants.
+- [x] Normalize city labels in UI filter chips to remove duplicates/placeholders.
+- [x] Add regression tests for dedupe behavior.
+- [x] Verify with lint, tests, and production build.
+
+## Verification Checklist
+- [x] `npm run lint`
+- [x] `npm run test -- --runInBand`
+- [x] `npm run build`
+
+## Review
+- Added fuzzy near-duplicate collapse in `/app/lib/google-calendar-service.js` using city canonicalization + title token similarity + start-time proximity.
+- Added city canonicalization in `/app/events/page.tsx` so city chips no longer split into redundant values like `New York`, `New York City`, and `New York, NY`, and placeholder values (`Location TBA`) are excluded from suggestions.
+- Added regression tests in `/app/lib/google-calendar-service.test.js` covering both duplicate collapse and preserving valid multi-session events.

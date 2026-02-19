@@ -72,6 +72,37 @@ function parseLocation(loc?: string) {
   return { venue, city }
 }
 
+function normalizeCityLabel(raw?: string): string | null {
+  if (!raw) return null
+  const cleaned = raw.trim().replace(/\s+/g, ' ')
+  if (!cleaned) return null
+
+  const normalized = cleaned
+    .toLowerCase()
+    .replace(/[()]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  const placeholderPatterns = [
+    'location tba',
+    'venue tba',
+    'tba',
+    'online',
+    'virtual',
+    'global release',
+  ]
+  if (placeholderPatterns.some((pattern) => normalized.includes(pattern))) {
+    return null
+  }
+
+  if (normalized === 'new york' || normalized === 'new york city' || normalized === 'new york ny' || normalized === 'ny') {
+    return 'New York, NY'
+  }
+
+  const withoutCountry = cleaned.replace(/,\s*(usa|us|united states)\s*$/i, '').trim()
+  return withoutCountry
+}
+
 function firstUrlFromText(text?: string): string | null {
   if (!text) return null
   const m = text.match(/https?:\/\/[\w.-]+(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=.]+)?/i)
@@ -204,7 +235,8 @@ export default function Events() {
 
     raw.forEach((ev) => {
       const { city } = parseLocation(ev.location)
-      if (city) cities.set(city, (cities.get(city) || 0) + 1)
+      const cityLabel = normalizeCityLabel(city)
+      if (cityLabel) cities.set(cityLabel, (cities.get(cityLabel) || 0) + 1)
       months.add(monthKey(ev.startDate))
       const tags = extractCuratedTags(ev)
       tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1))
@@ -244,8 +276,9 @@ export default function Events() {
       const q = query.trim().toLowerCase()
       const text = `${ev.title} ${ev.description || ''}`.toLowerCase()
       const { city: c } = parseLocation(ev.location)
+      const normalizedCity = normalizeCityLabel(c)
       const okQ = !q || text.includes(q) || (c && c.toLowerCase().includes(q))
-      const okCity = !location || (c && c.toLowerCase() === location.toLowerCase())
+      const okCity = !location || (normalizedCity && normalizedCity.toLowerCase() === location.toLowerCase())
       const tags = extractCuratedTags(ev)
       const required = advanced.tags || []
       const okTags = required.length === 0 || required.every((t) => tags.includes(t))

@@ -3,17 +3,17 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import FilterRail from '@/app/components/FilterRail'
+import FilterRail, { ActiveFilterChips } from '@/app/components/FilterRail'
 import { EpisodeCard, FeatureCard, EventCard } from '@/app/components/Cards'
 import { usePlayer } from '@/app/components/PlayerProvider'
 import { useRSSFeed } from '@/app/lib/use-rss-data'
+import { useFacets, applyFacetFilters } from '@/app/lib/use-facets'
 import { getStaggeredDelayClass } from '@/app/lib/animation-utils'
 import { Button } from '@/app/components/Button'
 
 export default function Archive() {
   const { data: feedData, loading: feedLoading, error: feedError } = useRSSFeed()
   const player = usePlayer()
-  const [filteredResults, setFilteredResults] = useState<any[]>([])
   const [activeFilter, setActiveFilter] = useState('all')
   const [query, setQuery] = useState('')
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
@@ -22,133 +22,27 @@ export default function Archive() {
   const [groupMode, setGroupMode] = useState<'none' | 'year' | 'decade'>('none')
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
-  // Derived filters for API from facet filters + active type
-  const apiFilters = useMemo(() => {
-    const filters: any = {}
-    if (activeFilter !== 'all') filters.type = activeFilter
-    const regionSel = facetFilters['Region'] || []
-    const genreSel = facetFilters['Genre'] || []
-    if (regionSel.length > 0) {
-      const r0 = regionSel[0]
-      // Prefer full region label for robust includes() matching
-      const regionMap: Record<string, string> = {
-        'West Africa': 'west africa',
-        'East Africa': 'east africa',
-        'Southern Africa': 'southern africa',
-        'North Africa': 'north africa',
-      }
-      filters.region = (regionMap[r0] || r0).toLowerCase()
-    }
-    if (genreSel.length > 0) filters.genre = genreSel[0]
+  // All items from the feed
+  const allItems = useMemo(() => feedData?.items || [], [feedData])
 
-    const eras = facetFilters['Era/Decade'] || []
-    if (eras.length > 0) {
-      // Compute min/max date range from selected decades
-      const ranges = eras.map(dec => {
-        const decadeStart = parseInt(dec) || parseInt(dec.replace(/s$/, ''))
-        if (!isNaN(decadeStart)) {
-          const from = `${decadeStart}-01-01`
-          const to = `${decadeStart + 9}-12-31`
-          return { from, to }
-        }
-        return null
-      }).filter(Boolean) as { from: string, to: string }[]
-      if (ranges.length > 0) {
-        const from = ranges.reduce((min, r) => r.from < min ? r.from : min, ranges[0].from)
-        const to = ranges.reduce((max, r) => r.to > max ? r.to : max, ranges[0].to)
-        filters.dateFrom = from
-        filters.dateTo = to
-      }
-    }
-    return filters
-  }, [facetFilters, activeFilter])
+  // Items filtered by content type dropdown (before facet filters)
+  const typeFilteredItems = useMemo(() => {
+    if (activeFilter === 'all') return allItems
+    return allItems.filter((item: any) => item.type?.toLowerCase() === activeFilter)
+  }, [allItems, activeFilter])
 
-  // Source is the full feed; we filter client-side for responsiveness
-  const sourceItems = useMemo(() => {
-    return feedData?.items || []
-  }, [feedData])
+  // Build dynamic facets from the type-filtered set so counts stay accurate
+  const facets = useFacets(typeFilteredItems)
 
-  const loading = feedLoading
-  const error = feedError
+  // Apply all facet filters + search + sort via the centralized engine
+  const filteredResults = useMemo(() => {
+    return applyFacetFilters(typeFilteredItems, facetFilters, query, sortOrder)
+  }, [typeFilteredItems, facetFilters, query, sortOrder])
 
-  // Filter results based on active filter, query, and facet filters
+  // Reset visible count when filters change
   useEffect(() => {
-    if (!sourceItems) return
-
-    let items = [...sourceItems]
-
-    // Filter by active type
-    if (activeFilter !== 'all') {
-      items = items.filter((item: any) => item.type?.toLowerCase() === activeFilter)
-    }
-
-    // Apply facet filters: region, genre, and era/decade date range
-    const regionSel = (facetFilters['Region'] || []).map(r => r.toLowerCase())
-    const genreSel = (facetFilters['Genre'] || []).map(g => g.toLowerCase())
-    const eras = facetFilters['Era/Decade'] || []
-
-    if (regionSel.length > 0) {
-      const synonyms: Record<string, string[]> = {
-        'west africa': ['west africa', 'west', 'western'],
-        'east africa': ['east africa', 'east', 'eastern'],
-        'southern africa': ['southern africa', 'south', 'southern'],
-        'north africa': ['north africa', 'north', 'northern'],
-      }
-      const targets = regionSel.flatMap(label => {
-        const key = label.toLowerCase()
-        // Map canonical labels; fall back to the label itself
-        return synonyms[key] || [key]
-      })
-      items = items.filter((item: any) => {
-        const r = (item.region || '').toLowerCase()
-        return targets.some(t => r.includes(t))
-      })
-    }
-
-    if (genreSel.length > 0) {
-      items = items.filter((item: any) => {
-        const g = (item.genre || '').toLowerCase()
-        return genreSel.some(t => g.includes(t))
-      })
-    }
-
-    if (eras.length > 0) {
-      const ranges = eras.map(dec => {
-        const decadeStart = parseInt(dec) || parseInt(dec.replace(/s$/, ''))
-        if (!isNaN(decadeStart)) {
-          const from = new Date(`${decadeStart}-01-01`).getTime()
-          const to = new Date(`${decadeStart + 9}-12-31`).getTime()
-          return { from, to }
-        }
-        return null
-      }).filter(Boolean) as { from: number, to: number }[]
-      if (ranges.length > 0) {
-        items = items.filter((item: any) => {
-          const t = new Date(item.isoDate || item.pubDate || 0).getTime()
-          return ranges.some(r => t >= r.from && t <= r.to)
-        })
-      }
-    }
-
-    // Simple client-side search across title and description
-    if (query.trim()) {
-      const q = query.toLowerCase()
-      items = items.filter((item: any) =>
-        (item.title || '').toLowerCase().includes(q) ||
-        (item.description || '').toLowerCase().includes(q)
-      )
-    }
-
-    // Sort by date
-    items.sort((a: any, b: any) => {
-      const da = new Date(a.isoDate || a.pubDate || 0).getTime()
-      const db = new Date(b.isoDate || b.pubDate || 0).getTime()
-      return sortOrder === 'newest' ? db - da : da - db
-    })
-
-    setFilteredResults(items)
     setVisibleCount(12)
-  }, [sourceItems, activeFilter, query, sortOrder, facetFilters])
+  }, [activeFilter, query, sortOrder, facetFilters])
 
   // Infinite scroll via IntersectionObserver
   useEffect(() => {
@@ -165,7 +59,7 @@ export default function Archive() {
     return () => observer.unobserve(el)
   }, [filteredResults.length, visibleCount])
 
-  if (loading) {
+  if (feedLoading) {
     return (
       <div className="min-h-screen bg-page text-white flex items-center justify-center">
         <div className="spinner spinner-lg"></div>
@@ -173,13 +67,13 @@ export default function Archive() {
     )
   }
 
-  if (error) {
+  if (feedError) {
     return (
       <div className="min-h-screen bg-page text-white flex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="page-kicker">Archive</p>
           <h2 className="text-3xl font-display-condensed uppercase tracking-tight">Error Loading Archive</h2>
-          <p className="text-white/60">{String(error)}</p>
+          <p className="text-white/60">{String(feedError)}</p>
           <Button
             onClick={() => window.location.reload()}
             variant="outline"
@@ -192,13 +86,15 @@ export default function Archive() {
     )
   }
 
+  const activeCount = Object.values(facetFilters).reduce((n, arr) => n + arr.length, 0)
+
   return (
     <div className="min-h-screen bg-page text-white">
       <div className="page-shell py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filter Rail (sticky with own scroll; applies on button click) */}
-          <FilterRail initialSelected={facetFilters} onApply={(filters) => setFacetFilters(filters)} />
-          
+          {/* Desktop filter rail */}
+          <FilterRail facets={facets} selected={facetFilters} onChange={setFacetFilters} />
+
           {/* Main Content */}
           <div className="flex-1">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
@@ -252,14 +148,37 @@ export default function Archive() {
                 </div>
               </div>
             </div>
-            
+
+            {/* Active filter chips */}
+            <ActiveFilterChips selected={facetFilters} onChange={setFacetFilters} />
+
             {/* Results count */}
             <p className="text-white/50 mb-6 text-sm uppercase tracking-[0.35em]">
               Showing {Math.min(filteredResults.length, visibleCount)} of {filteredResults.length} items
+              {activeCount > 0 && (
+                <span className="text-white/30 ml-2">
+                  ({activeCount} filter{activeCount !== 1 ? 's' : ''} active)
+                </span>
+              )}
             </p>
-            
+
+            {/* Empty state */}
+            {filteredResults.length === 0 && (
+              <div className="text-center py-20 space-y-4">
+                <p className="text-white/40 text-lg">No results match your filters.</p>
+                {activeCount > 0 && (
+                  <button
+                    onClick={() => setFacetFilters({})}
+                    className="text-sm text-accent-v hover:underline"
+                  >
+                    Clear all filters
+                  </button>
+                )}
+              </div>
+            )}
+
             {/* Results */}
-            {(() => {
+            {filteredResults.length > 0 && (() => {
               const visibleItems = filteredResults.slice(0, visibleCount)
               const renderItem = (item: any, index: number) => {
                 if (item.type === 'Episode') {
@@ -295,7 +214,7 @@ export default function Archive() {
                     </Link>
                   )
                 }
-                
+
                 if (item.type === 'Feature') {
                   return (
                     <Link
@@ -316,7 +235,7 @@ export default function Archive() {
                     </Link>
                   )
                 }
-                
+
                 if (item.type === 'Event') {
                   return (
                     <div key={item.id} className={`fade-in ${getStaggeredDelayClass(index, 100, 6)}`}>
@@ -329,7 +248,7 @@ export default function Archive() {
                     </div>
                   )
                 }
-                
+
                 // Default to episode card for unknown types
                 return (
                   <Link
@@ -383,7 +302,6 @@ export default function Archive() {
                 groupsMap.set(key, arr)
               })
               const groupKeys = Array.from(groupsMap.keys()).sort((a, b) => {
-                // Numeric compare based on leading number
                 const na = parseInt(a)
                 const nb = parseInt(b)
                 return sortOrder === 'newest' ? nb - na : na - nb
@@ -407,7 +325,7 @@ export default function Archive() {
             {visibleCount < filteredResults.length && (
               <div ref={sentinelRef} className="h-10" />
             )}
-            
+
             {/* Manual Load More fallback */}
             {visibleCount < filteredResults.length && (
               <div className="mt-10 text-center">
@@ -427,11 +345,10 @@ export default function Archive() {
   )
 }
 
-// Helper function to format dates
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric' 
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
   })
 }
