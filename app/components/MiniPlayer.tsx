@@ -2,7 +2,6 @@
 'use client'
 
 import React from 'react'
-import Image from 'next/image'
 import { usePlayer } from '@/app/components/PlayerProvider'
 
 const MiniPlayer = () => {
@@ -28,15 +27,11 @@ const MiniPlayer = () => {
           {/* Track details */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {track.image ? (
-              <div className="h-12 w-12 md:h-14 md:w-14 relative">
-                <Image
-                  src={track.image}
-                  alt={track.title}
-                  fill
-                  sizes="56px"
-                  className="rounded-xl object-cover shadow-[0_10px_35px_rgba(0,0,0,0.45)]"
-                />
-              </div>
+              <img
+                src={track.image}
+                alt={track.title}
+                className="h-12 w-12 md:h-14 md:w-14 rounded-xl object-cover shadow-[0_10px_35px_rgba(0,0,0,0.45)]"
+              />
             ) : (
               <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl bg-white/10 border border-white/10" />
             )}

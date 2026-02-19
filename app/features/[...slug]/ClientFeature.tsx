@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
-import Image from 'next/image'
+import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { useItemById, useEpisodes } from '@/app/lib/use-rss-data'
 import { EpisodeCard } from '@/app/components/Cards'
@@ -11,11 +10,6 @@ export default function ClientFeature({ slug }: { slug: string }) {
   const { data, loading, error } = useItemById(slug)
   const episodes = useEpisodes(48)
   const player = usePlayer()
-  const [heroImageError, setHeroImageError] = useState(false)
-
-  useEffect(() => {
-    setHeroImageError(false)
-  }, [data?.image])
 
   const shareFeature = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -148,16 +142,17 @@ export default function ClientFeature({ slug }: { slug: string }) {
 
         {/* Hero with gradient overlay */}
         <div className="relative mb-10 overflow-hidden rounded-2xl">
-          <div className="aspect-video w-full bg-gray-200 relative">
-            {data.image && !heroImageError && (
-              <Image
+          <div className="aspect-video w-full bg-gray-200">
+            {data.image && (
+              <img
                 src={data.image}
                 alt={data.title}
-                fill
-                sizes="100vw"
-                priority
-                className="w-full h-full object-cover"
-                onError={() => setHeroImageError(true)}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  const t = e.target as HTMLImageElement
+                  t.onerror = null
+                  t.style.display = 'none'
+                }}
               />
             )}
           </div>
